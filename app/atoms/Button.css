@@ -1,0 +1,77 @@
+.button {
+  font-size: 1em;
+  font-family: inherit;
+  outline: none;
+  padding: 0;
+  border: none;
+  position: relative;
+  border-radius: var(--roundness);
+  overflow: hidden;
+  background-color: transparent;
+}
+
+.buttonContent {
+  background-color: var(--backgroundColor);
+  border: solid thin var(--primaryColor);
+  border-radius: var(--roundness);
+  color: var(--textColor);
+  cursor: pointer;
+  display: inline-block;
+  min-width: 10ch;
+  width: 100%;
+  padding: calc(var(--spacing-unit) * 0.25) var(--spacing-unit)
+    calc(var(--spacing-unit) * 0.5);
+}
+
+.buttonPrimary .buttonContent {
+  background-color: var(--primaryColor);
+  color: var(--primaryTextColor);
+}
+
+.button:focus,
+.buttonContent:focus {
+  outline: none;
+}
+
+.button:focus > .buttonContent {
+  box-shadow: var(--focusRing);
+}
+
+.button:active > .buttonContent,
+.buttonContent:active {
+  background-color: var(--primaryLightColor);
+}
+
+.button:disabled > .buttonContent {
+  cursor: not-allowed;
+  background-color: var(--primaryLightColor);
+  opacity: 0.6;
+}
+
+.buttonLoading {
+  cursor: progress;
+  opacity: 0.8;
+}
+
+@keyframes moveLoadingButton {
+  to {
+    left: 0;
+  }
+}
+
+.buttonLoading::before {
+  content: '';
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    transparent 33.3334%,
+    var(--secondaryColor) 50%,
+    transparent 66.6667%
+  );
+  position: absolute;
+  top: 0;
+  left: -200%;
+  width: 300%;
+  height: 100%;
+  animation: moveLoadingButton ease-out 1s infinite;
+}

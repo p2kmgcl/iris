@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strict": true,
+    "jsx": "preserve",
+    "lib": ["ES2018", "DOM", "WebWorker"],
+    "target": "ES2018"
+  },
+  "include": ["app", "service-worker", "types"]
+}
