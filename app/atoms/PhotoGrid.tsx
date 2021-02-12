@@ -79,7 +79,15 @@ const Thumbnail: FC<GridChildComponentProps> = React.memo(
         return;
       }
 
-      const photo = photos[rowIndex * numColumns + columnIndex];
+      // Photo might not exist because
+      // last row might be uneven
+
+      const photo = photos[rowIndex * numColumns + columnIndex] as
+        | Photo
+        | undefined;
+
+      if (!photo) return;
+
       thumbnailURL = URL.createObjectURL(photo.thumbnail);
       thumbnailURLGrid[columnIndex][rowIndex] = thumbnailURL;
       setURL(thumbnailURL);
