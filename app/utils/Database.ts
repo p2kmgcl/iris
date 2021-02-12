@@ -12,7 +12,12 @@ export const Database = {
     }
 
     if (!(await navigator.storage.persisted())) {
-      throw new Error('Storage not persisted');
+      console.warn(
+        'Application storage is not persistent. ' +
+          'Your data might be lost at any point if your browser needs to ' +
+          'make some extra space. However, you can continue using all ' +
+          'features.',
+      );
     }
 
     database = await openDB<Schema>('database', DATABASE_VERSION, {
