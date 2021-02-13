@@ -1,6 +1,6 @@
 import { IDBPDatabase, openDB } from 'idb';
 import pkg from '../../package.json';
-import { Album, Item, Photo, Schema } from '../../types/Schema';
+import { Album, Item, MetadataFile, Photo, Schema } from '../../types/Schema';
 
 const DATABASE_VERSION = 1;
 let database: IDBPDatabase<Schema>;
@@ -47,6 +47,15 @@ export const Database = {
           unique: false,
           multiEntry: false,
         });
+
+        const metadataFilesStore = database.createObjectStore('metadataFiles', {
+          keyPath: 'itemId',
+        });
+
+        metadataFilesStore.createIndex('byPhotoItemId', 'photoItemId', {
+          unique: true,
+          multiEntry: false,
+        });
       },
     });
 
@@ -74,8 +83,8 @@ export const Database = {
   },
 
   destroy: async () => {
-    await database.clear('configuration');
     await database.clear('photos');
+    await database.clear('metadataFiles');
     await database.clear('items');
     await database.clear('albums');
 
@@ -117,7 +126,7 @@ export const Database = {
   },
 
   addAlbum: async (album: Album & Item) => {
-    await database.add('items', {
+    await Database.addItem({
       itemId: album.itemId,
       fileName: album.fileName,
       updateTime: album.updateTime,
@@ -137,7 +146,7 @@ export const Database = {
       response.blob(),
     );
 
-    await database.add('items', {
+    await Database.addItem({
       itemId: photo.itemId,
       fileName: photo.fileName,
       updateTime: photo.updateTime,
@@ -151,6 +160,19 @@ export const Database = {
       isVideo: photo.isVideo,
       albumItemId: photo.albumItemId,
       thumbnail,
+    });
+  },
+
+  addMetadataFile: async (metadataFile: MetadataFile & Item) => {
+    await Database.addItem({
+      itemId: metadataFile.itemId,
+      updateTime: metadataFile.updateTime,
+      fileName: metadataFile.fileName,
+    });
+
+    await database.add('metadataFiles', {
+      itemId: metadataFile.itemId,
+      photoItemId: metadataFile.photoItemId,
     });
   },
 };

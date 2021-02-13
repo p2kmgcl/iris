@@ -22,6 +22,11 @@ export interface Photo {
   isVideo: boolean;
 }
 
+export interface MetadataFile {
+  itemId: string;
+  photoItemId: string;
+}
+
 export interface Schema extends DBSchema {
   configuration: {
     key: string;
@@ -55,6 +60,14 @@ export interface Schema extends DBSchema {
     indexes: {
       byDateTime: number;
       byAlbumItemId: string;
+    };
+  };
+
+  metadataFiles: {
+    key: string;
+    value: MetadataFile;
+    indexes: {
+      byPhotoItemId: string;
     };
   };
 }

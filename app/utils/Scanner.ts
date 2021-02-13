@@ -1,5 +1,4 @@
 import { DriveItem } from '@microsoft/microsoft-graph-types';
-import fastXMLParser from 'fast-xml-parser';
 import { Database } from './Database';
 import { Graph } from './Graph';
 import { Photo } from '../../types/Schema';
@@ -44,48 +43,11 @@ export const Scanner = {
           await Graph.getItemThumbnails(driveItem.id as string)
         ).medium?.url as string;
 
-        const dateTime: number = await (async function () {
-          try {
-            const metadataFile = driveItemSiblings.find(
-              (item) => item.name === `${driveItem.name}.xmp`,
-            ) as {
-              '@microsoft.graph.downloadUrl': string;
-            };
-
-            const metadata = fastXMLParser.parse(
-              await fetch(
-                metadataFile['@microsoft.graph.downloadUrl'],
-              ).then((response) => response.text()),
-              {
-                attributeNamePrefix: '',
-                ignoreAttributes: false,
-              },
-            ) as {
-              'x:xmpmeta': {
-                'rdf:RDF': {
-                  'rdf:Description': { 'xmp:CreateDate': string };
-                };
-              };
-            };
-
-            const createDateTime =
-              metadata['x:xmpmeta']['rdf:RDF']['rdf:Description'][
-                'xmp:CreateDate'
-              ];
-
-            if (!createDateTime) {
-              throw new Error();
-            }
-
-            return new Date(createDateTime).getTime();
-          } catch (_) {
-            return new Date(
-              driveItem.photo?.takenDateTime ||
-                driveItem.createdDateTime ||
-                lastModifiedDateTime,
-            ).getTime();
-          }
-        })();
+        const dateTime: number = new Date(
+          driveItem.photo?.takenDateTime ||
+            driveItem.createdDateTime ||
+            lastModifiedDateTime,
+        ).getTime();
 
         await Database.addPhoto({
           itemId: driveItem.id as string,
@@ -119,6 +81,18 @@ export const Scanner = {
           title,
           dateTime,
         });
+      } else if (getMetadataFilePhoto(driveItem, driveItemSiblings)) {
+        const photoItem = getMetadataFilePhoto(
+          driveItem,
+          driveItemSiblings,
+        ) as DriveItem;
+
+        await Database.addMetadataFile({
+          photoItemId: photoItem.id as string,
+          itemId: driveItem.id as string,
+          fileName: driveItem.name as string,
+          updateTime: lastModifiedDateTime,
+        });
       } else {
         await Database.addItem({
           itemId: driveItem.id as string,
@@ -133,6 +107,22 @@ export const Scanner = {
     );
   },
 };
+
+function getMetadataFilePhoto(
+  driveItem: DriveItem,
+  driveItemSiblings: DriveItem[],
+) {
+  const photoName = driveItem.name?.replace(/\.xmp$/i, '') ?? '';
+
+  return (
+    (photoName &&
+      photoName !== driveItem.name &&
+      driveItemSiblings.find(
+        (sibling) => sibling.name && sibling.name === photoName,
+      )) ??
+    null
+  );
+}
 
 function driveItemIsPhoto(driveItem: DriveItem) {
   return !!(driveItem.video?.width || driveItem.image?.width);
