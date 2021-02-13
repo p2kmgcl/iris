@@ -6,6 +6,7 @@ import { Setup } from './organisms/Setup';
 import { responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core';
 import { yellow } from '@material-ui/core/colors';
+import { ScanContextProvider } from './contexts/ScanContext';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 
@@ -43,7 +44,11 @@ const Wrapper: FC = ({ children }) => {
     appElement.style.height = '100%';
   }, []);
 
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider theme={theme}>
+      <ScanContextProvider>{children}</ScanContextProvider>
+    </ThemeProvider>
+  );
 };
 
 (async function () {

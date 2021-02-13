@@ -1,7 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Database } from '../utils/Database';
-import { AbortError, Scanner } from '../utils/Scanner';
-import { Photo } from '../../types/Schema';
+import React, { FC } from 'react';
 import {
   Box,
   Card,
@@ -12,45 +9,19 @@ import {
 } from '@material-ui/core';
 import { PauseCircleOutline, PlayCircleOutline } from '@material-ui/icons';
 import { PhotoThumbnail } from '../atoms/PhotoThumbnail';
+import {
+  useIsScanning,
+  useLastScannedPhoto,
+  useScanError,
+  useToggleScan,
+} from '../contexts/ScanContext';
 
 export const ScanStatus: FC = () => {
   const theme = useTheme();
-  const [scan, setScan] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [lastScannedPhoto, setLastScannedPhoto] = useState<Photo | null>(null);
-
-  useEffect(() => {
-    if (!scan) {
-      return;
-    }
-
-    const abortController = new AbortController();
-    setError(null);
-
-    Database.getConfiguration()
-      .then(({ rootDirectoryId }) => {
-        return Scanner.scan(
-          rootDirectoryId,
-          abortController.signal,
-          setLastScannedPhoto,
-        );
-      })
-      .then(() => {
-        setScan(false);
-      })
-      .catch((error) => {
-        setScan(false);
-
-        if (!(error instanceof AbortError)) {
-          setError(error);
-        }
-      });
-
-    return () => {
-      setLastScannedPhoto(null);
-      abortController.abort();
-    };
-  }, [scan]);
+  const isScanning = useIsScanning();
+  const toggleScan = useToggleScan();
+  const lastScannedPhoto = useLastScannedPhoto();
+  const scanError = useScanError();
 
   return (
     <Card style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
@@ -75,12 +46,14 @@ export const ScanStatus: FC = () => {
         )}
       </Box>
 
-      <CardContent style={{ flexGrow: 1, overflow: 'hi  dden' }}>
-        <Typography>{scan ? 'Scanning...' : 'Scanning stopped'}</Typography>
+      <CardContent style={{ flexGrow: 1, overflow: 'hidden' }}>
+        <Typography>
+          {isScanning ? 'Scanning...' : 'Scanning stopped'}
+        </Typography>
         <Typography
           variant="body2"
           style={{
-            color: error
+            color: scanError
               ? theme.palette.error.main
               : theme.palette.text.secondary,
             whiteSpace: 'nowrap',
@@ -88,17 +61,17 @@ export const ScanStatus: FC = () => {
             textOverflow: 'ellipsis',
           }}
         >
-          {error
-            ? error.toString()
-            : scan && lastScannedPhoto?.dateTime
+          {scanError
+            ? scanError.toString()
+            : isScanning && lastScannedPhoto?.dateTime
             ? new Date(lastScannedPhoto.dateTime).toLocaleString()
             : ''}
         </Typography>
       </CardContent>
 
       <Box style={{ flexShrink: 0 }}>
-        <IconButton onClick={() => setScan(!scan)}>
-          {scan ? <PauseCircleOutline /> : <PlayCircleOutline />}
+        <IconButton onClick={toggleScan}>
+          {isScanning ? <PauseCircleOutline /> : <PlayCircleOutline />}
         </IconButton>
       </Box>
     </Card>

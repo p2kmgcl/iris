@@ -1,45 +1,62 @@
-import React, { FC, useState } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 import {
+  Badge,
   BottomNavigation,
   BottomNavigationAction,
   Box,
+  CircularProgress,
   useTheme,
 } from '@material-ui/core';
-import {
-  PhotoLibraryOutlined,
-  SettingsOutlined,
-  SvgIconComponent,
-} from '@material-ui/icons';
+import { PhotoLibraryOutlined, SettingsOutlined } from '@material-ui/icons';
 import { AllPhotosTab } from './tabs/AllPhotosTab';
 import { SettingsTab } from './tabs/SettingsTab';
+import { useIsScanning } from '../contexts/ScanContext';
 
 const DEFAULT_TAB_ID = 'allPhotos';
-
-const TABS: Record<
-  string,
-  {
-    label: string;
-    Component: FC;
-    Icon: SvgIconComponent;
-  }
-> = {
-  [DEFAULT_TAB_ID]: {
-    label: 'Photos',
-    Icon: PhotoLibraryOutlined,
-    Component: AllPhotosTab,
-  },
-
-  settings: {
-    label: 'Settings',
-    Icon: SettingsOutlined,
-    Component: SettingsTab,
-  },
-};
 
 export function App() {
   const theme = useTheme();
   const [tabId, setTabId] = useState(DEFAULT_TAB_ID);
-  const { Component } = TABS[tabId];
+  const isScanning = useIsScanning();
+
+  const tabs: Record<
+    string,
+    {
+      label: string;
+      Component: FC;
+      Icon: ReactElement;
+    }
+  > = {
+    [DEFAULT_TAB_ID]: {
+      label: 'Photos',
+      Icon: <PhotoLibraryOutlined />,
+      Component: AllPhotosTab,
+    },
+
+    settings: {
+      label: 'Settings',
+      Icon: isScanning ? (
+        <Badge
+          color="primary"
+          overlap="circle"
+          badgeContent={
+            <CircularProgress
+              size={10}
+              disableShrink
+              style={{ color: theme.palette.primary.contrastText }}
+            />
+          }
+        >
+          <SettingsOutlined />
+        </Badge>
+      ) : (
+        <SettingsOutlined />
+      ),
+      Component: SettingsTab,
+    },
+  };
+
+  const { Component } = tabs[tabId];
 
   return (
     <Box display="flex" flexDirection="column" style={{ height: '100%' }}>
@@ -53,11 +70,11 @@ export function App() {
         onChange={(_, nextValue) => setTabId(nextValue)}
         style={{ height: `${theme.spacing(10)}px` }}
       >
-        {Object.entries(TABS).map(([value, { label, Icon }]) => (
+        {Object.entries(tabs).map(([value, { label, Icon }]) => (
           <BottomNavigationAction
             key={value}
             label={label}
-            icon={<Icon />}
+            icon={Icon}
             value={value}
           />
         ))}
