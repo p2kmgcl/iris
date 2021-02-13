@@ -9,7 +9,7 @@
     "lint": "eslint --max-warnings 0 --fix app/**/*.ts app/**/*.tsx service-worker/**/*.ts",
     "build": "NODE_ENV=production webpack --mode production --config webpack.config.js",
     "start": "NODE_ENV=development webpack serve --mode development --config webpack.config.js",
-    "start:production": "NODE_ENV=production http-server -a 0.0.0.0 --port 9000 --ssl --cert ./build/development-certificate/localhost.crt --key ./build/development-certificate/localhost.key ./build/app/"
+    "start:production": "NODE_ENV=production http-server -a 0.0.0.0 --port 9000 --gzip --ssl --cert ./build/development-certificate/localhost.crt --key ./build/development-certificate/localhost.key ./build/app/"
   },
   "engines": {
     "node": ">=10.0.0",
@@ -60,6 +60,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
+    "compression-webpack-plugin": "^7.1.2",
     "conventional-changelog-cli": "^2.1.1",
     "copy-webpack-plugin": "^7.0.0",
     "css-loader": "^5.0.2",
@@ -72,6 +73,7 @@
     "typescript": "^3.8.3",
     "webpack": "^5.21.2",
     "webpack-cli": "^4.5.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^3.11.2",
+    "workbox-webpack-plugin": "^6.1.0"
   }
 }

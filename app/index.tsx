@@ -24,6 +24,17 @@ const Wrapper: FC = ({ children }) => {
 (async function () {
   await Database.open();
 
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then((registration) => {
+        console.log('SW registered: ', registration);
+      })
+      .catch((registrationError) => {
+        console.error('SW registration failed: ', registrationError);
+      });
+  }
+
   const isSetupReady = await (async function () {
     const configuration = await Database.getConfiguration();
     return Object.values(configuration).every((value) => !!value);

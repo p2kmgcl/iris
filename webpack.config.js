@@ -3,6 +3,8 @@
 
 const CopyPlugin = require('copy-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
@@ -13,7 +15,6 @@ const CERTIFICATE_DIRECTORY = './build/development-certificate';
 module.exports = {
   entry: {
     app: './app/index.tsx',
-    'service-worker': './app/service-worker.ts',
     'auth-redirection': './app/auth-redirection.ts',
   },
   output: {
@@ -62,6 +63,19 @@ module.exports = {
         { from: 'static', to: path.resolve(__dirname, DESTINATION_DIRECTORY) },
       ],
     }),
+
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          new CompressionPlugin({
+            test: /\.(js|css)$/i,
+          }),
+
+          new WorkboxPlugin.GenerateSW({
+            clientsClaim: true,
+            skipWaiting: true,
+          }),
+        ]
+      : []),
 
     ...(process.env.NODE_ENV === 'development'
       ? [

@@ -51,7 +51,7 @@ export const PhotoGrid: FC<{ photos: Photo[] }> = ({ photos }) => {
               rowCount={Math.ceil(photos.length / numColumns)}
               columnWidth={thumbnailSize}
               rowHeight={thumbnailSize}
-              overscanCount={Math.ceil(height / thumbnailSize)}
+              overscanRowCount={Math.ceil(height / thumbnailSize)}
               height={height}
               width={width}
               itemData={{

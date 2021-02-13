@@ -6,3 +6,6 @@ node_modules/
 yarn.lock
 static/CNAME
 generate-development-certificate.sh
+*.svg
+*.png
+*.txt
