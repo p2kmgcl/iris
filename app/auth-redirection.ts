@@ -20,5 +20,8 @@ if (code && state) {
     <p><strong>Description</strong>: ${errorDescription || ''}</p>
   `;
 } else {
-  document.body.innerHTML = '????';
+  document.body.innerHTML = `
+    <p>Unknown sign in error</p>
+    <p style='font-size: 5em; margin: 0;'>🤷</p>
+  `;
 }
