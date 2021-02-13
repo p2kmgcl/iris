@@ -42,7 +42,7 @@ export const ScanStatus: FC = () => {
         setScan(false);
 
         if (!(error instanceof AbortError)) {
-          throw error;
+          setError(error);
         }
       });
 
