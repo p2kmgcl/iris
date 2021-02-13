@@ -73,6 +73,15 @@ export const Database = {
     }
   },
 
+  destroy: async () => {
+    await database.clear('configuration');
+    await database.clear('photos');
+    await database.clear('items');
+    await database.clear('albums');
+
+    window.location.reload();
+  },
+
   getConfiguration: async () => {
     return (await database.get(
       'configuration',
