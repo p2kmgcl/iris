@@ -3,70 +3,89 @@ import React, {
   FC,
   useCallback,
   useContext,
-  useEffect,
-  useState,
+  useRef,
 } from 'react';
 import { Photo } from '../../types/Schema';
 import { Database } from '../utils/Database';
 import { AbortError, Scanner } from '../utils/Scanner';
+import {
+  Channel,
+  NoopChannel,
+  useChannel,
+  useChannelData,
+} from '../hooks/useChannel';
 
 const ScanContext = createContext<{
-  isScanning: boolean;
-  lastScannedPhoto: Photo | null;
-  scanError: Error | null;
+  isScanningChannel: Channel<boolean>;
+  scanErrorChannel: Channel<Error | null>;
+  scanStatusChannel: Channel<Photo | null>;
   toggleScan: () => void;
 }>({
-  isScanning: false,
-  lastScannedPhoto: null,
-  scanError: null,
+  isScanningChannel: NoopChannel,
+  scanErrorChannel: NoopChannel,
+  scanStatusChannel: NoopChannel,
   toggleScan: () => {},
 });
 
 export const ScanContextProvider: FC = ({ children }) => {
-  const [scan, setScan] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [lastScannedPhoto, setLastScannedPhoto] = useState<Photo | null>(null);
+  const isScanningChannel = useChannel<boolean>(false);
+  const scanErrorChannel = useChannel<Error | null>(null);
+  const scanStatusChannel = useChannel<Photo | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    if (!scan) {
+  const toggleScan = useCallback(() => {
+    if (abortControllerRef.current) {
+      isScanningChannel.emit(false);
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
       return;
     }
 
     const abortController = new AbortController();
-    setError(null);
 
-    Database.getConfiguration()
-      .then(({ rootDirectoryId }) => {
-        return Scanner.scan(
-          rootDirectoryId,
-          abortController.signal,
-          setLastScannedPhoto,
-        );
-      })
-      .then(() => {
-        setScan(false);
-      })
-      .catch((error) => {
-        setScan(false);
+    abortControllerRef.current = abortController;
+    scanErrorChannel.emit(null);
+    isScanningChannel.emit(true);
 
-        if (!(error instanceof AbortError)) {
-          setError(error);
-        }
-      });
+    Database.getConfiguration().then(({ rootDirectoryId }) => {
+      if (!abortControllerRef.current) {
+        return;
+      }
+
+      return Scanner.scan(
+        rootDirectoryId,
+        abortControllerRef.current.signal,
+        scanStatusChannel.emit,
+      )
+        .then(() => {
+          if (abortControllerRef.current === abortController) {
+            isScanningChannel.emit(false);
+          }
+        })
+        .catch((error) => {
+          if (abortControllerRef.current === abortController) {
+            isScanningChannel.emit(false);
+            if (!(error instanceof AbortError)) scanErrorChannel.emit(error);
+          }
+        });
+    });
 
     return () => {
-      setLastScannedPhoto(null);
       abortController.abort();
+
+      if (abortControllerRef.current === abortController) {
+        abortControllerRef.current = null;
+      }
     };
-  }, [scan]);
+  }, [isScanningChannel, scanErrorChannel, scanStatusChannel]);
 
   return (
     <ScanContext.Provider
       value={{
-        isScanning: scan,
-        scanError: error,
-        toggleScan: useCallback(() => setScan((prevScan) => !prevScan), []),
-        lastScannedPhoto,
+        isScanningChannel,
+        scanErrorChannel,
+        scanStatusChannel,
+        toggleScan,
       }}
     >
       {children}
@@ -74,18 +93,15 @@ export const ScanContextProvider: FC = ({ children }) => {
   );
 };
 
-export const useIsScanning = () => {
-  return useContext(ScanContext).isScanning;
-};
+export const useIsScanning = () =>
+  useChannelData(useContext(ScanContext).isScanningChannel);
+
+export const useLastScannedPhoto = () =>
+  useChannelData(useContext(ScanContext).scanStatusChannel);
+
+export const useScanError = () =>
+  useChannelData(useContext(ScanContext).scanErrorChannel);
 
 export const useToggleScan = () => {
   return useContext(ScanContext).toggleScan;
-};
-
-export const useLastScannedPhoto = () => {
-  return useContext(ScanContext).lastScannedPhoto;
-};
-
-export const useScanError = () => {
-  return useContext(ScanContext).scanError;
 };
