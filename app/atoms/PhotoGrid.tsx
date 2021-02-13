@@ -1,15 +1,15 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useMemo } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, areEqual, GridChildComponentProps } from 'react-window';
 import { Photo } from '../../types/Schema';
 import { Box, useTheme } from '@material-ui/core';
+import { PhotoThumbnail } from './PhotoThumbnail';
 
 const BASE_THUMBNAIL_SIZE = 128;
 const LARGE_BASE_THUMBNAIL_SIZE = 256;
 const LARGE_THRESHOLD = 1440;
 
 export const PhotoGrid: FC<{ photos: Photo[] }> = ({ photos }) => {
-  const thumbnailURLGridRef = useRef<string[][]>([]);
   const theme = useTheme();
 
   return (
@@ -32,18 +32,6 @@ export const PhotoGrid: FC<{ photos: Photo[] }> = ({ photos }) => {
 
           const thumbnailSize = Math.ceil(width / numColumns);
 
-          if (numColumns !== thumbnailURLGridRef.current.length) {
-            thumbnailURLGridRef.current.forEach((column) => {
-              column.forEach((url) => {
-                URL.revokeObjectURL(url);
-              });
-            });
-          }
-
-          thumbnailURLGridRef.current = Array.from({
-            length: numColumns,
-          }).map(() => []);
-
           return (
             <FixedSizeGrid
               style={{ overflowX: 'hidden', outline: 'none' }}
@@ -58,7 +46,6 @@ export const PhotoGrid: FC<{ photos: Photo[] }> = ({ photos }) => {
                 photos,
                 numColumns,
                 thumbnailSize,
-                thumbnailURLGrid: thumbnailURLGridRef.current,
               }}
               children={Thumbnail}
             />
@@ -71,37 +58,20 @@ export const PhotoGrid: FC<{ photos: Photo[] }> = ({ photos }) => {
 
 const Thumbnail: FC<GridChildComponentProps> = React.memo(
   ({ data, rowIndex, columnIndex, style }) => {
-    const theme = useTheme();
-
-    const { photos, numColumns, thumbnailSize, thumbnailURLGrid } = data as {
+    const { photos, numColumns, thumbnailSize } = data as {
       photos: Photo[];
       numColumns: number;
       thumbnailSize: number;
-      thumbnailURLGrid: string[][];
     };
 
-    const [url, setURL] = useState(thumbnailURLGrid[columnIndex][rowIndex]);
+    const photo = useMemo(
+      () => photos[rowIndex * numColumns + columnIndex] as Photo | undefined,
+      [],
+    );
 
-    useEffect(() => {
-      let thumbnailURL = thumbnailURLGrid[columnIndex][rowIndex];
-      if (thumbnailURL) {
-        setURL(thumbnailURL);
-        return;
-      }
-
-      // Photo might not exist because
-      // last row might be uneven
-
-      const photo = photos[rowIndex * numColumns + columnIndex] as
-        | Photo
-        | undefined;
-
-      if (!photo) return;
-
-      thumbnailURL = URL.createObjectURL(photo.thumbnail);
-      thumbnailURLGrid[columnIndex][rowIndex] = thumbnailURL;
-      setURL(thumbnailURL);
-    }, [photos, numColumns, thumbnailURLGrid, rowIndex, columnIndex]);
+    if (!photo) {
+      return null;
+    }
 
     return (
       <Box
@@ -115,15 +85,16 @@ const Thumbnail: FC<GridChildComponentProps> = React.memo(
       >
         <button
           style={{
+            display: 'block',
+            padding: 0,
             width: '100%',
             height: '100%',
             border: 'none',
-            backgroundPosition: 'center center',
-            backgroundSize: 'cover',
-            backgroundImage: url ? `url(${url})` : 'none',
-            backgroundColor: theme.palette.background.paper,
+            background: 'none',
           }}
-        />
+        >
+          <PhotoThumbnail photo={photo} size={thumbnailSize - 4} />
+        </button>
       </Box>
     );
   },

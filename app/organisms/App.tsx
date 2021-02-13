@@ -1,14 +1,17 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
   useTheme,
 } from '@material-ui/core';
-import { PhotoLibraryOutlined, SvgIconComponent } from '@material-ui/icons';
+import {
+  PhotoLibraryOutlined,
+  SettingsOutlined,
+  SvgIconComponent,
+} from '@material-ui/icons';
 import { AllPhotosTab } from './tabs/AllPhotosTab';
-import { AbortError, Scanner } from '../utils/Scanner';
-import { Database } from '../utils/Database';
+import { SettingsTab } from './tabs/SettingsTab';
 
 const DEFAULT_TAB_ID = 'allPhotos';
 
@@ -25,30 +28,18 @@ const TABS: Record<
     Icon: PhotoLibraryOutlined,
     Component: AllPhotosTab,
   },
+
+  settings: {
+    label: 'Settings',
+    Icon: SettingsOutlined,
+    Component: SettingsTab,
+  },
 };
 
 export function App() {
   const theme = useTheme();
   const [tabId, setTabId] = useState(DEFAULT_TAB_ID);
   const { Component } = TABS[tabId];
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    Database.getConfiguration()
-      .then(({ rootDirectoryId }) => {
-        return Scanner.scan(rootDirectoryId, abortController.signal, () => {});
-      })
-      .catch((error) => {
-        if (!(error instanceof AbortError)) {
-          throw error;
-        }
-      });
-
-    return () => {
-      abortController.abort();
-    };
-  }, []);
 
   return (
     <Box display="flex" flexDirection="column" style={{ height: '100%' }}>

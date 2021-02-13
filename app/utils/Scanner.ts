@@ -2,6 +2,7 @@ import { DriveItem } from '@microsoft/microsoft-graph-types';
 import fastXMLParser from 'fast-xml-parser';
 import { Database } from './Database';
 import { Graph } from './Graph';
+import { Photo } from '../../types/Schema';
 
 export class AbortError extends Error {
   toString() {
@@ -13,7 +14,7 @@ export const Scanner = {
   scan: async (
     driveItemId: string,
     abortSignal: AbortSignal,
-    onStatusUpdate: (status: string) => void,
+    onStatusUpdate: (lastScannedPhoto: Photo | null) => void,
   ) => {
     async function scanItem(
       driveItem: DriveItem,
@@ -37,8 +38,6 @@ export const Scanner = {
         await scanItem(child, driveItem, children);
         if (abortSignal.aborted) throw new AbortError();
       }
-
-      onStatusUpdate(`${driveItemParent.name}/${driveItem.name}`);
 
       if (driveItemIsPhoto(driveItem)) {
         const thumbnailURI = (
@@ -100,6 +99,8 @@ export const Scanner = {
             driveItem.video?.height) as number,
           isVideo: !!driveItem.video,
         });
+
+        onStatusUpdate(await Database.selectMostRecentPhoto());
       } else if (children.some((child) => driveItemIsPhoto(child))) {
         const titleRegExp = /^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})\s([^\n]+)$/;
         let title = driveItem.name as string;

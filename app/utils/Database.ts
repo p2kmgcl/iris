@@ -95,6 +95,15 @@ export const Database = {
     return database.get('items', itemId);
   },
 
+  selectMostRecentPhoto: async (): Promise<Photo | null> => {
+    const cursor = await database
+      .transaction('photos', 'readonly')
+      .store.index('byDateTime')
+      .openCursor();
+
+    return cursor?.value || null;
+  },
+
   selectPhotos: async (): Promise<Photo[]> => {
     return (await database.getAllFromIndex('photos', 'byDateTime')).reverse();
   },
