@@ -42,6 +42,7 @@ const Wrapper: FC = ({ children }) => {
 
   document.body.style.margin = '0';
   document.body.style.height = '100vh';
+  document.body.style.overflow = 'hidden';
 
   const MainComponent = isSetupReady ? App : Setup;
 
