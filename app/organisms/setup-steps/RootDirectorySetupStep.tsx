@@ -102,81 +102,89 @@ export const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
         Gallery folder
       </Typography>
 
-      <LoadingMask loading={loading}>
-        {item && children ? (
-          <List
-            style={{
-              width: '90%',
-              margin: '2em auto',
-              maxWidth: '60ch',
-              height: '40em',
-              maxHeight: '50vh',
-              overflowY: 'auto',
-              borderBottom: `solid thin ${theme.palette.divider}`,
-            }}
-            subheader={
-              <ListSubheader
-                component="div"
-                style={{
-                  textAlign: 'left',
-                  backgroundColor: theme.palette.background.default,
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                }}
-              >
-                {path.length ? (
-                  <Breadcrumbs
-                    maxItems={2}
-                    style={{
-                      marginBottom: theme.spacing(2),
-                      marginTop: theme.spacing(2),
-                    }}
-                  >
-                    {path.map((chunk, index) => (
-                      <Chip
-                        key={`${chunk}-${index}`}
-                        label={chunk}
-                        size="small"
-                      />
-                    ))}
-                  </Breadcrumbs>
-                ) : null}
-              </ListSubheader>
-            }
-          >
-            {children.map(({ id, label, Icon }) => (
-              <ListItem
-                button
-                key={id}
-                onClick={() => setItemId(id)}
-                style={{ borderTop: `solid thin ${theme.palette.divider}` }}
-              >
-                <ListItemIcon>
-                  <Icon />
-                </ListItemIcon>
-                <ListItemText>{label}</ListItemText>
-              </ListItem>
-            ))}
+      <Box
+        style={{
+          margin: '2em auto',
+          borderRadius: theme.shape.borderRadius,
+          overflow: 'hidden',
+        }}
+      >
+        <LoadingMask loading={loading}>
+          {item && children ? (
+            <List
+              style={{
+                width: '90vw',
+                maxWidth: '60ch',
+                height: '40em',
+                maxHeight: '50vh',
+                overflowY: 'auto',
+                backgroundColor: theme.palette.background.default,
+                borderBottom: `solid thin ${theme.palette.divider}`,
+              }}
+              subheader={
+                <ListSubheader
+                  component="div"
+                  style={{
+                    textAlign: 'left',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    backgroundColor: theme.palette.background.paper,
+                  }}
+                >
+                  {path.length ? (
+                    <Breadcrumbs
+                      maxItems={2}
+                      style={{
+                        marginBottom: theme.spacing(2),
+                        marginTop: theme.spacing(2),
+                      }}
+                    >
+                      {path.map((chunk, index) => (
+                        <Chip
+                          key={`${chunk}-${index}`}
+                          label={chunk}
+                          size="small"
+                        />
+                      ))}
+                    </Breadcrumbs>
+                  ) : null}
+                </ListSubheader>
+              }
+            >
+              {children.map(({ id, label, Icon }) => (
+                <ListItem
+                  button
+                  key={id}
+                  onClick={() => setItemId(id)}
+                  style={{ borderTop: `solid thin ${theme.palette.divider}` }}
+                >
+                  <ListItemIcon>
+                    <Icon />
+                  </ListItemIcon>
+                  <ListItemText>{label}</ListItemText>
+                </ListItem>
+              ))}
 
-            {children.length === 1 ? (
-              <Box
-                style={{
-                  color: theme.palette.text.disabled,
-                  padding: theme.spacing(2),
-                  margin: theme.spacing(4),
-                }}
-              >
-                <Typography>Folder is empty</Typography>
-              </Box>
-            ) : null}
-          </List>
-        ) : (
-          <Box marginY="4em">
-            <CircularProgress />
-          </Box>
-        )}
-      </LoadingMask>
+              {children.length === 1 ? (
+                <Box
+                  style={{
+                    color: theme.palette.text.disabled,
+                    padding: theme.spacing(2),
+                    margin: theme.spacing(4),
+                  }}
+                >
+                  <Typography>Folder is empty</Typography>
+                </Box>
+              ) : null}
+            </List>
+          ) : (
+            <Box marginY="4em">
+              <CircularProgress />
+            </Box>
+          )}
+        </LoadingMask>
+      </Box>
 
       {item && item.name ? (
         <Button

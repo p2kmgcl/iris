@@ -3,11 +3,36 @@ import { render } from 'react-dom';
 import { Database } from './utils/Database';
 import { App } from './organisms/App';
 import { Setup } from './organisms/Setup';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core';
+import { yellow } from '@material-ui/core/colors';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
-const theme = createMuiTheme({});
+
+const theme = responsiveFontSizes(
+  createMuiTheme({
+    palette: {
+      background: {
+        default: '#111',
+        paper: '#222',
+      },
+
+      primary: {
+        main: yellow['500'],
+      },
+
+      type: 'dark',
+    },
+
+    typography: {
+      fontFamily: `
+        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans,
+        Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      `,
+      fontSize: 16,
+    },
+  }),
+);
 
 const Wrapper: FC = ({ children }) => {
   useEffect(() => {
@@ -24,7 +49,7 @@ const Wrapper: FC = ({ children }) => {
 (async function () {
   await Database.open();
 
-  if ('serviceWorker' in navigator) {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/service-worker.js')
       .then((registration) => {

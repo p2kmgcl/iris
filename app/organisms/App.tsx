@@ -3,6 +3,7 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
+  useTheme,
 } from '@material-ui/core';
 import { PhotoLibraryOutlined, SvgIconComponent } from '@material-ui/icons';
 import { AllPhotosTab } from './tabs/AllPhotosTab';
@@ -27,6 +28,7 @@ const TABS: Record<
 };
 
 export function App() {
+  const theme = useTheme();
   const [tabId, setTabId] = useState(DEFAULT_TAB_ID);
   const { Component } = TABS[tabId];
 
@@ -58,6 +60,7 @@ export function App() {
         showLabels
         value={tabId}
         onChange={(_, nextValue) => setTabId(nextValue)}
+        style={{ height: `${theme.spacing(10)}px` }}
       >
         {Object.entries(TABS).map(([value, { label, Icon }]) => (
           <BottomNavigationAction

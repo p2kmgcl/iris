@@ -7,12 +7,16 @@ export const WelcomePageSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
 
   return (
     <>
+      <Typography variant="h1" component="h1">
+        Iris
+      </Typography>
+
       <Typography
-        variant="h2"
-        component="h1"
+        component="p"
+        variant="subtitle1"
         style={{ marginBottom: theme.spacing(2) }}
       >
-        Iris
+        The missing OneDrive gallery.
       </Typography>
 
       <Button
