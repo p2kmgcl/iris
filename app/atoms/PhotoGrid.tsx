@@ -66,7 +66,7 @@ const Thumbnail: FC<GridChildComponentProps> = React.memo(
 
     const photo = useMemo(
       () => photos[rowIndex * numColumns + columnIndex] as Photo | undefined,
-      [],
+      [photos, rowIndex, numColumns, columnIndex],
     );
 
     if (!photo) {
