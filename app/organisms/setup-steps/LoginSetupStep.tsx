@@ -1,10 +1,15 @@
 import React, { FC, FormEventHandler, useEffect, useState } from 'react';
-import { CenteredLayout } from '../../atoms/CenteredLayout';
-import { Heading } from '../../atoms/Heading';
 import { SetupStepProps } from '../../../types/SetupStepProps';
-import { Form, Input, SubmitButton } from '../../atoms/Form';
 import { Database } from '../../utils/Database';
 import { Authentication } from '../../utils/Authentication';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  TextField,
+  Typography,
+} from '@material-ui/core';
+import { PersonOutlined } from '@material-ui/icons';
 
 export const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [clientId, setClientId] = useState('');
@@ -13,8 +18,12 @@ export const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     setLoading(true);
+
+    const popupWindow = window.open() as Window;
+
     await Database.setConfiguration({ clientId });
-    await Authentication.login();
+    await Authentication.login(popupWindow);
+
     setLoading(false);
     stepReady();
   };
@@ -36,22 +45,34 @@ export const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   }, []);
 
   return (
-    <CenteredLayout>
-      <Heading level={1}>Login</Heading>
+    <>
+      <Typography variant="h2" component="h1">
+        Account
+      </Typography>
 
-      <Form onSubmit={handleSubmit}>
-        <Input
-          label="ClientId"
-          required
-          readOnly={loading}
-          value={clientId}
-          onChange={(event) => setClientId(event.target.value)}
-        />
+      <form onSubmit={handleSubmit}>
+        <Box marginY="1em">
+          <TextField
+            disabled={loading}
+            label="ClientId"
+            variant="outlined"
+            value={clientId}
+            onChange={(event) => setClientId(event.target.value)}
+          />
+        </Box>
 
-        <SubmitButton loading={loading}>
-          {loading ? 'Signing in...' : 'Sign in'}
-        </SubmitButton>
-      </Form>
-    </CenteredLayout>
+        <Button
+          disabled={loading}
+          variant="contained"
+          color="primary"
+          type="submit"
+          startIcon={
+            loading ? <CircularProgress size={16} /> : <PersonOutlined />
+          }
+        >
+          {loading ? 'Signing in' : 'Sign in'}
+        </Button>
+      </form>
+    </>
   );
 };

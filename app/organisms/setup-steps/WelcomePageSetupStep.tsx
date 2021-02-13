@@ -1,16 +1,28 @@
 import React, { FC } from 'react';
-import { CenteredLayout } from '../../atoms/CenteredLayout';
-import { Button } from '../../atoms/Button';
-import { Heading } from '../../atoms/Heading';
 import { SetupStepProps } from '../../../types/SetupStepProps';
+import { Button, Typography, useTheme } from '@material-ui/core';
 
 export const WelcomePageSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
+  const theme = useTheme();
+
   return (
-    <CenteredLayout>
-      <Heading level={1}>Iris</Heading>
-      <Button variant="primary" onClick={() => stepReady()}>
-        Welcome
+    <>
+      <Typography
+        variant="h2"
+        component="h1"
+        style={{ marginBottom: theme.spacing(2) }}
+      >
+        Iris
+      </Typography>
+
+      <Button
+        variant="contained"
+        color="primary"
+        type="button"
+        onClick={() => stepReady()}
+      >
+        Start
       </Button>
-    </CenteredLayout>
+    </>
   );
 };

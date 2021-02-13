@@ -3,6 +3,7 @@
 DIRNAME=build/development-certificate
 CANAME=localca
 NAME=localhost
+IP=0.0.0.0
 
 rm -rf $DIRNAME
 mkdir -p $DIRNAME
@@ -20,7 +21,7 @@ keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 subjectAltName = @alt_names
 [alt_names]
 DNS.1 = $NAME
-IP.1 = 0.0.0.0
+IP.1 = $IP
 EOF
 
 openssl x509 -req -in $NAME.csr -CA $CANAME.pem -CAkey $CANAME.key -CAcreateserial -out $NAME.crt -days 825 -sha256 -extfile $NAME.ext

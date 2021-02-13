@@ -1,9 +1,30 @@
 import React, { FC } from 'react';
-import styles from './LoadingMask.css';
+import { Box, CircularProgress } from '@material-ui/core';
 
 export const LoadingMask: FC<{ loading?: boolean }> = ({
   loading = false,
   children,
 }) => {
-  return <div className={loading ? styles.mask : ''}>{children}</div>;
+  return (
+    <Box
+      style={{
+        position: 'relative',
+        pointerEvents: loading ? 'none' : 'initial',
+      }}
+    >
+      <Box style={{ opacity: loading ? 0.7 : 1 }}>{children}</Box>
+      {loading ? (
+        <Box
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translateX(-50%) translateY(-50%)',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : null}
+    </Box>
+  );
 };

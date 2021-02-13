@@ -5,6 +5,7 @@ import { App } from './App';
 import { LoginSetupStep } from './setup-steps/LoginSetupStep';
 import { RootDirectorySetupStep } from './setup-steps/RootDirectorySetupStep';
 import { ReadySetupStep } from './setup-steps/ReadySetupStep';
+import { Box } from '@material-ui/core';
 
 const SetupSteps: Array<FC<SetupStepProps>> = [
   WelcomePageSetupStep,
@@ -25,5 +26,9 @@ export function Setup() {
     throw new Error('Setup not ready, but there is no StepComponent');
   }
 
-  return <StepComponent stepReady={() => setStepIndex(stepIndex + 1)} />;
+  return (
+    <Box m="auto" paddingTop="5em" textAlign="center">
+      <StepComponent stepReady={() => setStepIndex(stepIndex + 1)} />
+    </Box>
+  );
 }

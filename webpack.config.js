@@ -77,7 +77,7 @@ module.exports = {
     ? {
         devServer: {
           hot: true,
-          host: 'localhost',
+          host: '0.0.0.0',
           https: {
             key: fs.readFileSync(
               path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.key'),

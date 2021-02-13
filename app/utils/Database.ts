@@ -7,11 +7,11 @@ let database: IDBPDatabase<Schema>;
 
 export const Database = {
   open: async () => {
-    if (!(await navigator.storage.persisted())) {
-      await navigator.storage.persist();
+    if (!(await navigator.storage?.persisted())) {
+      await navigator.storage?.persist();
     }
 
-    if (!(await navigator.storage.persisted())) {
+    if (!(await navigator.storage?.persisted())) {
       console.warn(
         'Application storage is not persistent. ' +
           'Your data might be lost at any point if your browser needs to ' +

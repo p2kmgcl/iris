@@ -11,7 +11,7 @@ const SCOPES = [
 ];
 
 export const Authentication = {
-  login: async () => {
+  login: async (popupWindow: Window) => {
     const state = getRandomString(16);
     const codeVerifier = getRandomString(64);
     const codeChallenge = await getCodeChallenge(codeVerifier);
@@ -34,7 +34,7 @@ export const Authentication = {
     url.searchParams.set('code_challenge', codeChallenge);
     url.searchParams.set('code_challenge_method', 'S256');
 
-    window.open(url.toString());
+    popupWindow.location.href = url.toString();
 
     await new Promise((resolve) => {
       window.addEventListener('message', (event) => {

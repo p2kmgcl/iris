@@ -1,33 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '../atoms/Button';
-import { Authentication } from '../utils/Authentication';
-import { Database } from '../utils/Database';
+import React, { FC, useEffect, useState } from 'react';
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Box,
+} from '@material-ui/core';
+import { PhotoLibraryOutlined, SvgIconComponent } from '@material-ui/icons';
+import { AllPhotosTab } from './tabs/AllPhotosTab';
 import { AbortError, Scanner } from '../utils/Scanner';
-import { Photo } from '../../types/Schema';
-import { PhotoGrid } from '../atoms/PhotoGrid';
+import { Database } from '../utils/Database';
+
+const DEFAULT_TAB_ID = 'allPhotos';
+
+const TABS: Record<
+  string,
+  {
+    label: string;
+    Component: FC;
+    Icon: SvgIconComponent;
+  }
+> = {
+  [DEFAULT_TAB_ID]: {
+    label: 'Photos',
+    Icon: PhotoLibraryOutlined,
+    Component: AllPhotosTab,
+  },
+};
 
 export function App() {
-  const [loading, setLoading] = useState(false);
-  const [scan, setScan] = useState(false);
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [tabId, setTabId] = useState(DEFAULT_TAB_ID);
+  const { Component } = TABS[tabId];
 
   useEffect(() => {
-    if (!scan) {
-      return;
-    }
-
     const abortController = new AbortController();
 
     Database.getConfiguration()
       .then(({ rootDirectoryId }) => {
-        return Scanner.scan(
-          rootDirectoryId,
-          abortController.signal,
-          async () => {},
-        );
-      })
-      .then(() => {
-        setScan(false);
+        return Scanner.scan(rootDirectoryId, abortController.signal, () => {});
       })
       .catch((error) => {
         if (!(error instanceof AbortError)) {
@@ -38,35 +46,28 @@ export function App() {
     return () => {
       abortController.abort();
     };
-  }, [scan]);
-
-  useEffect(() => {
-    Database.selectPhotos().then(setPhotos);
   }, []);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        width: '100%',
-      }}
-    >
-      <Button
-        onClick={() => {
-          setLoading(true);
-          Authentication.logout();
-        }}
-        variant="primary"
-        loading={loading}
+    <Box display="flex" flexDirection="column" style={{ height: '100%' }}>
+      <Box flexGrow={1} overflow="flex" display="flex">
+        <Component />
+      </Box>
+
+      <BottomNavigation
+        showLabels
+        value={tabId}
+        onChange={(_, nextValue) => setTabId(nextValue)}
       >
-        Logout
-      </Button>
-      <Button onClick={() => setScan(!scan)}>
-        {scan ? 'Stop scanning' : 'Start scanning'}
-      </Button>
-      <PhotoGrid photos={photos} />
-    </div>
+        {Object.entries(TABS).map(([value, { label, Icon }]) => (
+          <BottomNavigationAction
+            key={value}
+            label={label}
+            icon={<Icon />}
+            value={value}
+          />
+        ))}
+      </BottomNavigation>
+    </Box>
   );
 }
