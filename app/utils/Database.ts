@@ -2,6 +2,7 @@ import { IDBPDatabase, openDB } from 'idb';
 import pkg from '../../package.json';
 import { Album, Item, MetadataFile, Photo, Schema } from '../../types/Schema';
 
+const DATABASE_NAME = 'database';
 const DATABASE_VERSION = 1;
 let database: IDBPDatabase<Schema>;
 
@@ -20,7 +21,7 @@ export const Database = {
       );
     }
 
-    database = await openDB<Schema>('database', DATABASE_VERSION, {
+    database = await openDB<Schema>(DATABASE_NAME, DATABASE_VERSION, {
       async upgrade(database) {
         database.createObjectStore('configuration', { keyPath: 'version' });
         database.createObjectStore('items', { keyPath: 'itemId' });
@@ -82,14 +83,15 @@ export const Database = {
     }
   },
 
-  destroy: async () => {
-    await database.clear('photos');
-    await database.clear('metadataFiles');
-    await database.clear('items');
-    await database.clear('albums');
+  destroy: () =>
+    new Promise(() => {
+      const request = indexedDB.deleteDatabase(DATABASE_NAME);
+      const handler = () => window.location.reload();
 
-    window.location.reload();
-  },
+      request.onsuccess = handler;
+      request.onerror = handler;
+      request.onblocked = handler;
+    }),
 
   getConfiguration: async () => {
     return (await database.get(
