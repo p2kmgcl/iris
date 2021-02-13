@@ -95,13 +95,8 @@ export const Database = {
     return database.get('items', itemId);
   },
 
-  selectMostRecentPhoto: async (): Promise<Photo | null> => {
-    const cursor = await database
-      .transaction('photos', 'readonly')
-      .store.index('byDateTime')
-      .openCursor();
-
-    return cursor?.value || null;
+  selectPhoto: async (itemId: string): Promise<Photo | null> => {
+    return (await database.get('photos', itemId)) || null;
   },
 
   selectPhotos: async (): Promise<Photo[]> => {

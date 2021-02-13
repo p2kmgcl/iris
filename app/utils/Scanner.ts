@@ -100,7 +100,7 @@ export const Scanner = {
           isVideo: !!driveItem.video,
         });
 
-        onStatusUpdate(await Database.selectMostRecentPhoto());
+        onStatusUpdate(await Database.selectPhoto(driveItem.id as string));
       } else if (children.some((child) => driveItemIsPhoto(child))) {
         const titleRegExp = /^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})\s([^\n]+)$/;
         let title = driveItem.name as string;
