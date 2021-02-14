@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useState } from 'react';
 import {
   Badge,
   BottomNavigation,
@@ -10,7 +10,7 @@ import {
 import { PhotoLibraryOutlined, SettingsOutlined } from '@material-ui/icons';
 import { AllPhotosTab } from './tabs/AllPhotosTab';
 import { SettingsTab } from './tabs/SettingsTab';
-import { useIsScanning } from '../contexts/ScanContext';
+import { useIsScanning, useToggleScan } from '../contexts/ScanContext';
 
 const DEFAULT_TAB_ID = 'allPhotos';
 
@@ -18,6 +18,11 @@ export function App() {
   const theme = useTheme();
   const [tabId, setTabId] = useState(DEFAULT_TAB_ID);
   const isScanning = useIsScanning();
+  const toggleScan = useToggleScan();
+
+  useEffect(() => {
+    toggleScan();
+  }, [toggleScan]);
 
   const tabs: Record<
     string,

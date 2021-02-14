@@ -89,7 +89,7 @@ export const ScanContextProvider: FC = ({ children }) => {
             abortControllerRef.current = null;
             isScanningChannel.emit(false);
             scanStatusChannel.emit({
-              description: 'Scanning completed',
+              description: `Completed at ${new Date().toLocaleString()}`,
               relatedPhoto: null,
             });
           }
