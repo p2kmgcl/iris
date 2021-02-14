@@ -1,14 +1,20 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, Suspense, useEffect } from 'react';
 import { render } from 'react-dom';
 import { Database } from './utils/Database';
-import { App } from './organisms/App';
-import { Setup } from './organisms/Setup';
 import { responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core';
 import { yellow } from '@material-ui/core/colors';
 import { ScanContextProvider } from './contexts/ScanContext';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
+
+const LazyApp = React.lazy(() =>
+  import('./organisms/App').then(({ App }) => ({ default: App })),
+);
+
+const LazySetup = React.lazy(() =>
+  import('./organisms/Setup').then(({ Setup }) => ({ default: Setup })),
+);
 
 const theme = responsiveFontSizes(
   createMuiTheme({
@@ -74,11 +80,13 @@ const Wrapper: FC = ({ children }) => {
   document.body.style.height = '100vh';
   document.body.style.overflow = 'hidden';
 
-  const MainComponent = isSetupReady ? App : Setup;
+  const MainComponent = isSetupReady ? LazyApp : LazySetup;
 
   render(
     <Wrapper>
-      <MainComponent />
+      <Suspense fallback={<div>Loading...</div>}>
+        <MainComponent />
+      </Suspense>
     </Wrapper>,
     appElement,
   );
