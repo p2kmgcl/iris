@@ -60,7 +60,7 @@ export function App() {
 
   return (
     <Box display="flex" flexDirection="column" style={{ height: '100%' }}>
-      <Box flexGrow={1} overflow="flex" display="flex">
+      <Box flexGrow={1} overflow="auto" display="flex">
         <Component />
       </Box>
 
