@@ -16,7 +16,10 @@ export interface Photo {
   itemId: string;
   albumItemId: string;
   dateTime: number;
-  thumbnail: Blob;
+  thumbnail: {
+    arrayBuffer: ArrayBuffer;
+    contentType: string;
+  };
   width: number;
   height: number;
   isVideo: boolean;

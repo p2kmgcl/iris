@@ -149,15 +149,11 @@ export const Database = {
     photo: Omit<Photo, 'thumbnail'> & Item & { thumbnailURI: string },
   ) => {
     const thumbnail = await fetch(photo.thumbnailURI).then((response) =>
-      response.blob(),
+      response.arrayBuffer().then((arrayBuffer) => ({
+        arrayBuffer,
+        contentType: response.headers.get('content-type') || '',
+      })),
     );
-
-    // const thumbnail = await fetch(photo.thumbnailURI).then((response) =>
-    //   response.arrayBuffer().then((arrayBuffer) => ({
-    //     arrayBuffer,
-    //     contentType: response.headers.get('content-type'),
-    //   })),
-    // );
 
     await Database.addItem({
       itemId: photo.itemId,

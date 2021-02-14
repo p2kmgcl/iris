@@ -20,7 +20,12 @@ export const PhotoThumbnail: FC<{ photo: Photo; size: number | string }> = ({
       return;
     }
 
-    thumbnailURL = URL.createObjectURL(photo.thumbnail);
+    thumbnailURL = URL.createObjectURL(
+      new File([photo.thumbnail.arrayBuffer], photo.itemId, {
+        type: photo.thumbnail.contentType,
+      }),
+    );
+
     thumbnailURLMap.set(photo.itemId, thumbnailURL);
     setURL(thumbnailURL);
   }, [photo]);
