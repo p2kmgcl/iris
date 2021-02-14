@@ -3,7 +3,7 @@ import { Database } from './Database';
 import { Graph } from './Graph';
 import { Photo } from '../../types/Schema';
 
-export class AbortError extends Error {
+class AbortError extends Error {
   toString() {
     return 'AbortError';
   }

@@ -1,41 +1,132 @@
 import React, { FC } from 'react';
-import { ScanStatus } from '../ScanStatus';
-import { Box, Button, useTheme } from '@material-ui/core';
+import {
+  List as MaterialList,
+  ListSubheader as MaterialListSubheader,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  useTheme,
+  ListItemSecondaryAction,
+  Switch,
+  CircularProgress,
+  Box,
+} from '@material-ui/core';
+import pkg from '../../../package.json';
+import {
+  ExitToAppOutlined,
+  InfoOutlined,
+  WarningOutlined,
+} from '@material-ui/icons';
 import { Authentication } from '../../utils/Authentication';
 import { Database } from '../../utils/Database';
+import {
+  useIsScanning,
+  useScanStatus,
+  useToggleScan,
+} from '../../contexts/ScanContext';
+import { PhotoThumbnail } from '../../atoms/PhotoThumbnail';
 
-export const SettingsTab: FC = () => {
+const List: FC = ({ children }) => (
+  <MaterialList style={{ padding: 0, width: '100%' }}>{children}</MaterialList>
+);
+
+const ListSubheader: FC = ({ children }) => {
   const theme = useTheme();
 
   return (
-    <Box style={{ width: '100%' }}>
-      <ScanStatus />
+    <MaterialListSubheader
+      style={{ backgroundColor: theme.palette.background.default }}
+    >
+      {children}
+    </MaterialListSubheader>
+  );
+};
 
-      <Box p={2}>
-        <Button
-          variant="outlined"
+const SubList: FC = ({ children }) => (
+  <ListItem style={{ padding: 0, width: '100%' }}>
+    <List>{children}</List>
+  </ListItem>
+);
+
+export const SettingsTab: FC = () => {
+  const isScanning = useIsScanning();
+  const toggleScan = useToggleScan();
+  const scanStatus = useScanStatus();
+
+  return (
+    <List>
+      <SubList>
+        <ListSubheader>Scan</ListSubheader>
+        <ListItem>
+          <ListItemIcon>
+            <CircularProgress
+              size={24}
+              {...(isScanning
+                ? { variant: 'indeterminate' }
+                : { variant: 'determinate', value: 100 })}
+            />
+          </ListItemIcon>
+          <ListItemText
+            primary="Find new photos"
+            secondary={scanStatus.description}
+          />
+          {scanStatus.relatedPhoto ? (
+            <ListItemIcon style={{ marginRight: '1ch' }}>
+              <Box style={{ borderRadius: '50%', overflow: 'hidden' }}>
+                <PhotoThumbnail photo={scanStatus.relatedPhoto} size={42} />
+              </Box>
+            </ListItemIcon>
+          ) : null}
+          <ListItemSecondaryAction>
+            <Switch
+              edge="end"
+              onChange={() => toggleScan()}
+              checked={isScanning}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+      </SubList>
+      <SubList>
+        <ListSubheader>About</ListSubheader>
+        <ListItem
+          button
           onClick={() => {
-            Authentication.logout();
+            if (confirm('Are you sure?')) {
+              Authentication.logout();
+            }
           }}
         >
-          Logout
-        </Button>
-      </Box>
-
-      <Box p={2} paddingTop={0}>
-        <Button
-          variant="outlined"
-          style={{
-            backgroundColor: theme.palette.error.main,
-            color: theme.palette.error.contrastText,
-          }}
+          <ListItemIcon>
+            <ExitToAppOutlined />
+          </ListItemIcon>
+          <ListItemText
+            primary="Logout"
+            secondary="Remove account but keep photos"
+          />
+        </ListItem>
+        <ListItem
+          button
           onClick={() => {
-            Database.destroy();
+            if (confirm('Are you sure?')) {
+              Database.destroy();
+            }
           }}
         >
-          Destroy everything
-        </Button>
-      </Box>
-    </Box>
+          <ListItemIcon>
+            <WarningOutlined />
+          </ListItemIcon>
+          <ListItemText
+            primary="Destroy everything"
+            secondary="Remove all photos and accounts"
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <InfoOutlined />
+          </ListItemIcon>
+          <ListItemText primary="Version" secondary={pkg.version} />
+        </ListItem>
+      </SubList>
+    </List>
   );
 };

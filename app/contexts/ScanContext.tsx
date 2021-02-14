@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { Photo } from '../../types/Schema';
 import { Database } from '../utils/Database';
-import { AbortError, Scanner } from '../utils/Scanner';
+import { Scanner } from '../utils/Scanner';
 import {
   Channel,
   NoopChannel,
@@ -18,7 +18,10 @@ import {
 const ScanContext = createContext<{
   isScanningChannel: Channel<boolean>;
   scanErrorChannel: Channel<Error | null>;
-  scanStatusChannel: Channel<Photo | null>;
+  scanStatusChannel: Channel<{
+    description: string;
+    relatedPhoto: Photo | null;
+  }>;
   toggleScan: () => void;
 }>({
   isScanningChannel: NoopChannel,
@@ -30,11 +33,18 @@ const ScanContext = createContext<{
 export const ScanContextProvider: FC = ({ children }) => {
   const isScanningChannel = useChannel<boolean>(false);
   const scanErrorChannel = useChannel<Error | null>(null);
-  const scanStatusChannel = useChannel<Photo | null>(null);
+  const scanStatusChannel = useChannel<{
+    description: string;
+    relatedPhoto: Photo | null;
+  }>({ description: 'Not scanning', relatedPhoto: null });
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const toggleScan = useCallback(() => {
     if (abortControllerRef.current) {
+      scanStatusChannel.emit({
+        description: 'Scanning stopped',
+        relatedPhoto: null,
+      });
       isScanningChannel.emit(false);
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
@@ -46,6 +56,10 @@ export const ScanContextProvider: FC = ({ children }) => {
     abortControllerRef.current = abortController;
     scanErrorChannel.emit(null);
     isScanningChannel.emit(true);
+    scanStatusChannel.emit({
+      description: 'Initializing...',
+      relatedPhoto: null,
+    });
 
     Database.getConfiguration().then(({ rootDirectoryId }) => {
       if (!abortControllerRef.current) {
@@ -55,17 +69,37 @@ export const ScanContextProvider: FC = ({ children }) => {
       return Scanner.scan(
         rootDirectoryId,
         abortControllerRef.current.signal,
-        scanStatusChannel.emit,
+        (photo) => {
+          if (abortControllerRef.current === abortController) {
+            scanStatusChannel.emit(
+              photo
+                ? {
+                    description: `Added ${new Date(
+                      photo.dateTime,
+                    ).toLocaleString()}`,
+                    relatedPhoto: photo,
+                  }
+                : { description: 'Scan in progress...', relatedPhoto: null },
+            );
+          }
+        },
       )
         .then(() => {
           if (abortControllerRef.current === abortController) {
             isScanningChannel.emit(false);
+            scanStatusChannel.emit({
+              description: 'Scanning completed',
+              relatedPhoto: null,
+            });
           }
         })
         .catch((error) => {
           if (abortControllerRef.current === abortController) {
             isScanningChannel.emit(false);
-            if (!(error instanceof AbortError)) scanErrorChannel.emit(error);
+            scanStatusChannel.emit({
+              description: error.toString(),
+              relatedPhoto: null,
+            });
           }
         });
     });
@@ -96,11 +130,8 @@ export const ScanContextProvider: FC = ({ children }) => {
 export const useIsScanning = () =>
   useChannelData(useContext(ScanContext).isScanningChannel);
 
-export const useLastScannedPhoto = () =>
+export const useScanStatus = () =>
   useChannelData(useContext(ScanContext).scanStatusChannel);
-
-export const useScanError = () =>
-  useChannelData(useContext(ScanContext).scanErrorChannel);
 
 export const useToggleScan = () => {
   return useContext(ScanContext).toggleScan;
