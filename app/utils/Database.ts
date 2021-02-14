@@ -69,7 +69,7 @@ export const Database = {
           multiEntry: false,
         });
 
-        photosStore.createIndex('byAlbumItemId', ['albumItemId', 'dateTime'], {
+        photosStore.createIndex('byAlbumItemId', 'albumItemId', {
           unique: false,
           multiEntry: false,
         });
@@ -165,12 +165,23 @@ export const Database = {
       .then((photo) => photo || null);
   },
 
-  selectPhotoFromIndex: async (index: number): Promise<Photo | null> => {
-    const cursor = await database
+  selectPhotoFromIndex: async (
+    index: number,
+    albumItemId?: string,
+  ): Promise<Photo | null> => {
+    const photosStore = database
       .transaction('photos', 'readonly')
-      .objectStore('photos')
-      .index('byDateTime')
-      .openCursor(null, 'prev');
+      .objectStore('photos');
+
+    let cursor;
+
+    if (albumItemId) {
+      cursor = await photosStore
+        .index('byAlbumItemId')
+        .openCursor(albumItemId, 'prev');
+    } else {
+      cursor = await photosStore.index('byDateTime').openCursor(null, 'prev');
+    }
 
     if (index) {
       await cursor?.advance(index);
