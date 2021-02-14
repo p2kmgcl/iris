@@ -3,7 +3,7 @@ import pkg from '../../package.json';
 import { Album, Item, MetadataFile, Photo, Schema } from '../../types/Schema';
 
 const DATABASE_NAME = 'database';
-const DATABASE_VERSION = 1;
+const DATABASE_VERSION = pkg.version;
 let database: IDBPDatabase<Schema>;
 
 export const Database = {
@@ -21,7 +21,7 @@ export const Database = {
       );
     }
 
-    database = await openDB<Schema>(DATABASE_NAME, DATABASE_VERSION, {
+    database = await openDB<Schema>(DATABASE_NAME, 1, {
       async upgrade(database) {
         database.createObjectStore('configuration', { keyPath: 'version' });
         database.createObjectStore('items', { keyPath: 'itemId' });
@@ -61,18 +61,22 @@ export const Database = {
     });
 
     // Data migration:
-    // - Remove old configurations
+    // - Clear old databases
     // - Populate default data
 
-    for (const key of await database.getAllKeys('configuration')) {
-      if (key !== pkg.version) {
-        await database.delete('configuration', key);
-      }
-    }
+    if (!(await database.get('configuration', DATABASE_VERSION))) {
+      if ((await database.getAll('configuration')).length) {
+        for (const key of await database.getAllKeys('configuration')) {
+          if (key !== pkg.version) {
+            await database.delete('configuration', key);
+          }
+        }
 
-    if (!(await database.get('configuration', pkg.version))) {
+        await Database.destroy();
+      }
+
       await database.add('configuration', {
-        version: pkg.version,
+        version: DATABASE_VERSION,
         clientId: '',
         accessToken: '',
         accessTokenExpirationTime: 0,
@@ -96,7 +100,7 @@ export const Database = {
   getConfiguration: async () => {
     return (await database.get(
       'configuration',
-      pkg.version,
+      DATABASE_VERSION,
     )) as Schema['configuration']['value'];
   },
 
@@ -147,6 +151,13 @@ export const Database = {
     const thumbnail = await fetch(photo.thumbnailURI).then((response) =>
       response.blob(),
     );
+
+    // const thumbnail = await fetch(photo.thumbnailURI).then((response) =>
+    //   response.arrayBuffer().then((arrayBuffer) => ({
+    //     arrayBuffer,
+    //     contentType: response.headers.get('content-type'),
+    //   })),
+    // );
 
     await Database.addItem({
       itemId: photo.itemId,
