@@ -69,7 +69,7 @@ export const Database = {
           multiEntry: false,
         });
 
-        photosStore.createIndex('byAlbumItemId', 'albumItemId', {
+        photosStore.createIndex('byAlbumItemId', ['albumItemId', 'dateTime'], {
           unique: false,
           multiEntry: false,
         });
@@ -147,6 +147,14 @@ export const Database = {
 
   selectItem: async (itemId: string) => {
     return database.get('items', itemId);
+  },
+
+  selectAlbumList: (): Promise<Album[]> => {
+    return database
+      .transaction('albums', 'readonly')
+      .objectStore('albums')
+      .index('byDateTime')
+      .getAll();
   },
 
   selectPhoto: async (itemId: string): Promise<Photo | null> => {
