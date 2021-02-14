@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import {
   List as MaterialList,
   ListSubheader as MaterialListSubheader,
-  ListItem,
+  ListItem as MaterialListItem,
   ListItemIcon,
   ListItemText,
   useTheme,
@@ -25,28 +25,6 @@ import {
   useToggleScan,
 } from '../../contexts/ScanContext';
 import { PhotoThumbnail } from '../../atoms/PhotoThumbnail';
-
-const List: FC = ({ children }) => (
-  <MaterialList style={{ padding: 0, width: '100%' }}>{children}</MaterialList>
-);
-
-const ListSubheader: FC = ({ children }) => {
-  const theme = useTheme();
-
-  return (
-    <MaterialListSubheader
-      style={{ backgroundColor: theme.palette.background.default }}
-    >
-      {children}
-    </MaterialListSubheader>
-  );
-};
-
-const SubList: FC = ({ children }) => (
-  <ListItem style={{ padding: 0, width: '100%' }}>
-    <List>{children}</List>
-  </ListItem>
-);
 
 export const SettingsTab: FC = () => {
   const isScanning = useIsScanning();
@@ -130,3 +108,38 @@ export const SettingsTab: FC = () => {
     </List>
   );
 };
+
+const List: FC = ({ children }) => (
+  <MaterialList style={{ padding: 0, width: '100%' }}>{children}</MaterialList>
+);
+
+const ListItem: typeof MaterialListItem = ({ ...props }) => {
+  const theme = useTheme();
+
+  return (
+    <MaterialListItem
+      {...props}
+      style={{ paddingLeft: theme.spacing(3), width: '100%' }}
+    />
+  );
+};
+
+const ListSubheader: FC = ({ children }) => {
+  const theme = useTheme();
+
+  return (
+    <MaterialListSubheader
+      style={{ backgroundColor: theme.palette.background.default }}
+    >
+      {children}
+    </MaterialListSubheader>
+  );
+};
+
+const SubList: FC = ({ children }) => (
+  <MaterialListItem style={{ padding: 0, width: '100%' }}>
+    <MaterialList style={{ padding: 0, width: '100%' }}>
+      {children}
+    </MaterialList>
+  </MaterialListItem>
+);
