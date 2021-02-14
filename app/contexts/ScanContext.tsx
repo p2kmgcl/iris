@@ -86,6 +86,7 @@ export const ScanContextProvider: FC = ({ children }) => {
       )
         .then(() => {
           if (abortControllerRef.current === abortController) {
+            abortControllerRef.current = null;
             isScanningChannel.emit(false);
             scanStatusChannel.emit({
               description: 'Scanning completed',
@@ -95,6 +96,7 @@ export const ScanContextProvider: FC = ({ children }) => {
         })
         .catch((error) => {
           if (abortControllerRef.current === abortController) {
+            abortControllerRef.current = null;
             isScanningChannel.emit(false);
             scanStatusChannel.emit({
               description: error.toString(),
