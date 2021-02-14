@@ -2,10 +2,10 @@ import { DependencyList, useEffect, useState } from 'react';
 
 export function useAsyncMemo<T>(
   factory: () => Promise<T>,
-  dependencies?: DependencyList,
-  initial?: T,
-): T | null {
-  const [value, setValue] = useState<T | null>(initial || null);
+  dependencies: DependencyList,
+  initial: T | (() => T),
+): T {
+  const [value, setValue] = useState<T>(initial);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {

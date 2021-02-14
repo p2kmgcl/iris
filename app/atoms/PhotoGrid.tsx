@@ -1,16 +1,44 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, areEqual, GridChildComponentProps } from 'react-window';
 import { Photo } from '../../types/Schema';
 import { Box, useTheme } from '@material-ui/core';
 import { PhotoThumbnail } from './PhotoThumbnail';
+import { useAsyncMemo } from '../hooks/useAsyncMemo';
+import { Database } from '../utils/Database';
+import { useIsScanning } from '../contexts/ScanContext';
 
 const BASE_THUMBNAIL_SIZE = 128;
 const LARGE_BASE_THUMBNAIL_SIZE = 256;
 const LARGE_THRESHOLD = 1440;
 
-export const PhotoGrid: FC<{ photos: Photo[] }> = ({ photos }) => {
+export const PhotoGrid: FC = () => {
+  const isScanning = useIsScanning();
+  const [countTrigger, setCountTrigger] = useState(false);
+
+  const photoCount = useAsyncMemo<number>(
+    () => Database.selectPhotoCount(),
+    [countTrigger],
+    0,
+  );
+
+  useEffect(() => {
+    if (isScanning) {
+      const intervalId = setInterval(() => {
+        setCountTrigger((prevCountTrigger) => !prevCountTrigger);
+      }, 5000);
+
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, [isScanning]);
+
   const theme = useTheme();
+
+  if (!photoCount) {
+    return null;
+  }
 
   return (
     <Box
@@ -36,17 +64,13 @@ export const PhotoGrid: FC<{ photos: Photo[] }> = ({ photos }) => {
             <FixedSizeGrid
               style={{ overflowX: 'hidden', outline: 'none' }}
               columnCount={numColumns}
-              rowCount={Math.ceil(photos.length / numColumns)}
+              rowCount={Math.ceil(photoCount / numColumns)}
               columnWidth={thumbnailSize}
               rowHeight={thumbnailSize}
               overscanRowCount={Math.ceil(height / thumbnailSize)}
               height={height}
               width={width}
-              itemData={{
-                photos,
-                numColumns,
-                thumbnailSize,
-              }}
+              itemData={{ photoCount, numColumns, thumbnailSize }}
               children={Thumbnail}
             />
           );
@@ -58,15 +82,16 @@ export const PhotoGrid: FC<{ photos: Photo[] }> = ({ photos }) => {
 
 const Thumbnail: FC<GridChildComponentProps> = React.memo(
   ({ data, rowIndex, columnIndex, style }) => {
-    const { photos, numColumns, thumbnailSize } = data as {
-      photos: Photo[];
+    const { photoCount, numColumns, thumbnailSize } = data as {
+      photoCount: number;
       numColumns: number;
       thumbnailSize: number;
     };
 
-    const photo = useMemo(
-      () => photos[rowIndex * numColumns + columnIndex] as Photo | undefined,
-      [photos, rowIndex, numColumns, columnIndex],
+    const photo = useAsyncMemo<Photo | null>(
+      () => Database.selectPhotoFromIndex(rowIndex * numColumns + columnIndex),
+      [photoCount, rowIndex, numColumns, columnIndex],
+      null,
     );
 
     if (!photo) {

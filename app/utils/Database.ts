@@ -150,11 +150,35 @@ export const Database = {
   },
 
   selectPhoto: async (itemId: string): Promise<Photo | null> => {
-    return (await database.get('photos', itemId)) || null;
+    return database
+      .transaction('photos', 'readonly')
+      .objectStore('photos')
+      .get(itemId)
+      .then((photo) => photo || null);
   },
 
-  selectPhotos: async (): Promise<Photo[]> => {
-    return (await database.getAllFromIndex('photos', 'byDateTime')).reverse();
+  selectPhotoFromIndex: async (index: number): Promise<Photo | null> => {
+    const cursor = await database
+      .transaction('photos', 'readonly')
+      .objectStore('photos')
+      .index('byDateTime')
+      .openCursor(null, 'prev');
+
+    if (index) {
+      await cursor?.advance(index);
+    }
+
+    return cursor?.value || null;
+  },
+
+  selectPhotoCount: async (albumItemId?: string): Promise<number> => {
+    const photosStore = database
+      .transaction('photos', 'readonly')
+      .objectStore('photos');
+
+    return albumItemId
+      ? photosStore.index('byAlbumItemId').count(albumItemId)
+      : photosStore.count();
   },
 
   addItem: (item: Item) => {
