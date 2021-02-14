@@ -237,7 +237,7 @@ export const Database = {
     });
 
     transaction.objectStore('metadataFiles').add({
-      itemId: 'asda',
+      itemId: metadataFile.itemId,
       photoItemId: metadataFile.photoItemId,
     });
 
