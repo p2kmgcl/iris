@@ -167,7 +167,7 @@ export const Database = {
 
   selectPhotoFromIndex: async (
     index: number,
-    albumItemId?: string,
+    albumItemId: string | null = null,
   ): Promise<Photo | null> => {
     const photosStore = database
       .transaction('photos', 'readonly')
@@ -190,7 +190,9 @@ export const Database = {
     return cursor?.value || null;
   },
 
-  selectPhotoCount: async (albumItemId?: string): Promise<number> => {
+  selectPhotoCount: async (
+    albumItemId: string | null = null,
+  ): Promise<number> => {
     const photosStore = database
       .transaction('photos', 'readonly')
       .objectStore('photos');

@@ -7,10 +7,15 @@ import {
   CircularProgress,
   useTheme,
 } from '@material-ui/core';
-import { PhotoLibraryOutlined, SettingsOutlined } from '@material-ui/icons';
+import {
+  PhotoAlbumOutlined,
+  PhotoLibraryOutlined,
+  SettingsOutlined,
+} from '@material-ui/icons';
 import { AllPhotosTab } from './tabs/AllPhotosTab';
 import { SettingsTab } from './tabs/SettingsTab';
 import { useIsScanning, useToggleScan } from '../contexts/ScanContext';
+import { AllAlbumsTab } from './tabs/AllAlbumsTab';
 
 const DEFAULT_TAB_ID = 'allPhotos';
 
@@ -36,6 +41,12 @@ export function App() {
       label: 'Photos',
       Icon: <PhotoLibraryOutlined />,
       Component: AllPhotosTab,
+    },
+
+    allAlbums: {
+      label: 'Albums',
+      Icon: <PhotoAlbumOutlined />,
+      Component: AllAlbumsTab,
     },
 
     settings: {

@@ -12,13 +12,15 @@ const BASE_THUMBNAIL_SIZE = 128;
 const LARGE_BASE_THUMBNAIL_SIZE = 256;
 const LARGE_THRESHOLD = 1440;
 
-export const PhotoGrid: FC = () => {
+export const PhotoGrid: FC<{ albumItemId?: string }> = ({
+  albumItemId = null,
+}) => {
   const isScanning = useIsScanning();
   const [countTrigger, setCountTrigger] = useState(false);
 
   const photoCount = useAsyncMemo<number>(
-    () => Database.selectPhotoCount(),
-    [countTrigger],
+    () => Database.selectPhotoCount(albumItemId),
+    [countTrigger, albumItemId],
     0,
   );
 
@@ -70,7 +72,7 @@ export const PhotoGrid: FC = () => {
               overscanRowCount={Math.ceil(height / thumbnailSize)}
               height={height}
               width={width}
-              itemData={{ photoCount, numColumns, thumbnailSize }}
+              itemData={{ albumItemId, photoCount, numColumns, thumbnailSize }}
               children={Thumbnail}
             />
           );
@@ -82,15 +84,25 @@ export const PhotoGrid: FC = () => {
 
 const Thumbnail: FC<GridChildComponentProps> = React.memo(
   ({ data, rowIndex, columnIndex, style }) => {
-    const { photoCount, numColumns, thumbnailSize } = data as {
+    const {
+      albumItemId = null,
+      photoCount,
+      numColumns,
+      thumbnailSize,
+    } = data as {
+      albumItemId?: string;
       photoCount: number;
       numColumns: number;
       thumbnailSize: number;
     };
 
     const photo = useAsyncMemo<Photo | null>(
-      () => Database.selectPhotoFromIndex(rowIndex * numColumns + columnIndex),
-      [photoCount, rowIndex, numColumns, columnIndex],
+      () =>
+        Database.selectPhotoFromIndex(
+          rowIndex * numColumns + columnIndex,
+          albumItemId,
+        ),
+      [albumItemId, photoCount, rowIndex, numColumns, columnIndex],
       null,
     );
 
