@@ -1,18 +1,15 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-env node */
-
-const CopyPlugin = require('copy-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
-const CompressionPlugin = require('compression-webpack-plugin');
-const webpack = require('webpack');
-const fs = require('fs');
-const path = require('path');
+import CopyPlugin from 'copy-webpack-plugin';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import WorkboxPlugin from 'workbox-webpack-plugin';
+import CompressionPlugin from 'compression-webpack-plugin';
+import webpack from 'webpack';
+import fs from 'fs';
+import path from 'path';
 
 const DESTINATION_DIRECTORY = './build/app';
 const CERTIFICATE_DIRECTORY = './build/development-certificate';
 
-module.exports = {
+export default {
   entry: {
     app: './app/index.tsx',
     'auth-redirection': './app/auth-redirection.ts',
