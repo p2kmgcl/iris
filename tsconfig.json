@@ -11,5 +11,5 @@
     "lib": ["ES2018", "DOM", "WebWorker"],
     "target": "ES2018"
   },
-  "include": ["app", "service-worker", "types"]
+  "include": ["app", "types"]
 }
