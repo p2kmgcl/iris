@@ -9,7 +9,7 @@ export interface Item {
 export interface Album {
   itemId: string;
   title: string;
-  dateTime?: number;
+  dateTime: number;
 }
 
 export interface Photo {

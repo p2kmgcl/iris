@@ -66,7 +66,7 @@ export const Scanner = {
       } else if (children.some((child) => driveItemIsPhoto(child))) {
         const titleRegExp = /^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})\s([^\n]+)$/;
         let title = driveItem.name as string;
-        let dateTime: number | undefined = undefined;
+        let dateTime = Infinity;
 
         if (titleRegExp.test(title)) {
           const [, dateText, titleText] = titleRegExp.exec(title) as string[];
