@@ -42,17 +42,24 @@ export interface Schema extends DBSchema {
       refreshTokenExpirationTime: number;
       rootDirectoryId: string;
     };
+    indexes: {
+      byVersion: string;
+    };
   };
 
   items: {
     key: string;
     value: Item;
+    indexes: {
+      byItemId: string;
+    };
   };
 
   albums: {
     key: string;
     value: Album;
     indexes: {
+      byItemId: string;
       byDateTime: number;
     };
   };
@@ -61,6 +68,7 @@ export interface Schema extends DBSchema {
     key: string;
     value: Photo;
     indexes: {
+      byItemId: string;
       byDateTime: number;
       byAlbumItemId: string;
     };
@@ -70,6 +78,7 @@ export interface Schema extends DBSchema {
     key: string;
     value: MetadataFile;
     indexes: {
+      byItemId: string;
       byPhotoItemId: string;
     };
   };

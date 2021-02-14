@@ -23,11 +23,31 @@ export const Database = {
 
     database = await openDB<Schema>(DATABASE_NAME, 1, {
       async upgrade(database) {
-        database.createObjectStore('configuration', { keyPath: 'version' });
-        database.createObjectStore('items', { keyPath: 'itemId' });
+        const configurationStore = database.createObjectStore('configuration', {
+          keyPath: 'version',
+        });
+
+        configurationStore.createIndex('byVersion', 'version', {
+          unique: true,
+          multiEntry: false,
+        });
+
+        const itemsStore = database.createObjectStore('items', {
+          keyPath: 'itemId',
+        });
+
+        itemsStore.createIndex('byItemId', 'itemId', {
+          unique: true,
+          multiEntry: false,
+        });
 
         const albumsStore = database.createObjectStore('albums', {
           keyPath: 'itemId',
+        });
+
+        albumsStore.createIndex('byItemId', 'itemId', {
+          unique: true,
+          multiEntry: false,
         });
 
         albumsStore.createIndex('byDateTime', 'dateTime', {
@@ -37,6 +57,11 @@ export const Database = {
 
         const photosStore = database.createObjectStore('photos', {
           keyPath: 'itemId',
+        });
+
+        photosStore.createIndex('byItemId', 'itemId', {
+          unique: true,
+          multiEntry: false,
         });
 
         photosStore.createIndex('byDateTime', 'dateTime', {
@@ -51,6 +76,11 @@ export const Database = {
 
         const metadataFilesStore = database.createObjectStore('metadataFiles', {
           keyPath: 'itemId',
+        });
+
+        metadataFilesStore.createIndex('byItemId', 'itemId', {
+          unique: true,
+          multiEntry: false,
         });
 
         metadataFilesStore.createIndex('byPhotoItemId', 'photoItemId', {
@@ -127,21 +157,37 @@ export const Database = {
     return (await database.getAllFromIndex('photos', 'byDateTime')).reverse();
   },
 
-  addItem: async (item: Item) => {
-    await database.add('items', { ...item });
+  addItem: (item: Item) => {
+    const transaction = database.transaction('items', 'readwrite');
+
+    transaction.objectStore('items').add({
+      itemId: item.itemId,
+      updateTime: item.updateTime,
+      fileName: item.fileName,
+    });
+
+    return transaction.done.catch((error) => {
+      throw new Error(`Item ${item.fileName}: ${error.toString()}`);
+    });
   },
 
-  addAlbum: async (album: Album & Item) => {
-    await Database.addItem({
+  addAlbum: (album: Album & Item) => {
+    const transaction = database.transaction(['items', 'albums'], 'readwrite');
+
+    transaction.objectStore('items').add({
       itemId: album.itemId,
       fileName: album.fileName,
       updateTime: album.updateTime,
     });
 
-    await database.add('albums', {
+    transaction.objectStore('albums').add({
       itemId: album.itemId,
       dateTime: album.dateTime,
       title: album.title,
+    });
+
+    return transaction.done.catch((error) => {
+      throw new Error(`Album ${album.fileName}: ${error.toString()}`);
     });
   },
 
@@ -155,13 +201,15 @@ export const Database = {
       })),
     );
 
-    await Database.addItem({
+    const transaction = database.transaction(['items', 'photos'], 'readwrite');
+
+    transaction.objectStore('items').add({
       itemId: photo.itemId,
       fileName: photo.fileName,
       updateTime: photo.updateTime,
     });
 
-    await database.add('photos', {
+    transaction.objectStore('photos').add({
       itemId: photo.itemId,
       dateTime: photo.dateTime,
       height: photo.height,
@@ -170,18 +218,33 @@ export const Database = {
       albumItemId: photo.albumItemId,
       thumbnail,
     });
+
+    return transaction.done.catch((error) => {
+      throw new Error(`Photo ${photo.fileName}: ${error.toString()}`);
+    });
   },
 
-  addMetadataFile: async (metadataFile: MetadataFile & Item) => {
-    await Database.addItem({
+  addMetadataFile: (metadataFile: MetadataFile & Item) => {
+    const transaction = database.transaction(
+      ['items', 'metadataFiles'],
+      'readwrite',
+    );
+
+    transaction.objectStore('items').add({
       itemId: metadataFile.itemId,
       updateTime: metadataFile.updateTime,
       fileName: metadataFile.fileName,
     });
 
-    await database.add('metadataFiles', {
-      itemId: metadataFile.itemId,
+    transaction.objectStore('metadataFiles').add({
+      itemId: 'asda',
       photoItemId: metadataFile.photoItemId,
+    });
+
+    return transaction.done.catch((error) => {
+      throw new Error(
+        `Metadata file ${metadataFile.fileName}: ${error.toString()}`,
+      );
     });
   },
 };
