@@ -59,17 +59,7 @@ const Wrapper: FC = ({ children }) => {
 
 (async function () {
   await Database.open();
-
-  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    navigator.serviceWorker
-      .register('/service-worker.js')
-      .then((registration) => {
-        console.log('SW registered: ', registration);
-      })
-      .catch((registrationError) => {
-        console.error('SW registration failed: ', registrationError);
-      });
-  }
+  await registerServiceWorker();
 
   const isSetupReady = await (async function () {
     const configuration = await Database.getConfiguration();
@@ -91,3 +81,16 @@ const Wrapper: FC = ({ children }) => {
     appElement,
   );
 })();
+
+async function registerServiceWorker() {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    return navigator.serviceWorker
+      .register('/service-worker.js')
+      .then(() => {
+        console.log('SW registered');
+      })
+      .catch((registrationError) => {
+        console.error('SW registration failed: ', registrationError);
+      });
+  }
+}
