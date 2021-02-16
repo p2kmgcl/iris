@@ -1,0 +1,102 @@
+.wrapper {
+  overflow: hidden;
+  border-radius: var(--roundness);
+  height: 50vh;
+  width: 72ch;
+  margin: 0 auto;
+  max-width: calc(100vw - var(--spacing-unit) * 4);
+  box-sizing: border-box;
+  background-color: var(--dark);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.breadcrumbList {
+  list-style: none;
+  background-color: var(--dark-l1);
+  padding: calc(var(--spacing-unit) * 2);
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 0.875rem;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.breadcrumbItemContent {
+  background-color: var(--dark);
+  color: var(--secondary-l1);
+  display: inline-block;
+  padding: calc(var(--spacing-unit) * 0.5) calc(var(--spacing-unit) * 1.5);
+  border-radius: calc(1em + var(--spacing-unit) * 2);
+}
+
+.breadcrumbItem + .breadcrumbItem::before {
+  content: '/';
+  display: inline-block;
+  padding: 0 var(--spacing-unit);
+}
+
+.buttonList {
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  background-color: var(--dark);
+  width: 100%;
+}
+
+.buttonListItem + .buttonListItem {
+  border-top: solid thin var(--dark-l1);
+}
+
+.buttonListButton {
+  border: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  background-color: transparent;
+  color: inherit;
+  font-size: 1rem;
+  font-family: inherit;
+  padding: calc(var(--spacing-unit) * 2);
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.buttonListButton:hover {
+  background-color: var(--dark-l2);
+}
+
+.buttonListButton:focus {
+  background-color: var(--dark-l2);
+  outline: none;
+}
+
+.buttonListButton:active {
+  background-color: var(--dark-l1);
+}
+
+.buttonListButton:disabled {
+  background-color: transparent;
+  color: var(--secondary-d1);
+  cursor: default;
+}
+
+.buttonListIcon {
+  margin-right: calc(var(--spacing-unit) * 2);
+  font-size: 1.5rem;
+}
+
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}

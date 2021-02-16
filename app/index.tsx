@@ -1,10 +1,12 @@
-import React, { FC, Suspense, useEffect } from 'react';
+import './index.css';
+import React, { FC, Suspense } from 'react';
 import { render } from 'react-dom';
 import { Database } from './utils/Database';
 import { responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core';
 import { yellow } from '@material-ui/core/colors';
 import { ScanContextProvider } from './contexts/ScanContext';
+import { IconStyleContextProvider } from './contexts/IconStyleContext';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 
@@ -42,18 +44,12 @@ const theme = responsiveFontSizes(
 );
 
 const Wrapper: FC = ({ children }) => {
-  useEffect(() => {
-    appElement.style.fontFamily = theme.typography.fontFamily as string;
-    appElement.style.fontSize = `${theme.typography.fontSize}px`;
-    appElement.style.backgroundColor = theme.palette.background.default;
-    appElement.style.color = theme.palette.text.primary;
-    appElement.style.height = '100%';
-  }, []);
-
   return (
-    <ThemeProvider theme={theme}>
-      <ScanContextProvider>{children}</ScanContextProvider>
-    </ThemeProvider>
+    <IconStyleContextProvider>
+      <ThemeProvider theme={theme}>
+        <ScanContextProvider>{children}</ScanContextProvider>
+      </ThemeProvider>
+    </IconStyleContextProvider>
   );
 };
 
@@ -66,15 +62,11 @@ const Wrapper: FC = ({ children }) => {
     return Object.values(configuration).every((value) => !!value);
   })();
 
-  document.body.style.margin = '0';
-  document.body.style.height = '100vh';
-  document.body.style.overflow = 'hidden';
-
   const MainComponent = isSetupReady ? LazyApp : LazySetup;
 
   render(
     <Wrapper>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<></>}>
         <MainComponent />
       </Suspense>
     </Wrapper>,

@@ -2,14 +2,11 @@ import React, { FC, FormEventHandler, useEffect, useState } from 'react';
 import { SetupStepProps } from '../../../types/SetupStepProps';
 import { Database } from '../../utils/Database';
 import { Authentication } from '../../utils/Authentication';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import { PersonOutlined } from '@material-ui/icons';
+import { SetupStepTitle } from '../../atoms/SetupStepTitle';
+import { Button } from '../../atoms/Button';
+import { Input } from '../../atoms/Input';
+import { AiOutlineUser } from 'react-icons/ai';
+import { Spacer } from '../../atoms/Spacer';
 
 export const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [clientId, setClientId] = useState('');
@@ -46,30 +43,21 @@ export const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
 
   return (
     <>
-      <Typography variant="h2" component="h1">
-        Account
-      </Typography>
+      <SetupStepTitle>Account</SetupStepTitle>
 
       <form onSubmit={handleSubmit}>
-        <Box marginY="1em">
-          <TextField
-            disabled={loading}
-            label="ClientId"
-            variant="outlined"
-            value={clientId}
-            onChange={(event) => setClientId(event.target.value)}
-          />
-        </Box>
-
-        <Button
+        <Input
           disabled={loading}
-          variant="contained"
-          color="primary"
-          type="submit"
-          startIcon={
-            loading ? <CircularProgress size={16} /> : <PersonOutlined />
-          }
-        >
+          label="Client ID"
+          value={clientId}
+          onChange={(event) => setClientId(event.target.value)}
+        />
+
+        <Spacer block size={2} />
+
+        <Button disabled={loading} type="submit">
+          <AiOutlineUser />
+          <Spacer size={0.5} />
           {loading ? 'Signing in' : 'Sign in'}
         </Button>
       </form>

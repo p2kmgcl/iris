@@ -1,0 +1,19 @@
+.wrapper {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100%;
+  width: 100%;
+}
+
+.grid {
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+}
+
+.thumbnailButton {
+  background: none;
+  overflow: hidden;
+  padding: calc(var(--spacing-unit) / 2);
+  border: none;
+  box-sizing: border-box;
+}

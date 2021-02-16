@@ -1,0 +1,53 @@
+:global(:root) {
+  --dark: #272833;
+  --dark-l1: #393a4a;
+  --dark-l2: #495057;
+
+  --secondary-d3: #393a4a;
+  --secondary-d2: #6b6c7e;
+  --secondary-d1: #a7a9bc;
+  --secondary: #cdced9;
+  --secondary-l1: #e7e7ed;
+
+  --light: #f1f2f5;
+  --light-l1: #f7f8f9;
+
+  --black: #000;
+  --white: #fff;
+  --blue: #4b9fff;
+  --orange: #ffb46e;
+  --red: #ff5f5f;
+  --teal: #50d2a0;
+  --pink: #ff73c3;
+  --green: #9be169;
+  --purple: #af78ff;
+  --yellow: #ffd76e;
+  --cyan: #5fc8ff;
+  --indigo: #7785ff;
+
+  --primary-d3: #8e6ac8;
+  --primary-d2: #a78cd4;
+  --primary-d1: #b69edb;
+  --primary: #d2c4e9;
+  --primary-l1: #e8e1f4;
+  --primary-l2: #f4f0f9;
+
+  --roundness: 4px;
+  --spacing-unit: 8px;
+  --transition-duration: 0.3s;
+}
+
+:global(body) {
+  background-color: var(--dark);
+  color: var(--light);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu,
+    Cantarell, Helvetica Neue, Arial, sans-serif;
+  font-size: 16px;
+  margin: 0;
+}
+
+:global(#app) {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}

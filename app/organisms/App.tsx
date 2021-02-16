@@ -1,100 +1,68 @@
-import React, { FC, ReactElement, useEffect, useState } from 'react';
-import {
-  Badge,
-  BottomNavigation,
-  BottomNavigationAction,
-  Box,
-  CircularProgress,
-  useTheme,
-} from '@material-ui/core';
+import React, { FC, useEffect, useState } from 'react';
 import {
   PhotoAlbumOutlined,
   PhotoLibraryOutlined,
   SettingsOutlined,
 } from '@material-ui/icons';
-import { AllPhotosTab } from './tabs/AllPhotosTab';
-import { SettingsTab } from './tabs/SettingsTab';
-import { useIsScanning, useToggleScan } from '../contexts/ScanContext';
-import { AllAlbumsTab } from './tabs/AllAlbumsTab';
+import { useToggleScan } from '../contexts/ScanContext';
+import { BottomTabs } from '../atoms/BottomTabs';
 
 const DEFAULT_TAB_ID = 'allPhotos';
 
+const TABS: Record<
+  string,
+  {
+    tabId: string;
+    label: string;
+    Icon: FC;
+    Content: FC;
+  }
+> = {
+  [DEFAULT_TAB_ID]: {
+    tabId: DEFAULT_TAB_ID,
+    label: 'Photos',
+    Icon: PhotoLibraryOutlined,
+    Content: React.lazy(() =>
+      import('./tabs/AllPhotosTab').then(({ AllPhotosTab }) => ({
+        default: AllPhotosTab,
+      })),
+    ),
+  },
+  allAlbums: {
+    tabId: 'allAlbums',
+    label: 'Albums',
+    Icon: PhotoAlbumOutlined,
+    Content: React.lazy(() =>
+      import('./tabs/AllAlbumsTab').then(({ AllAlbumsTab }) => ({
+        default: AllAlbumsTab,
+      })),
+    ),
+  },
+  settings: {
+    tabId: 'settings',
+    label: 'Settings',
+    Icon: SettingsOutlined,
+    Content: React.lazy(() =>
+      import('./tabs/SettingsTab').then(({ SettingsTab }) => ({
+        default: SettingsTab,
+      })),
+    ),
+  },
+};
+
 export function App() {
-  const theme = useTheme();
-  const [tabId, setTabId] = useState(DEFAULT_TAB_ID);
-  const isScanning = useIsScanning();
+  const [tabId, setTabId] = useState<keyof typeof TABS>(DEFAULT_TAB_ID);
   const toggleScan = useToggleScan();
 
   useEffect(() => {
     toggleScan();
   }, [toggleScan]);
 
-  const tabs: Record<
-    string,
-    {
-      label: string;
-      Component: FC;
-      Icon: ReactElement;
-    }
-  > = {
-    [DEFAULT_TAB_ID]: {
-      label: 'Photos',
-      Icon: <PhotoLibraryOutlined />,
-      Component: AllPhotosTab,
-    },
-
-    allAlbums: {
-      label: 'Albums',
-      Icon: <PhotoAlbumOutlined />,
-      Component: AllAlbumsTab,
-    },
-
-    settings: {
-      label: 'Settings',
-      Icon: isScanning ? (
-        <Badge
-          color="primary"
-          overlap="circle"
-          badgeContent={
-            <CircularProgress
-              size={10}
-              disableShrink
-              style={{ color: theme.palette.primary.contrastText }}
-            />
-          }
-        >
-          <SettingsOutlined />
-        </Badge>
-      ) : (
-        <SettingsOutlined />
-      ),
-      Component: SettingsTab,
-    },
-  };
-
-  const { Component } = tabs[tabId];
-
   return (
-    <Box display="flex" flexDirection="column" style={{ height: '100%' }}>
-      <Box flexGrow={1} overflow="auto" display="flex">
-        <Component />
-      </Box>
-
-      <BottomNavigation
-        showLabels
-        value={tabId}
-        onChange={(_, nextValue) => setTabId(nextValue)}
-        style={{ height: `${theme.spacing(10)}px` }}
-      >
-        {Object.entries(tabs).map(([value, { label, Icon }]) => (
-          <BottomNavigationAction
-            key={value}
-            label={label}
-            icon={Icon}
-            value={value}
-          />
-        ))}
-      </BottomNavigation>
-    </Box>
+    <BottomTabs
+      selectedTabId={tabId}
+      onTabClick={setTabId}
+      tabs={Object.values(TABS)}
+    />
   );
 }

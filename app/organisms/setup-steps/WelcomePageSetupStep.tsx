@@ -1,32 +1,15 @@
 import React, { FC } from 'react';
 import { SetupStepProps } from '../../../types/SetupStepProps';
-import { Button, Typography, useTheme } from '@material-ui/core';
+import { SetupStepTitle } from '../../atoms/SetupStepTitle';
+import { Button } from '../../atoms/Button';
 
-export const WelcomePageSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
-  const theme = useTheme();
+export const WelcomePageSetupStep: FC<SetupStepProps> = ({ stepReady }) => (
+  <>
+    <SetupStepTitle>Iris</SetupStepTitle>
+    <p>The missing OneDrive gallery.</p>
 
-  return (
-    <>
-      <Typography variant="h1" component="h1">
-        Iris
-      </Typography>
-
-      <Typography
-        component="p"
-        variant="subtitle1"
-        style={{ marginBottom: theme.spacing(2) }}
-      >
-        The missing OneDrive gallery.
-      </Typography>
-
-      <Button
-        variant="contained"
-        color="primary"
-        type="button"
-        onClick={() => stepReady()}
-      >
-        Start
-      </Button>
-    </>
-  );
-};
+    <Button type="button" onClick={() => stepReady()}>
+      Start
+    </Button>
+  </>
+);

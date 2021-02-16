@@ -4,30 +4,23 @@ import { Graph } from '../../utils/Graph';
 import { DriveItem } from '@microsoft/microsoft-graph-types';
 import { LoadingMask } from '../../atoms/LoadingMask';
 import { Database } from '../../utils/Database';
+import { SetupStepTitle } from '../../atoms/SetupStepTitle';
+import { Button } from '../../atoms/Button';
 import {
-  Box,
-  Breadcrumbs,
-  Button,
-  Chip,
-  CircularProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListSubheader,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
-import { ArrowUpwardOutlined, FolderOutlined } from '@material-ui/icons';
+  AiOutlineArrowUp,
+  AiOutlineFile,
+  AiOutlineFolder,
+} from 'react-icons/ai';
+import { Spacer } from '../../atoms/Spacer';
+import { FileBrowser } from '../../atoms/FileBrowser';
 
 export const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
-  const theme = useTheme();
   const [itemId, setItemId] = useState('root');
   const [item, setItem] = useState<DriveItem | null>(null);
   const [path, setPath] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [children, setChildren] = useState<
-    Array<{ id: string; label: string; Icon: FC }>
+    Array<{ itemId: string; label: string; Icon: FC; disabled: boolean }>
   >([]);
 
   const handleChoose = async () => {
@@ -59,11 +52,12 @@ export const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
       }
 
       const filteredChildren = children
-        .filter((child) => child.id && child.name && child.folder)
+        .filter((child) => child.id && child.name)
         .map((child) => ({
-          id: child.id as string,
+          itemId: child.id as string,
           label: child.name as string,
-          Icon: FolderOutlined,
+          Icon: child.folder ? AiOutlineFolder : AiOutlineFile,
+          disabled: !child.folder,
         }));
 
       setItem(item);
@@ -71,9 +65,10 @@ export const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
       if (item.parentReference?.id) {
         setChildren([
           {
-            id: item.parentReference.id as string,
+            itemId: item.parentReference.id as string,
             label: '..',
-            Icon: ArrowUpwardOutlined,
+            Icon: AiOutlineArrowUp,
+            disabled: false,
           },
           ...filteredChildren,
         ]);
@@ -98,101 +93,16 @@ export const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
 
   return (
     <>
-      <Typography variant="h2" component="h1">
-        Gallery folder
-      </Typography>
+      <SetupStepTitle>Gallery folder</SetupStepTitle>
 
-      <Box
-        style={{
-          margin: '2em auto',
-          borderRadius: theme.shape.borderRadius,
-          overflow: 'hidden',
-        }}
-      >
-        <LoadingMask loading={loading}>
-          {item && children ? (
-            <List
-              style={{
-                width: '90vw',
-                maxWidth: '60ch',
-                height: '40em',
-                maxHeight: '50vh',
-                overflowY: 'auto',
-                backgroundColor: theme.palette.background.default,
-                borderBottom: `solid thin ${theme.palette.divider}`,
-              }}
-              subheader={
-                <ListSubheader
-                  component="div"
-                  style={{
-                    textAlign: 'left',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                    backgroundColor: theme.palette.background.paper,
-                  }}
-                >
-                  {path.length ? (
-                    <Breadcrumbs
-                      maxItems={2}
-                      style={{
-                        marginBottom: theme.spacing(2),
-                        marginTop: theme.spacing(2),
-                      }}
-                    >
-                      {path.map((chunk, index) => (
-                        <Chip
-                          key={`${chunk}-${index}`}
-                          label={chunk}
-                          size="small"
-                        />
-                      ))}
-                    </Breadcrumbs>
-                  ) : null}
-                </ListSubheader>
-              }
-            >
-              {children.map(({ id, label, Icon }) => (
-                <ListItem
-                  button
-                  key={id}
-                  onClick={() => setItemId(id)}
-                  style={{ borderTop: `solid thin ${theme.palette.divider}` }}
-                >
-                  <ListItemIcon>
-                    <Icon />
-                  </ListItemIcon>
-                  <ListItemText>{label}</ListItemText>
-                </ListItem>
-              ))}
+      <LoadingMask loading={loading}>
+        <FileBrowser path={path} items={children} onItemClick={setItemId} />
+      </LoadingMask>
 
-              {children.length === 1 ? (
-                <Box
-                  style={{
-                    color: theme.palette.text.disabled,
-                    padding: theme.spacing(2),
-                    margin: theme.spacing(4),
-                  }}
-                >
-                  <Typography>Folder is empty</Typography>
-                </Box>
-              ) : null}
-            </List>
-          ) : (
-            <Box marginY="4em">
-              <CircularProgress />
-            </Box>
-          )}
-        </LoadingMask>
-      </Box>
+      <Spacer block size={2} />
 
       {item && item.name ? (
-        <Button
-          disabled={loading}
-          onClick={handleChoose}
-          variant="contained"
-          color="primary"
-        >
+        <Button disabled={loading} onClick={handleChoose}>
           {`Choose ${item?.name}`}
         </Button>
       ) : null}

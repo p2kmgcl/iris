@@ -1,0 +1,29 @@
+.button {
+  border: none;
+  background: var(--primary);
+  color: var(--dark);
+  font-family: inherit;
+  font-size: 1rem;
+  padding: var(--spacing-unit) calc(var(--spacing-unit) * 3);
+  border-radius: var(--roundness);
+  cursor: pointer;
+  transition: background-color ease var(--transition-duration);
+  will-change: background-color;
+  display: inline-flex;
+  align-items: center;
+}
+
+.button:hover {
+  background-color: var(--primary-l2);
+}
+
+.button:disabled {
+  background-color: var(--secondary);
+  color: var(--secondary-d2);
+  cursor: default;
+}
+
+.button:active {
+  background-color: var(--primary-d1);
+  transition-duration: 0s;
+}
