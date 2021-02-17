@@ -9,6 +9,102 @@ import path from 'path';
 const DESTINATION_DIRECTORY = './build/app';
 const CERTIFICATE_DIRECTORY = './build/development-certificate';
 
+export const cssRule = {
+  test: /\.css$/,
+  include: path.join(__dirname, 'app'),
+  use: ['style-loader', { loader: 'css-loader', options: { modules: true } }],
+};
+
+export const jsRule = {
+  test: /\.tsx?$/,
+  include: path.join(__dirname, 'app'),
+  use: {
+    loader: 'babel-loader',
+    options: {
+      presets: [
+        '@babel/preset-typescript',
+        '@babel/preset-react',
+        [
+          '@babel/preset-env',
+          {
+            targets: ['last 2 Chrome versions', 'last 2 iOS versions'],
+          },
+        ],
+      ],
+      plugins: [
+        ...(process.env.NODE_ENV === 'development'
+          ? [require.resolve('react-refresh/babel')]
+          : []),
+      ],
+    },
+  },
+};
+
+export const urlRule = {
+  test: /\.(png|svg)$/i,
+  include: [
+    path.join(__dirname, 'app'),
+    path.join(__dirname, 'assets'),
+    path.join(__dirname, 'static'),
+  ],
+  use: [
+    {
+      loader: 'url-loader',
+      options: {
+        limit: 8192,
+      },
+    },
+  ],
+};
+
+export const rules = [cssRule, jsRule, urlRule];
+
+export const plugins = [
+  new CopyPlugin({
+    patterns: [
+      { from: 'static', to: path.resolve(__dirname, DESTINATION_DIRECTORY) },
+    ],
+  }),
+];
+
+export const productionPlugins = [
+  new CompressionPlugin({
+    test: /\.(js|css)$/i,
+  }),
+
+  new WorkboxPlugin.GenerateSW({
+    clientsClaim: true,
+    skipWaiting: true,
+    exclude: ['CNAME'],
+  }),
+];
+
+export const developmentPlugins = [
+  new webpack.HotModuleReplacementPlugin(),
+  new ReactRefreshWebpackPlugin(),
+];
+
+export const devtool =
+  process.env.NODE_ENV === 'development' ? 'eval-source-map' : false;
+
+export const devServer = {
+  hot: true,
+  host: '0.0.0.0',
+  https: {
+    key: fs.readFileSync(
+      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.key'),
+    ),
+    cert: fs.readFileSync(
+      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.crt'),
+    ),
+    ca: fs.readFileSync(
+      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localca.pem'),
+    ),
+  },
+  port: 9000,
+  contentBase: path.resolve(__dirname, DESTINATION_DIRECTORY),
+};
+
 export default {
   entry: {
     app: './app/index.tsx',
@@ -18,103 +114,17 @@ export default {
     filename: '[name].js',
     path: path.resolve(__dirname, DESTINATION_DIRECTORY),
   },
-  devtool: process.env.NODE_ENV === 'development' ? 'eval-source-map' : false,
+  devtool,
   module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          { loader: 'css-loader', options: { modules: true } },
-        ],
-      },
-      {
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              '@babel/preset-typescript',
-              '@babel/preset-react',
-              [
-                '@babel/preset-env',
-                {
-                  targets: ['last 2 Chrome versions', 'last 2 iOS versions'],
-                },
-              ],
-            ],
-            plugins: [
-              ...(process.env.NODE_ENV === 'development'
-                ? [require.resolve('react-refresh/babel')]
-                : []),
-            ],
-          },
-        },
-      },
-      {
-        test: /\.(png|svg)$/i,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 8192,
-            },
-          },
-        ],
-      },
-    ],
+    rules,
   },
   plugins: [
-    new CopyPlugin({
-      patterns: [
-        { from: 'static', to: path.resolve(__dirname, DESTINATION_DIRECTORY) },
-      ],
-    }),
-
-    ...(process.env.NODE_ENV === 'production'
-      ? [
-          new CompressionPlugin({
-            test: /\.(js|css)$/i,
-          }),
-
-          new WorkboxPlugin.GenerateSW({
-            clientsClaim: true,
-            skipWaiting: true,
-            exclude: ['CNAME'],
-          }),
-        ]
-      : []),
-
-    ...(process.env.NODE_ENV === 'development'
-      ? [
-          new webpack.HotModuleReplacementPlugin(),
-          new ReactRefreshWebpackPlugin(),
-        ]
-      : []),
+    ...plugins,
+    ...(process.env.NODE_ENV === 'production' ? productionPlugins : []),
+    ...(process.env.NODE_ENV === 'development' ? developmentPlugins : []),
   ],
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
   },
-  ...(process.env.NODE_ENV === 'development'
-    ? {
-        devServer: {
-          hot: true,
-          host: '0.0.0.0',
-          https: {
-            key: fs.readFileSync(
-              path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.key'),
-            ),
-            cert: fs.readFileSync(
-              path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.crt'),
-            ),
-            ca: fs.readFileSync(
-              path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localca.pem'),
-            ),
-          },
-          port: 9000,
-          contentBase: path.resolve(__dirname, DESTINATION_DIRECTORY),
-        },
-      }
-    : {}),
+  ...(process.env.NODE_ENV === 'development' ? { devServer } : {}),
 };
