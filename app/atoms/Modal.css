@@ -1,0 +1,11 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  padding: calc(var(--spacing-unit) * 2);
+  box-sizing: border-box;
+  background-color: var(--dark);
+}

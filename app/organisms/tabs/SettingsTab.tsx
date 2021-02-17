@@ -1,22 +1,5 @@
-import React, { FC } from 'react';
-import {
-  List as MaterialList,
-  ListSubheader as MaterialListSubheader,
-  ListItem as MaterialListItem,
-  ListItemIcon,
-  ListItemText,
-  useTheme,
-  ListItemSecondaryAction,
-  Switch,
-  CircularProgress,
-  Box,
-} from '@material-ui/core';
+import React, { FC, LiHTMLAttributes } from 'react';
 import pkg from '../../../package.json';
-import {
-  ExitToAppOutlined,
-  InfoOutlined,
-  WarningOutlined,
-} from '@material-ui/icons';
 import { Authentication } from '../../utils/Authentication';
 import { Database } from '../../utils/Database';
 import {
@@ -25,6 +8,12 @@ import {
   useToggleScan,
 } from '../../contexts/ScanContext';
 import { PhotoThumbnail } from '../../atoms/PhotoThumbnail';
+import { Spinner } from '../../atoms/Spinner';
+import {
+  AiOutlineInfo,
+  AiOutlineLogout,
+  AiOutlineWarning,
+} from 'react-icons/ai';
 
 export const SettingsTab: FC = () => {
   const isScanning = useIsScanning();
@@ -36,73 +25,62 @@ export const SettingsTab: FC = () => {
       <SubList>
         <ListSubheader>Scan</ListSubheader>
         <ListItem>
-          <ListItemIcon>
-            <CircularProgress
-              size={24}
-              {...(isScanning
-                ? { variant: 'indeterminate' }
-                : { variant: 'determinate', value: 100 })}
-            />
-          </ListItemIcon>
-          <ListItemText
-            primary="Find new photos"
-            secondary={scanStatus.description}
-          />
+          <Spinner size="regular" />
+          <span>Find new photos</span>
+          <span>{scanStatus.description}</span>
+
           {scanStatus.relatedPhoto ? (
-            <ListItemIcon style={{ marginRight: '1ch' }}>
-              <Box style={{ borderRadius: '50%', overflow: 'hidden' }}>
+            <span style={{ marginRight: '1ch' }}>
+              <div
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                }}
+              >
                 <PhotoThumbnail photo={scanStatus.relatedPhoto} size={42} />
-              </Box>
-            </ListItemIcon>
+              </div>
+            </span>
           ) : null}
-          <ListItemSecondaryAction>
-            <Switch
-              edge="end"
+          <label>
+            toggle
+            <input
+              type="checkbox"
               onChange={() => toggleScan()}
               checked={isScanning}
             />
-          </ListItemSecondaryAction>
+          </label>
         </ListItem>
       </SubList>
       <SubList>
         <ListSubheader>About</ListSubheader>
         <ListItem
-          button
           onClick={() => {
             if (confirm('Are you sure?')) {
               Authentication.logout();
             }
           }}
         >
-          <ListItemIcon>
-            <ExitToAppOutlined />
-          </ListItemIcon>
-          <ListItemText
-            primary="Logout"
-            secondary="Remove account but keep photos"
-          />
+          <AiOutlineLogout />
+          <span>Logout</span>
+          <span>Remove account but keep photos</span>
         </ListItem>
         <ListItem
-          button
           onClick={() => {
             if (confirm('Are you sure?')) {
               Database.destroy();
             }
           }}
         >
-          <ListItemIcon>
-            <WarningOutlined />
-          </ListItemIcon>
-          <ListItemText
-            primary="Destroy everything"
-            secondary="Remove all photos and accounts"
-          />
+          <AiOutlineWarning />
+          <span>Destroy everything</span>
+          <span>Remove all photos and accounts</span>
         </ListItem>
         <ListItem>
-          <ListItemIcon>
-            <InfoOutlined />
-          </ListItemIcon>
-          <ListItemText primary="Version" secondary={pkg.version} />
+          <AiOutlineInfo />
+          <span>Version</span>
+          <span>{pkg.version}</span>
         </ListItem>
       </SubList>
     </List>
@@ -110,36 +88,24 @@ export const SettingsTab: FC = () => {
 };
 
 const List: FC = ({ children }) => (
-  <MaterialList style={{ padding: 0, width: '100%' }}>{children}</MaterialList>
+  <ul style={{ padding: 0, width: '100%' }}>{children}</ul>
 );
 
-const ListItem: typeof MaterialListItem = ({ ...props }) => {
-  const theme = useTheme();
-
+const ListItem: FC<LiHTMLAttributes<HTMLLIElement>> = ({ ...props }) => {
   return (
-    <MaterialListItem
+    <li
       {...props}
-      style={{ paddingLeft: theme.spacing(3), width: '100%' }}
+      style={{ paddingLeft: 'var(--spacing-unit)', width: '100%' }}
     />
   );
 };
 
 const ListSubheader: FC = ({ children }) => {
-  const theme = useTheme();
-
-  return (
-    <MaterialListSubheader
-      style={{ backgroundColor: theme.palette.background.default }}
-    >
-      {children}
-    </MaterialListSubheader>
-  );
+  return <h2 style={{ backgroundColor: 'var(--dark-l1)' }}>{children}</h2>;
 };
 
 const SubList: FC = ({ children }) => (
-  <MaterialListItem style={{ padding: 0, width: '100%' }}>
-    <MaterialList style={{ padding: 0, width: '100%' }}>
-      {children}
-    </MaterialList>
-  </MaterialListItem>
+  <li style={{ padding: 0, width: '100%' }}>
+    <ul style={{ padding: 0, width: '100%' }}>{children}</ul>
+  </li>
 );
