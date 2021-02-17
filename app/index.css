@@ -37,6 +37,10 @@
   --transition-duration: 0.3s;
 }
 
+:global(html) {
+  height: 100%;
+}
+
 :global(body) {
   background-color: var(--dark);
   color: var(--light);
@@ -44,10 +48,11 @@
     Cantarell, Helvetica Neue, Arial, sans-serif;
   font-size: 16px;
   margin: 0;
+  height: 100%;
 }
 
 :global(#app) {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
 }
