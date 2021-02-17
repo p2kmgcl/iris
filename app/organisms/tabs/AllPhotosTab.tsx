@@ -1,6 +1,8 @@
 import React, { FC } from 'react';
-import { PhotoGrid } from '../../atoms/PhotoGrid';
+import PhotoGrid from '../../atoms/PhotoGrid';
 
-export const AllPhotosTab: FC = () => {
+const AllPhotosTab: FC = () => {
   return <PhotoGrid />;
 };
+
+export default AllPhotosTab;

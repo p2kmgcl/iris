@@ -1,12 +1,12 @@
 import { IDBPDatabase, openDB } from 'idb';
 import pkg from '../../package.json';
-import { Album, Item, MetadataFile, Photo, Schema } from '../../types/Schema';
+import Schema, { Album, Item, MetadataFile, Photo } from '../../types/Schema';
 
 const DATABASE_NAME = 'database';
 const DATABASE_VERSION = pkg.version;
 let database: IDBPDatabase<Schema>;
 
-export const Database = {
+const Database = {
   open: async () => {
     if (!(await navigator.storage?.persisted())) {
       await navigator.storage?.persist();
@@ -293,3 +293,5 @@ export const Database = {
     });
   },
 };
+
+export default Database;

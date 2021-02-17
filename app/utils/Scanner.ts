@@ -1,6 +1,6 @@
 import { DriveItem } from '@microsoft/microsoft-graph-types';
-import { Database } from './Database';
-import { Graph } from './Graph';
+import Database from './Database';
+import Graph from './Graph';
 import { Photo } from '../../types/Schema';
 
 class AbortError extends Error {
@@ -9,7 +9,7 @@ class AbortError extends Error {
   }
 }
 
-export const Scanner = {
+const Scanner = {
   scan: async (
     driveItemId: string,
     abortSignal: AbortSignal,
@@ -127,3 +127,5 @@ function getMetadataFilePhoto(
 function driveItemIsPhoto(driveItem: DriveItem) {
   return !!(driveItem.video?.width || driveItem.image?.width);
 }
+
+export default Scanner;

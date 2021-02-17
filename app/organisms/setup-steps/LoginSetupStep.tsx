@@ -1,14 +1,14 @@
 import React, { FC, FormEventHandler, useEffect, useState } from 'react';
-import { SetupStepProps } from '../../../types/SetupStepProps';
-import { Database } from '../../utils/Database';
-import { Authentication } from '../../utils/Authentication';
-import { SetupStepTitle } from '../../atoms/SetupStepTitle';
-import { Button } from '../../atoms/Button';
-import { Input } from '../../atoms/Input';
+import SetupStepProps from '../../../types/SetupStepProps';
+import Database from '../../utils/Database';
+import Authentication from '../../utils/Authentication';
+import SetupStepTitle from '../../atoms/SetupStepTitle';
+import Button from '../../atoms/Button';
+import Input from '../../atoms/Input';
 import { AiOutlineUser } from 'react-icons/ai';
-import { Spacer } from '../../atoms/Spacer';
+import Spacer from '../../atoms/Spacer';
 
-export const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
+const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [clientId, setClientId] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -64,3 +64,5 @@ export const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
     </>
   );
 };
+
+export default LoginSetupStep;

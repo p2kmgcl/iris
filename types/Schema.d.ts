@@ -30,7 +30,7 @@ export interface MetadataFile {
   photoItemId: string;
 }
 
-export interface Schema extends DBSchema {
+export default interface Schema extends DBSchema {
   configuration: {
     key: string;
     value: {

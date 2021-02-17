@@ -1,11 +1,11 @@
 import React, { FC, Suspense } from 'react';
 import styles from './BottomTabs.css';
-import { Spinner } from './Spinner';
+import Spinner from './Spinner';
 
 const TAB_ID_PREFIX = 'bottom-tab-';
 const LABEL_ID_PREFIX = 'bottom-tab-label-';
 
-export const BottomTabs: FC<{
+const BottomTabs: FC<{
   selectedTabId: string;
   onTabClick: (tabId: string) => void;
   tabs: Array<{
@@ -66,3 +66,5 @@ export const BottomTabs: FC<{
     </div>
   </div>
 );
+
+export default BottomTabs;

@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
-import { useAsyncMemo } from '../../hooks/useAsyncMemo';
-import { Database } from '../../utils/Database';
+import useAsyncMemo from '../../hooks/useAsyncMemo';
+import Database from '../../utils/Database';
 import { Album } from '../../../types/Schema';
-import { Button } from '../../atoms/Button';
-import { AlbumModal } from '../modals/AlbumModal';
+import Button from '../../atoms/Button';
+import AlbumModal from '../modals/AlbumModal';
 
-export const AllAlbumsTab: FC = () => {
+const AllAlbumsTab: FC = () => {
   const albumList = useAsyncMemo(() => Database.selectAlbumList(), [], []);
   const [album, setAlbum] = useState<Album | null>(null);
 
@@ -27,3 +27,5 @@ export const AllAlbumsTab: FC = () => {
     </>
   );
 };
+
+export default AllAlbumsTab;

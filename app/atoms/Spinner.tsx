@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styles from './Spinner.css';
 
-export const Spinner: FC<{ size: 'regular' | 'large' }> = ({ size }) => (
+const Spinner: FC<{ size: 'regular' | 'large' }> = ({ size }) => (
   <div
     style={{
       fontSize: {
@@ -12,3 +12,5 @@ export const Spinner: FC<{ size: 'regular' | 'large' }> = ({ size }) => (
     className={styles.spinner}
   />
 );
+
+export default Spinner;

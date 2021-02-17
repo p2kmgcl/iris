@@ -1,7 +1,7 @@
 import React, { InputHTMLAttributes, FC } from 'react';
 import styles from './Input.css';
 
-export const Input: FC<
+const Input: FC<
   Omit<InputHTMLAttributes<HTMLInputElement>, 'className'> & { label: string }
 > = ({ label, ...props }) => (
   <label className={styles.wrapper}>
@@ -9,3 +9,5 @@ export const Input: FC<
     <span className={styles.label}>{label}</span>
   </label>
 );
+
+export default Input;

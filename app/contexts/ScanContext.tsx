@@ -6,12 +6,11 @@ import React, {
   useRef,
 } from 'react';
 import { Photo } from '../../types/Schema';
-import { Database } from '../utils/Database';
-import { Scanner } from '../utils/Scanner';
-import {
+import Database from '../utils/Database';
+import Scanner from '../utils/Scanner';
+import useChannel, {
   Channel,
   NoopChannel,
-  useChannel,
   useChannelData,
 } from '../hooks/useChannel';
 
@@ -30,7 +29,7 @@ const ScanContext = createContext<{
   toggleScan: () => {},
 });
 
-export const ScanContextProvider: FC = ({ children }) => {
+const ScanContextProvider: FC = ({ children }) => {
   const isScanningChannel = useChannel<boolean>(false);
   const scanErrorChannel = useChannel<Error | null>(null);
   const scanStatusChannel = useChannel<{
@@ -128,6 +127,8 @@ export const ScanContextProvider: FC = ({ children }) => {
     </ScanContext.Provider>
   );
 };
+
+export default ScanContextProvider;
 
 export const useIsScanning = () =>
   useChannelData(useContext(ScanContext).isScanningChannel);

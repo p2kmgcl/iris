@@ -1,6 +1,6 @@
 import { DriveItem, ThumbnailSet } from '@microsoft/microsoft-graph-types';
 import { Client, GraphRequest } from '@microsoft/microsoft-graph-client';
-import { Authentication } from './Authentication';
+import Authentication from './Authentication';
 
 const tokenRef = { current: '' };
 
@@ -10,7 +10,7 @@ const client = Client.initWithMiddleware({
   },
 });
 
-export const Graph = {
+const Graph = {
   getItem: (itemId: string) => graphGet<DriveItem>(`/me/drive/items/${itemId}`),
 
   getItemChildren: (itemId: string) =>
@@ -39,3 +39,5 @@ async function graphGet<T>(query: string): Promise<T> {
     throw error;
   });
 }
+
+export default Graph;

@@ -3,7 +3,7 @@ import { Photo } from '../../types/Schema';
 
 const thumbnailURLMap: Map<string, string> = new Map();
 
-export const PhotoThumbnail: FC<{ photo: Photo; size: number | string }> = ({
+const PhotoThumbnail: FC<{ photo: Photo; size: number | string }> = ({
   photo,
   size,
 }) => {
@@ -41,3 +41,5 @@ export const PhotoThumbnail: FC<{ photo: Photo; size: number | string }> = ({
     />
   );
 };
+
+export default PhotoThumbnail;

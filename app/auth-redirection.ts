@@ -1,4 +1,4 @@
-import { Authentication } from './utils/Authentication';
+import Authentication from './utils/Authentication';
 
 const url = new URL(location.href);
 const code = url.searchParams.get('code');

@@ -1,21 +1,21 @@
 import React, { FC, LiHTMLAttributes } from 'react';
 import pkg from '../../../package.json';
-import { Authentication } from '../../utils/Authentication';
-import { Database } from '../../utils/Database';
+import Authentication from '../../utils/Authentication';
+import Database from '../../utils/Database';
 import {
   useIsScanning,
   useScanStatus,
   useToggleScan,
 } from '../../contexts/ScanContext';
-import { PhotoThumbnail } from '../../atoms/PhotoThumbnail';
-import { Spinner } from '../../atoms/Spinner';
+import PhotoThumbnail from '../../atoms/PhotoThumbnail';
+import Spinner from '../../atoms/Spinner';
 import {
   AiOutlineInfo,
   AiOutlineLogout,
   AiOutlineWarning,
 } from 'react-icons/ai';
 
-export const SettingsTab: FC = () => {
+const SettingsTab: FC = () => {
   const isScanning = useIsScanning();
   const toggleScan = useToggleScan();
   const scanStatus = useScanStatus();
@@ -109,3 +109,5 @@ const SubList: FC = ({ children }) => (
     <ul style={{ padding: 0, width: '100%' }}>{children}</ul>
   </li>
 );
+
+export default SettingsTab;

@@ -1,20 +1,20 @@
 import React, { FC, useEffect, useState } from 'react';
-import { SetupStepProps } from '../../../types/SetupStepProps';
-import { Graph } from '../../utils/Graph';
+import SetupStepProps from '../../../types/SetupStepProps';
+import Graph from '../../utils/Graph';
 import { DriveItem } from '@microsoft/microsoft-graph-types';
-import { LoadingMask } from '../../atoms/LoadingMask';
-import { Database } from '../../utils/Database';
-import { SetupStepTitle } from '../../atoms/SetupStepTitle';
-import { Button } from '../../atoms/Button';
+import LoadingMask from '../../atoms/LoadingMask';
+import Database from '../../utils/Database';
+import SetupStepTitle from '../../atoms/SetupStepTitle';
+import Button from '../../atoms/Button';
 import {
   AiOutlineArrowUp,
   AiOutlineFile,
   AiOutlineFolder,
 } from 'react-icons/ai';
-import { Spacer } from '../../atoms/Spacer';
-import { FileBrowser } from '../../atoms/FileBrowser';
+import Spacer from '../../atoms/Spacer';
+import FileBrowser from '../../atoms/FileBrowser';
 
-export const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
+const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [itemId, setItemId] = useState('root');
   const [item, setItem] = useState<DriveItem | null>(null);
   const [path, setPath] = useState<string[]>([]);
@@ -109,3 +109,5 @@ export const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
     </>
   );
 };
+
+export default RootDirectorySetupStep;

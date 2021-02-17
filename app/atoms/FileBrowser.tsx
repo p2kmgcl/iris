@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import styles from './FileBrowser.css';
-import { Spinner } from './Spinner';
+import Spinner from './Spinner';
 
-export const FileBrowser: FC<{
+const FileBrowser: FC<{
   path: string[];
   items: Array<{ label: string; itemId: string; Icon: FC; disabled: boolean }>;
   onItemClick: (itemId: string) => void;
@@ -48,3 +48,5 @@ export const FileBrowser: FC<{
     </div>
   );
 };
+
+export default FileBrowser;

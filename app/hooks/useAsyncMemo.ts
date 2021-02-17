@@ -1,6 +1,6 @@
 import { DependencyList, useEffect, useState } from 'react';
 
-export function useAsyncMemo<T>(
+export default function useAsyncMemo<T>(
   factory: () => Promise<T>,
   dependencies: DependencyList,
   initial: T | (() => T),

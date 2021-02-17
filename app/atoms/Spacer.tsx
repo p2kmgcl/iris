@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-export const Spacer: FC<{
+const Spacer: FC<{
   block?: boolean;
   axis?: 'x' | 'y' | 'both';
   size?: 0.25 | 0.5 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
@@ -13,3 +13,5 @@ export const Spacer: FC<{
     }}
   />
 );
+
+export default Spacer;

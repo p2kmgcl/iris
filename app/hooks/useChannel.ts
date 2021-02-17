@@ -14,7 +14,7 @@ export const NoopChannel: Channel<any> = {
   getLastData: () => null,
 };
 
-export function useChannel<T>(initialData: T): Channel<T> {
+export default function useChannel<T>(initialData: T): Channel<T> {
   type Listener = (data: T) => void;
 
   const listenersRef = useRef<Set<Listener>>(new Set());

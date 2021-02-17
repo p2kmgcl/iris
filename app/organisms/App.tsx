@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useToggleScan } from '../contexts/ScanContext';
-import { BottomTabs } from '../atoms/BottomTabs';
+import BottomTabs from '../atoms/BottomTabs';
 import {
   AiOutlineBook,
   AiOutlineFileImage,
@@ -22,35 +22,23 @@ const TABS: Record<
     tabId: DEFAULT_TAB_ID,
     label: 'Photos',
     Icon: AiOutlineFileImage,
-    Content: React.lazy(() =>
-      import('./tabs/AllPhotosTab').then(({ AllPhotosTab }) => ({
-        default: AllPhotosTab,
-      })),
-    ),
+    Content: React.lazy(() => import('./tabs/AllPhotosTab')),
   },
   allAlbums: {
     tabId: 'allAlbums',
     label: 'Albums',
     Icon: AiOutlineBook,
-    Content: React.lazy(() =>
-      import('./tabs/AllAlbumsTab').then(({ AllAlbumsTab }) => ({
-        default: AllAlbumsTab,
-      })),
-    ),
+    Content: React.lazy(() => import('./tabs/AllAlbumsTab')),
   },
   settings: {
     tabId: 'settings',
     label: 'Settings',
     Icon: AiOutlineSetting,
-    Content: React.lazy(() =>
-      import('./tabs/SettingsTab').then(({ SettingsTab }) => ({
-        default: SettingsTab,
-      })),
-    ),
+    Content: React.lazy(() => import('./tabs/SettingsTab')),
   },
 };
 
-export function App() {
+export default function App() {
   const [tabId, setTabId] = useState<keyof typeof TABS>(DEFAULT_TAB_ID);
   const toggleScan = useToggleScan();
 

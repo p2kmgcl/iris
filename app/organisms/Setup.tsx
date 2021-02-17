@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
-import { WelcomePageSetupStep } from './setup-steps/WelcomePageSetupStep';
-import { SetupStepProps } from '../../types/SetupStepProps';
-import { App } from './App';
-import { LoginSetupStep } from './setup-steps/LoginSetupStep';
-import { RootDirectorySetupStep } from './setup-steps/RootDirectorySetupStep';
-import { ReadySetupStep } from './setup-steps/ReadySetupStep';
-import { SetupStep } from '../atoms/SetupStep';
+import WelcomePageSetupStep from './setup-steps/WelcomePageSetupStep';
+import SetupStepProps from '../../types/SetupStepProps';
+import App from './App';
+import LoginSetupStep from './setup-steps/LoginSetupStep';
+import RootDirectorySetupStep from './setup-steps/RootDirectorySetupStep';
+import ReadySetupStep from './setup-steps/ReadySetupStep';
+import SetupStep from '../atoms/SetupStep';
 
 const SetupSteps: Array<FC<SetupStepProps>> = [
   WelcomePageSetupStep,
@@ -14,7 +14,7 @@ const SetupSteps: Array<FC<SetupStepProps>> = [
   ReadySetupStep,
 ];
 
-export function Setup() {
+export default function Setup() {
   const [stepIndex, setStepIndex] = useState(0);
   const StepComponent = SetupSteps[stepIndex];
 
@@ -27,9 +27,7 @@ export function Setup() {
   }
 
   const handleStepReady = () => {
-    setTimeout(() => {
-      setStepIndex((prevStepIndex) => prevStepIndex + 1);
-    }, 100);
+    setStepIndex((prevStepIndex) => prevStepIndex + 1);
   };
 
   return (

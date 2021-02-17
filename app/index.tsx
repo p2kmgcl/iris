@@ -1,19 +1,14 @@
 import './index.css';
 import React, { Suspense } from 'react';
 import { render } from 'react-dom';
-import { Database } from './utils/Database';
-import { ScanContextProvider } from './contexts/ScanContext';
-import { IconStyleContextProvider } from './contexts/IconStyleContext';
+import Database from './utils/Database';
+import ScanContextProvider from './contexts/ScanContext';
+import IconStyleContextProvider from './contexts/IconStyleContext';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 
-const LazyApp = React.lazy(() =>
-  import('./organisms/App').then(({ App }) => ({ default: App })),
-);
-
-const LazySetup = React.lazy(() =>
-  import('./organisms/Setup').then(({ Setup }) => ({ default: Setup })),
-);
+const LazyApp = React.lazy(() => import('./organisms/App'));
+const LazySetup = React.lazy(() => import('./organisms/Setup'));
 
 (async function () {
   await Database.open();

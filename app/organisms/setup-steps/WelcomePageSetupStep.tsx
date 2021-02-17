@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import { SetupStepProps } from '../../../types/SetupStepProps';
-import { SetupStepTitle } from '../../atoms/SetupStepTitle';
-import { Button } from '../../atoms/Button';
+import SetupStepProps from '../../../types/SetupStepProps';
+import SetupStepTitle from '../../atoms/SetupStepTitle';
+import Button from '../../atoms/Button';
 
-export const WelcomePageSetupStep: FC<SetupStepProps> = ({ stepReady }) => (
+const WelcomePageSetupStep: FC<SetupStepProps> = ({ stepReady }) => (
   <>
     <SetupStepTitle>Iris</SetupStepTitle>
     <p>The missing OneDrive gallery.</p>
@@ -13,3 +13,5 @@ export const WelcomePageSetupStep: FC<SetupStepProps> = ({ stepReady }) => (
     </Button>
   </>
 );
+
+export default WelcomePageSetupStep;

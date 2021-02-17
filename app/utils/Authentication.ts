@@ -1,4 +1,4 @@
-import { Database } from './Database';
+import Database from './Database';
 
 const SCOPES = [
   'email',
@@ -10,7 +10,7 @@ const SCOPES = [
   'Files.Read.All',
 ];
 
-export const Authentication = {
+const Authentication = {
   login: async (popupWindow: Window) => {
     const state = getRandomString(16);
     const codeVerifier = getRandomString(64);
@@ -169,3 +169,5 @@ async function requestAccessToken(formData: FormData) {
     });
   }
 }
+
+export default Authentication;

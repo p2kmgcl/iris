@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import styles from './LoadingMask.css';
-import { Spinner } from './Spinner';
+import Spinner from './Spinner';
 
-export const LoadingMask: FC<{ loading?: boolean }> = ({
+const LoadingMask: FC<{ loading?: boolean }> = ({
   loading = false,
   children,
 }) => (
@@ -19,3 +19,5 @@ export const LoadingMask: FC<{ loading?: boolean }> = ({
     ) : null}
   </div>
 );
+
+export default LoadingMask;

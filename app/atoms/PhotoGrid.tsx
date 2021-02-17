@@ -1,17 +1,15 @@
 import React, { FC, useEffect, useState } from 'react';
 import { FixedSizeGrid, areEqual, GridChildComponentProps } from 'react-window';
 import { Photo } from '../../types/Schema';
-import { PhotoThumbnail } from './PhotoThumbnail';
-import { useAsyncMemo } from '../hooks/useAsyncMemo';
-import { Database } from '../utils/Database';
+import PhotoThumbnail from './PhotoThumbnail';
+import useAsyncMemo from '../hooks/useAsyncMemo';
+import Database from '../utils/Database';
 import { useIsScanning } from '../contexts/ScanContext';
 import styles from './PhotoGrid.css';
 
 const BASE_THUMBNAIL_SIZE = 128;
 
-export const PhotoGrid: FC<{ albumItemId?: string }> = ({
-  albumItemId = null,
-}) => {
+const PhotoGrid: FC<{ albumItemId?: string }> = ({ albumItemId = null }) => {
   const isScanning = useIsScanning();
   const [countTrigger, setCountTrigger] = useState(false);
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(
@@ -148,3 +146,5 @@ const Thumbnail: FC<GridChildComponentProps> = React.memo(
   },
   areEqual,
 );
+
+export default PhotoGrid;

@@ -1,3 +1,3 @@
-export interface SetupStepProps {
+export default interface SetupStepProps {
   stepReady: () => void;
 }
