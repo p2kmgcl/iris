@@ -1,11 +1,10 @@
 import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import styles from './Grid.css';
 
-const MIN_ITEM_SIZE = 180;
+const MIN_ITEM_SIZE = 128;
 
 export interface ItemProps {
-  rowIndex: number;
-  columnIndex: number;
+  index: number;
   itemSize: number;
 }
 
@@ -24,7 +23,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
     gridStyle: CSSProperties;
   }>(() => ({
     itemSize: MIN_ITEM_SIZE,
-    columnCount: 1,
+    columnCount: 0,
     rowCount: 0,
     gridStyle: {},
   }));
@@ -71,6 +70,8 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
       return;
     }
 
+    const container = wrapperElement.parentElement || window;
+
     const handleScroll = () => {
       const overScan = window.innerHeight;
       const top = wrapperElement.getBoundingClientRect().top;
@@ -95,8 +96,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
               height: gridContext.itemSize,
             },
             itemProps: {
-              rowIndex: i,
-              columnIndex: j,
+              index: i * gridContext.columnCount + j,
               itemSize: gridContext.itemSize,
             },
           });
@@ -107,25 +107,23 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
     };
 
     handleScroll();
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
   }, [wrapperElement, gridContext, itemCount]);
-
-  if (!itemCount) {
-    return null;
-  }
 
   return (
     <div ref={setWrapperElement} className={styles.wrapper}>
-      <div className={styles.grid} style={gridContext.gridStyle}>
-        {renderGrid.map((cell) => (
-          <div key={cell.key} className={cell.className} style={cell.style}>
-            <div className={styles.cellContent}>
-              <Item {...cell.itemProps} />
+      {itemCount && gridContext.columnCount ? (
+        <div className={styles.grid} style={gridContext.gridStyle}>
+          {renderGrid.map((cell) => (
+            <div key={cell.key} className={cell.className} style={cell.style}>
+              <div className={styles.cellContent}>
+                <Item {...cell.itemProps} />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };

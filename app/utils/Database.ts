@@ -165,29 +165,52 @@ const Database = {
       .then((photo) => photo || null);
   },
 
-  selectPhotoFromIndex: async (
-    index: number,
+  selectPhotosFromIndex: async (
+    from: number,
+    to: number,
     albumItemId: string | null = null,
-  ): Promise<Photo | null> => {
+  ): Promise<Photo[]> => {
     const photosStore = database
       .transaction('photos', 'readonly')
       .objectStore('photos');
 
-    let cursor;
+    const photos: Photo[] = [];
 
     if (albumItemId) {
-      cursor = await photosStore
+      let cursor = await photosStore
         .index('byAlbumItemId')
         .openCursor(albumItemId, 'prev');
+
+      if (cursor && from) {
+        cursor = await cursor.advance(from);
+      }
+
+      let position = from;
+
+      while (position < to && cursor) {
+        photos.push(cursor.value);
+        cursor = await cursor.continue();
+        position++;
+      }
     } else {
-      cursor = await photosStore.index('byDateTime').openCursor(null, 'prev');
+      let cursor = await photosStore
+        .index('byDateTime')
+        .openCursor(null, 'prev');
+
+      if (cursor && from) {
+        cursor = await cursor.advance(from);
+      }
+
+      let position = from;
+
+      while (position < to && cursor) {
+        photos.push(cursor.value);
+        cursor = await cursor.continue();
+        position++;
+      }
     }
 
-    if (index) {
-      await cursor?.advance(index);
-    }
-
-    return cursor?.value || null;
+    return photos;
   },
 
   selectPhotoCount: async (

@@ -1,11 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useToggleScan } from '../contexts/ScanContext';
 import BottomTabs from '../atoms/BottomTabs';
-import {
-  AiOutlineBook,
-  AiOutlineFileImage,
-  AiOutlineSetting,
-} from 'react-icons/ai';
+import { MdPhoto, MdPhotoAlbum, MdSettings } from 'react-icons/md';
 
 const DEFAULT_TAB_ID = 'allPhotos';
 
@@ -21,19 +17,19 @@ const TABS: Record<
   [DEFAULT_TAB_ID]: {
     tabId: DEFAULT_TAB_ID,
     label: 'Photos',
-    Icon: AiOutlineFileImage,
+    Icon: MdPhoto,
     Content: React.lazy(() => import('./tabs/AllPhotosTab')),
   },
   allAlbums: {
     tabId: 'allAlbums',
     label: 'Albums',
-    Icon: AiOutlineBook,
+    Icon: MdPhotoAlbum,
     Content: React.lazy(() => import('./tabs/AllAlbumsTab')),
   },
   settings: {
     tabId: 'settings',
     label: 'Settings',
-    Icon: AiOutlineSetting,
+    Icon: MdSettings,
     Content: React.lazy(() => import('./tabs/SettingsTab')),
   },
 };

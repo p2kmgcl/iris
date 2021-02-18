@@ -23,7 +23,7 @@ function Item(props: ItemProps) {
         textShadow: '0 0 4px #fff',
       }}
     >
-      {props.rowIndex}x{props.columnIndex}
+      {props.index}
     </div>
   );
 }
