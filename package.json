@@ -10,7 +10,8 @@
     "lint": "eslint --max-warnings 0 --fix app/**/*.ts app/**/*.tsx service-worker/**/*.ts",
     "build": "NODE_ENV=production webpack --mode production --config webpack.config.ts",
     "start": "NODE_ENV=development webpack serve --mode development --config webpack.config.ts",
-    "start:production": "NODE_ENV=production http-server -a 0.0.0.0 --port 9000 --gzip --ssl --cert ./build/development-certificate/localhost.crt --key ./build/development-certificate/localhost.key ./build/app/"
+    "start:production": "NODE_ENV=production http-server -a 0.0.0.0 --port 9000 --gzip --ssl --cert ./build/development-certificate/localhost.crt --key ./build/development-certificate/localhost.key ./build/app/",
+    "storybook": "start-storybook -p 6006"
   },
   "engines": {
     "node": ">=10.0.0",
@@ -47,6 +48,10 @@
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-angular": "^11.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
+    "@storybook/addon-actions": "^6.1.18",
+    "@storybook/addon-essentials": "^6.1.18",
+    "@storybook/addon-links": "^6.1.18",
+    "@storybook/react": "^6.1.18",
     "@types/compression-webpack-plugin": "^6.0.4",
     "@types/copy-webpack-plugin": "^6.4.0",
     "@types/node": "^10.0.0",

@@ -18,9 +18,15 @@ const FileBrowser: FC<{
         <>
           <ol className={styles.breadcrumbList}>
             {filteredPath.map((item, index) => (
-              <li className={styles.breadcrumbItem} key={`${item}-${index}`}>
-                <span className={styles.breadcrumbItemContent}>{item}</span>
-              </li>
+              <>
+                {index > 0 ? (
+                  <span className={styles.breadcrumbSeparator}>/</span>
+                ) : null}
+
+                <li className={styles.breadcrumbItem} key={`${item}-${index}`}>
+                  {item}
+                </li>
+              </>
             ))}
           </ol>
 

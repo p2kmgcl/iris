@@ -1,0 +1,22 @@
+:global(html) {
+  display: flex;
+  flex-direction: column;
+}
+
+:global(body) {
+  background: white !important;
+  padding: 0 !important;
+  height: auto !important;
+  flex-grow: 1;
+  display: flex !important;
+  flex-direction: column;
+}
+
+:global(#root) {
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background-color: var(--dark-l2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}

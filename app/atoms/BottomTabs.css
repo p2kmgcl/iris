@@ -23,29 +23,40 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 0;
   width: 20ch;
   border: none;
   cursor: pointer;
   padding: var(--spacing-unit);
 }
 
-.tab:hover {
-  background-color: var(--dark-l2);
-}
-
-.tab:focus {
-  background-color: var(--dark-l2);
-  outline: none;
-}
-
-.tab[aria-selected='true'],
-.tab:active {
+.tab[aria-selected='true'] {
   background-color: var(--primary);
   color: var(--dark);
 }
 
+.tab:active {
+  background-color: var(--primary-d1);
+  color: var(--dark);
+}
+
+.tab:hover {
+  background-color: var(--primary-l1);
+  color: var(--dark);
+}
+
+.tab:focus {
+  background-color: var(--primary-l1);
+  color: var(--dark);
+  outline: none;
+}
+
 .tab + .tab {
   border-left: solid thin var(--secondary-d2);
+}
+
+.tabIcon {
+  font-size: 22px;
 }
 
 .content {

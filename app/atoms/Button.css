@@ -14,7 +14,7 @@
 }
 
 .button:hover {
-  background-color: var(--primary-l2);
+  background-color: var(--primary-l1);
 }
 
 .button:disabled {

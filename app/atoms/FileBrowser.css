@@ -15,30 +15,37 @@
 .breadcrumbList {
   list-style: none;
   background-color: var(--dark-l1);
-  padding: calc(var(--spacing-unit) * 2);
-  display: flex;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-  overflow: hidden;
+  padding: calc(var(--spacing-unit) * 1.25) calc(var(--spacing-unit) * 2);
   width: 100%;
   box-sizing: border-box;
   font-size: 0.875rem;
   margin: 0;
+
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
   flex-shrink: 0;
+  align-items: center;
 }
 
-.breadcrumbItemContent {
+.breadcrumbSeparator {
+  display: block;
+  flex-shrink: 0;
+  padding: 0 calc(var(--spacing-unit) * 0.5);
+}
+
+.breadcrumbItem {
+  flex-shrink: 1;
+  min-width: 1ch;
+  display: block;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   background-color: var(--dark);
   color: var(--secondary-l1);
-  display: inline-block;
+  border-radius: calc(var(--spacing-unit) + 1em);
   padding: calc(var(--spacing-unit) * 0.5) calc(var(--spacing-unit) * 1.5);
-  border-radius: calc(1em + var(--spacing-unit) * 2);
-}
-
-.breadcrumbItem + .breadcrumbItem::before {
-  content: '/';
-  display: inline-block;
-  padding: 0 var(--spacing-unit);
 }
 
 .buttonList {
@@ -71,16 +78,19 @@
 }
 
 .buttonListButton:hover {
-  background-color: var(--dark-l2);
+  background-color: var(--primary-l1);
+  color: var(--dark);
 }
 
 .buttonListButton:focus {
-  background-color: var(--dark-l2);
+  background-color: var(--primary-l1);
+  color: var(--dark);
   outline: none;
 }
 
 .buttonListButton:active {
-  background-color: var(--dark-l1);
+  background-color: var(--primary-d1);
+  color: var(--dark);
 }
 
 .buttonListButton:disabled {
