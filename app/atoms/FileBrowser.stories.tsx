@@ -26,26 +26,8 @@ export const Default = () => {
         {
           itemId: 'gato',
           label: 'Gato',
-          disabled: false,
-          Icon: FaCat,
-        },
-        {
-          itemId: 'cabra',
-          label: 'Cabra',
           disabled: true,
-          Icon: GiGoat,
-        },
-        {
-          itemId: 'queso',
-          label: 'Queso',
-          disabled: false,
-          Icon: GiCheeseWedge,
-        },
-        {
-          itemId: 'pizza',
-          label: 'Pizza',
-          disabled: false,
-          Icon: FaPizzaSlice,
+          Icon: FaCat,
         },
       ]}
       path={[]}
