@@ -114,8 +114,14 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
     };
 
     handleScroll();
+
     container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [wrapperElement, gridContext, itemCount]);
 
   return (
