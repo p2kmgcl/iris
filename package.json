@@ -1,6 +1,6 @@
 {
   "name": "iris",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": true,
   "scripts": {
     "analyze-bundle": "NODE_ENV=production webpack --profile --json --config webpack.config.ts > build/bundle-profile.json && webpack-bundle-analyzer build/bundle-profile.json build/app",
