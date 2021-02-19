@@ -1,5 +1,6 @@
 import Database from './Database';
 import { Photo } from '../../types/Schema';
+import Graph from './Graph';
 
 const CHUNK_SIZE = 30;
 
@@ -16,7 +17,7 @@ const cache: {
 };
 
 const PhotoLoader = {
-  getThumbnailURLFromIndex: async (
+  getLoadedPhotoFromIndex: async (
     index: number,
     albumId: string | null = null,
   ) => {
@@ -52,6 +53,15 @@ const PhotoLoader = {
       );
 
     return cache.chunks[chunkIndex].then((chunk) => chunk[photoIndex]);
+  },
+
+  getDownloadURLFromItemId: async (itemId: string) => {
+    return Graph.getItem(itemId).then(
+      (item) =>
+        (item as { '@microsoft.graph.downloadUrl'?: string })[
+          '@microsoft.graph.downloadUrl'
+        ] || '',
+    );
   },
 };
 

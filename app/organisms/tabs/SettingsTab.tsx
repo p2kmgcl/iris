@@ -7,7 +7,6 @@ import {
   useScanStatus,
   useToggleScan,
 } from '../../contexts/ScanContext';
-import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 import Spinner from '../../atoms/Spinner';
 import {
   AiOutlineInfo,
@@ -29,20 +28,6 @@ const SettingsTab: FC = () => {
           <span>Find new photos</span>
           <span>{scanStatus.description}</span>
 
-          {scanStatus.relatedPhoto ? (
-            <span style={{ marginRight: '1ch' }}>
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                }}
-              >
-                <PhotoThumbnail photo={scanStatus.relatedPhoto} size={42} />
-              </div>
-            </span>
-          ) : null}
           <label>
             toggle
             <input

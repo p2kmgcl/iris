@@ -5,10 +5,10 @@ import { MdLocalMovies } from 'react-icons/all';
 import { Album } from '../../types/Schema';
 import PhotoModal from '../organisms/modals/PhotoModal';
 
-const PhotoThumbnail: FC<{ photo: LoadedPhoto; album?: Album | null }> = ({
-  photo,
-  album = null,
-}) => {
+const PhotoThumbnail: FC<{
+  photo: LoadedPhoto;
+  album: Album | null;
+}> = ({ photo, album }) => {
   const [openModal, setOpenModal] = useState(false);
 
   return (

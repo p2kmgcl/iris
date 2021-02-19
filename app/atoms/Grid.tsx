@@ -93,7 +93,8 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
           }
 
           nextRenderGrid.push({
-            key: `${itemCount}-${i}-${j}`,
+            // TODO Use itemId to preserve keys on resize
+            key: `${gridContext.columnCount}-${gridContext.rowCount}-${i}-${j}`,
             className: styles.cell,
             style: {
               top: i * gridContext.itemSize,

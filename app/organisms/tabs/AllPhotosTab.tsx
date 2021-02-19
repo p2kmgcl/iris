@@ -17,12 +17,12 @@ const AllPhotosTab: FC = () => {
 
   const Photo = useCallback(function PhotoCallback({ index }: ItemProps) {
     const photo = useAsyncMemo(
-      () => PhotoLoader.getThumbnailURLFromIndex(index),
+      () => PhotoLoader.getLoadedPhotoFromIndex(index),
       [index],
       null,
     );
 
-    return photo ? <PhotoThumbnail photo={photo} /> : null;
+    return photo ? <PhotoThumbnail photo={photo} album={null} /> : null;
   }, []);
 
   return <Grid itemCount={photoCount} Item={Photo} />;

@@ -20,7 +20,7 @@ const AlbumModal: FC<{
   const Photo = useCallback(
     function PhotoCallback({ index }: ItemProps) {
       const photo = useAsyncMemo(
-        () => PhotoLoader.getThumbnailURLFromIndex(index, album.itemId),
+        () => PhotoLoader.getLoadedPhotoFromIndex(index, album.itemId),
         [index, album.itemId],
         null,
       );
