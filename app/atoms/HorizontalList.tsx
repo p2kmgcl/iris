@@ -148,14 +148,26 @@ const HorizontalList: FC<{
       }
     };
 
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.code === 'ArrowLeft') {
+        scrollLeft -= itemWidth;
+        wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+      } else if (event.code === 'ArrowRight') {
+        scrollLeft += itemWidth;
+        wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+      }
+    };
+
     wrapper.addEventListener('touchstart', handleTouchStart);
     wrapper.addEventListener('touchmove', handleTouchMove);
     wrapper.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('keyup', handleKeyUp);
 
     return () => {
       wrapper.removeEventListener('touchstart', handleTouchStart);
       wrapper.removeEventListener('touchmove', handleTouchMove);
       wrapper.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('keyup', handleKeyUp);
     };
   }, [wrapper, listContext, initialIndex]);
 
