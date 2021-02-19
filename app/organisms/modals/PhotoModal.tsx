@@ -1,29 +1,45 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import Modal from '../../atoms/Modal';
 import PhotoLoader, { LoadedPhoto } from '../../utils/PhotoLoader';
 import { Album } from '../../../types/Schema';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import styles from './PhotoModal.css';
+import HorizontalList from '../../atoms/HorizontalList';
+import Database from '../../utils/Database';
 
 const PhotoModal: FC<{
-  photo: LoadedPhoto;
+  index: number;
   onCloseButtonClick: () => void;
   album: Album | null;
-}> = ({ photo, onCloseButtonClick }) => {
-  const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
+}> = ({ album, index, onCloseButtonClick }) => {
+  const photoCount = useAsyncMemo<number>(
+    () => Database.selectPhotoCount(album?.itemId),
+    [album?.itemId],
+    0,
+  );
 
-  const wrapperSize = useMemo(() => {
-    if (!wrapper) return { width: 0, height: 0 };
-    return wrapper.getBoundingClientRect();
-  }, [wrapper]);
+  const PhotoCallback = useCallback(
+    ({ index, itemHeight, itemWidth }) => {
+      const photo = useAsyncMemo(
+        () => PhotoLoader.getLoadedPhotoFromIndex(index, album?.itemId),
+        [index, album?.itemId],
+        null,
+      );
+
+      return photo ? (
+        <PhotoSlide photo={photo} maxWidth={itemWidth} maxHeight={itemHeight} />
+      ) : null;
+    },
+    [album],
+  );
 
   return (
     <Modal background="black" onCloseButtonClick={onCloseButtonClick}>
-      <div className={styles.wrapper} ref={setWrapper}>
-        <PhotoSlide
-          photo={photo}
-          maxWidth={wrapperSize.width}
-          maxHeight={wrapperSize.height}
+      <div className={styles.wrapper}>
+        <HorizontalList
+          initialIndex={index}
+          itemCount={photoCount}
+          Item={PhotoCallback}
         />
       </div>
     </Modal>
@@ -61,18 +77,22 @@ const PhotoSlide: FC<{
     return [width, height];
   }, [maxWidth, maxHeight]);
 
-  return photo.isVideo ? (
-    <video
-      src={url}
-      controls
-      autoPlay
-      loop
-      poster={photo.thumbnailURL}
-      width={width}
-      height={height}
-    />
-  ) : (
-    <img src={url || photo.thumbnailURL} width={width} height={height} />
+  return (
+    <div className={styles.photoSlide}>
+      {photo.isVideo ? (
+        <video
+          src={url}
+          controls
+          autoPlay
+          loop
+          poster={photo.thumbnailURL}
+          width={width}
+          height={height}
+        />
+      ) : (
+        <img src={url || photo.thumbnailURL} width={width} height={height} />
+      )}
+    </div>
   );
 };
 

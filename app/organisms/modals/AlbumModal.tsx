@@ -25,7 +25,9 @@ const AlbumModal: FC<{
         null,
       );
 
-      return photo ? <PhotoThumbnail photo={photo} album={album} /> : null;
+      return photo ? (
+        <PhotoThumbnail index={index} photo={photo} album={album} />
+      ) : null;
     },
     [album.itemId],
   );

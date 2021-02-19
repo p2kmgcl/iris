@@ -7,15 +7,16 @@ import PhotoModal from '../organisms/modals/PhotoModal';
 
 const PhotoThumbnail: FC<{
   photo: LoadedPhoto;
+  index: number;
   album: Album | null;
-}> = ({ photo, album }) => {
+}> = ({ photo, index, album }) => {
   const [openModal, setOpenModal] = useState(false);
 
   return (
     <>
       {openModal ? (
         <PhotoModal
-          photo={photo}
+          index={index}
           album={album}
           onCloseButtonClick={() => setOpenModal(false)}
         />

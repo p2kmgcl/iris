@@ -5,3 +5,9 @@
   align-items: center;
   justify-content: center;
 }
+
+.photoSlide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
