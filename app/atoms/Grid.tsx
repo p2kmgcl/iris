@@ -79,13 +79,19 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
       const from = Math.max(-top - overScan, 0);
       const to = from + window.innerHeight + overScan;
 
-      const fromIndex = Math.floor(from / gridContext.itemSize);
-      const toIndex = Math.ceil(to / gridContext.itemSize);
+      const fromRowIndex = Math.floor(from / gridContext.itemSize);
+      const toRowIndex = Math.ceil(to / gridContext.itemSize);
 
       const nextRenderGrid = [];
 
-      for (let i = fromIndex; i <= toIndex; i++) {
+      for (let i = fromRowIndex; i <= toRowIndex; i++) {
         for (let j = 0; j < gridContext.columnCount; j++) {
+          const index = i * gridContext.columnCount + j;
+
+          if (index >= itemCount) {
+            break;
+          }
+
           nextRenderGrid.push({
             key: `${itemCount}-${i}-${j}`,
             className: styles.cell,
@@ -96,7 +102,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
               height: gridContext.itemSize,
             },
             itemProps: {
-              index: i * gridContext.columnCount + j,
+              index,
               itemSize: gridContext.itemSize,
             },
           });
