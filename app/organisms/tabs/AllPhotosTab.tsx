@@ -4,6 +4,7 @@ import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import PhotoLoader from '../../utils/PhotoLoader';
 import { useScanStatus } from '../../contexts/ScanContext';
+import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 
 const AllPhotosTab: FC = () => {
   const scanTrigger = useScanStatus();
@@ -14,24 +15,14 @@ const AllPhotosTab: FC = () => {
     0,
   );
 
-  const Photo = useCallback(({ index }: ItemProps) => {
+  const Photo = useCallback(function PhotoCallback({ index }: ItemProps) {
     const photo = useAsyncMemo(
-      () => PhotoLoader.fromIndex(index),
+      () => PhotoLoader.getThumbnailURLFromIndex(index),
       [index],
       null,
     );
 
-    return photo ? (
-      <div
-        style={{
-          backgroundImage: `url(${photo.thumbnailURL})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          width: '100%',
-          height: '100%',
-        }}
-      />
-    ) : null;
+    return photo ? <PhotoThumbnail photo={photo} /> : null;
   }, []);
 
   return <Grid itemCount={photoCount} Item={Photo} />;

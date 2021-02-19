@@ -1,45 +1,17 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Photo } from '../../types/Schema';
+import React, { FC } from 'react';
+import { LoadedPhoto } from '../utils/PhotoLoader';
 
-const thumbnailURLMap: Map<string, string> = new Map();
-
-const PhotoThumbnail: FC<{ photo: Photo; size: number | string }> = ({
-  photo,
-  size,
-}) => {
-  const [url, setURL] = useState(() => thumbnailURLMap.get(photo.itemId));
-
-  useEffect(() => {
-    let thumbnailURL = thumbnailURLMap.get(photo.itemId);
-
-    if (thumbnailURL) {
-      setURL(thumbnailURL);
-      return;
-    }
-
-    thumbnailURL = URL.createObjectURL(
-      new File([photo.thumbnail.arrayBuffer], photo.itemId, {
-        type: photo.thumbnail.contentType,
-      }),
-    );
-
-    thumbnailURLMap.set(photo.itemId, thumbnailURL);
-    setURL(thumbnailURL);
-  }, [photo]);
-
-  return (
-    <div
-      role="img"
-      style={{
-        width: size,
-        height: size,
-        backgroundPosition: 'center center',
-        backgroundSize: 'cover',
-        backgroundImage: url ? `url(${url})` : 'none',
-        backgroundColor: `var(--dark-l1)`,
-      }}
-    />
-  );
-};
+const PhotoThumbnail: FC<{ photo: LoadedPhoto }> = ({ photo }) => (
+  <div
+    role="img"
+    style={{
+      backgroundImage: `url(${photo.thumbnailURL})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center center',
+      width: '100%',
+      height: '100%',
+    }}
+  />
+);
 
 export default PhotoThumbnail;

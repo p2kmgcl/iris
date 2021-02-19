@@ -5,6 +5,7 @@ import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import Grid, { ItemProps } from '../../atoms/Grid';
 import PhotoLoader from '../../utils/PhotoLoader';
+import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 
 const AlbumModal: FC<{
   album: Album;
@@ -17,24 +18,14 @@ const AlbumModal: FC<{
   );
 
   const Photo = useCallback(
-    ({ index }: ItemProps) => {
+    function PhotoCallback({ index }: ItemProps) {
       const photo = useAsyncMemo(
-        () => PhotoLoader.fromIndex(index, album.itemId),
+        () => PhotoLoader.getThumbnailURLFromIndex(index, album.itemId),
         [index, album.itemId],
         null,
       );
 
-      return photo ? (
-        <div
-          style={{
-            backgroundImage: `url(${photo.thumbnailURL})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            width: '100%',
-            height: '100%',
-          }}
-        />
-      ) : null;
+      return photo ? <PhotoThumbnail photo={photo} /> : null;
     },
     [album.itemId],
   );

@@ -1,17 +1,25 @@
 import Database from './Database';
+import { Photo } from '../../types/Schema';
 
 const CHUNK_SIZE = 30;
 
+export interface LoadedPhoto extends Photo {
+  thumbnailURL: string;
+}
+
 const cache: {
   albumId: string | null;
-  chunks: Array<Promise<Array<{ itemId: string; thumbnailURL: string }>>>;
+  chunks: Promise<LoadedPhoto[]>[];
 } = {
   albumId: null,
   chunks: [],
 };
 
 const PhotoLoader = {
-  fromIndex: async (index: number, albumId: string | null = null) => {
+  getThumbnailURLFromIndex: async (
+    index: number,
+    albumId: string | null = null,
+  ) => {
     if (cache.albumId !== albumId) {
       cache.albumId = albumId;
 
@@ -33,15 +41,14 @@ const PhotoLoader = {
       cache.chunks[chunkIndex] ||
       Database.selectPhotosFromIndex(index, index + CHUNK_SIZE, albumId).then(
         (photos) =>
-          photos.map((photo) => {
-            const thumbnailURL = URL.createObjectURL(
+          photos.map((photo) => ({
+            ...photo,
+            thumbnailURL: URL.createObjectURL(
               new File([photo.thumbnail.arrayBuffer], photo.itemId, {
                 type: photo.thumbnail.contentType,
               }),
-            );
-
-            return { itemId: photo.itemId, thumbnailURL };
-          }),
+            ),
+          })),
       );
 
     return cache.chunks[chunkIndex].then((chunk) => chunk[photoIndex]);
