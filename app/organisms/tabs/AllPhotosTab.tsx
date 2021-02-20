@@ -3,15 +3,12 @@ import Grid, { ItemProps } from '../../atoms/Grid';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import PhotoLoader from '../../utils/PhotoLoader';
-import { useScanStatus } from '../../contexts/ScanContext';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 
 const AllPhotosTab: FC = () => {
-  const scanTrigger = useScanStatus();
-
   const photoCount = useAsyncMemo<number>(
     () => Database.selectPhotoCount(),
-    [scanTrigger],
+    [],
     0,
   );
 
