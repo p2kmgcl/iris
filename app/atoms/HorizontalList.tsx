@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import styles from './HorizontalList.css';
 
 export interface ItemProps {
@@ -8,32 +8,71 @@ export interface ItemProps {
   itemWidth: number;
 }
 
+interface ListContext {
+  itemWidth: number;
+  itemHeight: number;
+  listStyle: CSSProperties;
+}
+
+interface RenderListItem {
+  key: string;
+  className: string;
+  style: CSSProperties;
+  itemProps: ItemProps;
+}
+
 const HorizontalList: FC<{
   initialIndex?: number;
   itemCount: number;
   Item: FC<ItemProps>;
 }> = ({ initialIndex = 0, itemCount, Item }) => {
+  const [index, setIndex] = useState(initialIndex);
   const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
-  const [list, setList] = useState<HTMLDivElement | null>(null);
 
-  const [listContext, setListContext] = useState<{
-    itemWidth: number;
-    itemHeight: number;
-    listStyle: CSSProperties;
-  }>(() => ({
+  const [
+    { itemWidth, itemHeight, listStyle },
+    setListContext,
+  ] = useState<ListContext>(() => ({
     itemWidth: 0,
     itemHeight: 0,
     listStyle: {},
   }));
 
-  const [renderList, setRenderList] = useState<
-    Array<{
-      key: string;
-      className: string;
-      style: CSSProperties;
-      itemProps: ItemProps;
-    }>
-  >(() => []);
+  const listItems = useMemo<RenderListItem[]>(() => {
+    if (!itemWidth) {
+      return [];
+    }
+
+    const overScan = itemWidth;
+    const from = Math.max(index * itemWidth - overScan, 0);
+    const to = from + itemWidth + overScan;
+
+    const fromIndex = Math.floor(from / itemWidth);
+    const toIndex = Math.min(Math.ceil(to / itemWidth), itemCount);
+
+    const nextListItems = [];
+
+    for (let i = fromIndex; i <= toIndex; i++) {
+      nextListItems.push({
+        key: `${itemCount}-${i}`,
+        className: styles.cell,
+        style: {
+          top: 0,
+          left: i * itemWidth,
+          height: itemHeight,
+          width: itemWidth,
+        },
+        itemProps: {
+          index: i,
+          isVisible: i === index,
+          itemWidth: itemWidth,
+          itemHeight: itemHeight,
+        },
+      });
+    }
+
+    return nextListItems;
+  }, [index, itemWidth, itemHeight, itemCount]);
 
   useEffect(() => {
     if (!wrapper || !itemCount) {
@@ -51,140 +90,47 @@ const HorizontalList: FC<{
         itemHeight: wrapperHeight,
         listStyle: { width: wrapperWidth * itemCount },
       });
-
-      requestAnimationFrame(() => {
-        wrapper.scrollTo({ left: wrapperWidth * initialIndex });
-      });
     };
 
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [wrapper, itemCount, initialIndex]);
+  }, [wrapper, itemCount]);
 
   useEffect(() => {
-    if (!wrapper || !list) {
+    if (!wrapper || !itemWidth) {
       return;
     }
+
+    wrapper.scrollTo({ left: index * itemWidth, behavior: 'auto' });
+  }, [wrapper, index, itemWidth]);
+
+  useEffect(() => {
+    if (!wrapper) {
+      return;
+    }
+
+    const scrollLeft = index * itemWidth;
 
     const handleScroll = () => {
-      const left = wrapper.scrollLeft;
-      const overScan = listContext.itemWidth;
-      const from = Math.max(left - overScan, 0);
-      const to = from + listContext.itemWidth + overScan;
+      const delta = (wrapper.scrollLeft - scrollLeft) / itemWidth;
 
-      const fromIndex = Math.floor(from / listContext.itemWidth);
-      const toIndex = Math.min(
-        Math.ceil(to / listContext.itemWidth),
-        itemCount,
-      );
-
-      const nextRenderList = [];
-
-      for (let i = fromIndex; i <= toIndex; i++) {
-        nextRenderList.push({
-          key: `${itemCount}-${i}`,
-          className: styles.cell,
-          style: {
-            top: 0,
-            left: i * listContext.itemWidth,
-            height: listContext.itemHeight,
-            width: listContext.itemWidth,
-          },
-          itemProps: {
-            index: i,
-            isVisible: left === i * listContext.itemWidth,
-            itemWidth: listContext.itemWidth,
-            itemHeight: listContext.itemHeight,
-          },
-        });
+      if (delta >= 1) {
+        setIndex((index) => clamp(index + 1, 0, itemCount - 1));
+      } else if (delta <= -1) {
+        setIndex((index) => clamp(index - 1, 0, itemCount - 1));
       }
-
-      setRenderList(nextRenderList);
     };
 
-    handleScroll();
     wrapper.addEventListener('scroll', handleScroll);
     return () => wrapper.removeEventListener('scroll', handleScroll);
-  }, [wrapper, list, listContext, itemCount]);
-
-  useEffect(() => {
-    if (!wrapper || !listContext.itemWidth) {
-      return;
-    }
-
-    const { itemWidth } = listContext;
-    const minScrollLeft = 0;
-    const maxScrollLeft = (itemCount - 1) * itemWidth;
-
-    let scrollLeft = minScrollLeft;
-    let touchStartX: number | null = null;
-    let delta: number | null = null;
-
-    requestAnimationFrame(() => {
-      scrollLeft = wrapper.scrollLeft;
-    });
-
-    const handleTouchStart = (event: TouchEvent) => {
-      if (event.touches.length === 1) {
-        touchStartX = event.touches[0].clientX;
-      }
-    };
-
-    const handleTouchMove = (event: TouchEvent) => {
-      if (touchStartX !== null && event.touches.length === 1) {
-        delta = touchStartX - event.touches[0].clientX;
-        wrapper.scrollLeft = scrollLeft + delta;
-      }
-    };
-
-    const handleTouchEnd = () => {
-      if (delta !== null) {
-        if (delta < -itemWidth * 0.25) {
-          scrollLeft = Math.max(scrollLeft - itemWidth, minScrollLeft);
-        } else if (delta > itemWidth * 0.25) {
-          scrollLeft = Math.min(scrollLeft + itemWidth, maxScrollLeft);
-        }
-
-        wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-
-        delta = null;
-        touchStartX = null;
-      }
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.code === 'ArrowLeft') {
-        scrollLeft = Math.max(scrollLeft - itemWidth, minScrollLeft);
-        wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-      } else if (event.code === 'ArrowRight') {
-        scrollLeft = Math.min(scrollLeft + itemWidth, maxScrollLeft);
-        wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-      }
-    };
-
-    wrapper.addEventListener('touchstart', handleTouchStart);
-    wrapper.addEventListener('touchmove', handleTouchMove);
-    wrapper.addEventListener('touchend', handleTouchEnd);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      wrapper.removeEventListener('touchstart', handleTouchStart);
-      wrapper.removeEventListener('touchmove', handleTouchMove);
-      wrapper.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [wrapper, listContext, initialIndex, itemCount]);
+  }, [wrapper, itemWidth, index, itemCount]);
 
   return (
     <div ref={setWrapper} className={styles.wrapper}>
-      {itemCount && listContext.itemWidth ? (
-        <div
-          ref={setList}
-          className={styles.list}
-          style={listContext.listStyle}
-        >
-          {renderList.map((cell) => (
+      {itemCount && itemWidth ? (
+        <div className={styles.list} style={listStyle}>
+          {listItems.map((cell) => (
             <div key={cell.key} className={cell.className} style={cell.style}>
               <div className={styles.cellContent}>
                 <Item {...cell.itemProps} />
@@ -196,5 +142,15 @@ const HorizontalList: FC<{
     </div>
   );
 };
+
+function clamp(value: number, min: number, max: number) {
+  if (value < min) {
+    return min;
+  } else if (value > max) {
+    return max;
+  } else {
+    return value;
+  }
+}
 
 export default HorizontalList;

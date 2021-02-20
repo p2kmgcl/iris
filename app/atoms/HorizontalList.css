@@ -2,6 +2,8 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
 }
 
 .list {
@@ -11,6 +13,8 @@
 
 .cell {
   position: absolute;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .cellContent {
