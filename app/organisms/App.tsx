@@ -1,7 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useToggleScan } from '../contexts/ScanContext';
 import BottomTabs from '../atoms/BottomTabs';
 import { MdPhoto, MdPhotoAlbum, MdSettings } from 'react-icons/md';
+import AlbumModal from './modals/AlbumModal';
+import PhotoModal from './modals/PhotoModal';
+import { useRouteKey, useSetRouteKey } from '../contexts/RouteContext';
 
 const DEFAULT_TAB_ID = 'allPhotos';
 
@@ -35,7 +38,12 @@ const TABS: Record<
 };
 
 export default function App() {
-  const [tabId, setTabId] = useState<keyof typeof TABS>(DEFAULT_TAB_ID);
+  const tabId = useRouteKey('tab');
+  const setTabId = useSetRouteKey('tab');
+  const albumId = useRouteKey('album');
+  const setAlbumId = useSetRouteKey('album');
+  const photoIndex = useRouteKey('photo');
+  const setPhotoIndex = useSetRouteKey('photo');
   const toggleScan = useToggleScan();
 
   useEffect(() => {
@@ -43,10 +51,29 @@ export default function App() {
   }, [toggleScan]);
 
   return (
-    <BottomTabs
-      selectedTabId={tabId}
-      onTabClick={setTabId}
-      tabs={Object.values(TABS)}
-    />
+    <>
+      <BottomTabs
+        selectedTabId={tabId || DEFAULT_TAB_ID}
+        onTabClick={(nextTabId) => {
+          setTabId(nextTabId);
+        }}
+        tabs={Object.values(TABS)}
+      />
+
+      {albumId ? (
+        <AlbumModal
+          albumId={albumId}
+          onCloseButtonClick={() => setAlbumId('')}
+        />
+      ) : null}
+
+      {photoIndex ? (
+        <PhotoModal
+          index={Number(photoIndex)}
+          albumId={albumId || null}
+          onCloseButtonClick={() => setPhotoIndex('')}
+        />
+      ) : null}
+    </>
   );
 }

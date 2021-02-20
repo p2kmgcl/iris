@@ -1,29 +1,31 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../../atoms/Modal';
 import PhotoLoader, { LoadedPhoto } from '../../utils/PhotoLoader';
-import { Album } from '../../../types/Schema';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import styles from './PhotoModal.css';
 import HorizontalList from '../../atoms/HorizontalList';
 import Database from '../../utils/Database';
 import LoadingMask from '../../atoms/LoadingMask';
+import { useSetRouteKey } from '../../contexts/RouteContext';
 
 const PhotoModal: FC<{
   index: number;
+  albumId: string | null;
   onCloseButtonClick: () => void;
-  album: Album | null;
-}> = ({ album, index, onCloseButtonClick }) => {
+}> = ({ index, albumId = null, onCloseButtonClick }) => {
+  const setIndex = useSetRouteKey('photo');
+
   const photoCount = useAsyncMemo<number>(
-    () => Database.selectPhotoCount(album?.itemId),
-    [album?.itemId],
+    () => Database.selectPhotoCount(albumId),
+    [albumId],
     0,
   );
 
   const PhotoCallback = useCallback(
     ({ index, itemHeight, itemWidth, isVisible }) => {
       const photo = useAsyncMemo(
-        () => PhotoLoader.getLoadedPhotoFromIndex(index, album?.itemId),
-        [index, album?.itemId],
+        () => PhotoLoader.getLoadedPhotoFromIndex(index, albumId),
+        [index, albumId],
         null,
       );
 
@@ -36,15 +38,20 @@ const PhotoModal: FC<{
         />
       ) : null;
     },
-    [album],
+    [albumId],
   );
 
   return (
-    <Modal background="black" onCloseButtonClick={onCloseButtonClick}>
+    <Modal
+      priority={2}
+      background="black"
+      onCloseButtonClick={onCloseButtonClick}
+    >
       <HorizontalList
-        initialIndex={index}
         itemCount={photoCount}
         Item={PhotoCallback}
+        index={index}
+        onIndexChange={(nextIndex) => setIndex(nextIndex.toString())}
       />
     </Modal>
   );

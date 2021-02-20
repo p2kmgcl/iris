@@ -1,41 +1,32 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { LoadedPhoto } from '../utils/PhotoLoader';
 import styles from './PhotoThumbnail.css';
 import { MdLocalMovies } from 'react-icons/all';
-import { Album } from '../../types/Schema';
-import PhotoModal from '../organisms/modals/PhotoModal';
+import { useSetRouteKey } from '../contexts/RouteContext';
 
 const PhotoThumbnail: FC<{
   photo: LoadedPhoto;
   index: number;
-  album: Album | null;
-}> = ({ photo, index, album }) => {
-  const [openModal, setOpenModal] = useState(false);
+}> = ({ photo, index }) => {
+  const setPhotoIndex = useSetRouteKey('photo');
 
   return (
-    <>
-      {openModal ? (
-        <PhotoModal
-          index={index}
-          album={album}
-          onCloseButtonClick={() => setOpenModal(false)}
-        />
+    <button
+      className={styles.button}
+      onClick={() => setPhotoIndex(index.toString())}
+    >
+      <div
+        role="img"
+        className={styles.thumbnail}
+        style={{ backgroundImage: `url(${photo.thumbnailURL})` }}
+      />
+
+      {photo.isVideo ? (
+        <div className={styles.icon}>
+          <MdLocalMovies />
+        </div>
       ) : null}
-
-      <button className={styles.button} onClick={() => setOpenModal(true)}>
-        <div
-          role="img"
-          className={styles.thumbnail}
-          style={{ backgroundImage: `url(${photo.thumbnailURL})` }}
-        />
-
-        {photo.isVideo ? (
-          <div className={styles.icon}>
-            <MdLocalMovies />
-          </div>
-        ) : null}
-      </button>
-    </>
+    </button>
   );
 };
 

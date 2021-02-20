@@ -4,9 +4,10 @@ import styles from './Modal.css';
 import { MdClose } from 'react-icons/all';
 
 const Modal: FC<{
+  priority: number;
   background?: 'default' | 'black';
   onCloseButtonClick: () => void;
-}> = ({ background = 'default', children, onCloseButtonClick }) => {
+}> = ({ priority, background = 'default', children, onCloseButtonClick }) => {
   return createPortal(
     <div
       className={styles.modal}
@@ -14,6 +15,7 @@ const Modal: FC<{
         {
           '--background-color':
             background === 'default' ? 'var(--dark)' : 'var(--black)',
+          zIndex: priority,
         } as CSSProperties
       }
     >

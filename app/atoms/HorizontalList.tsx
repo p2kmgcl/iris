@@ -22,11 +22,11 @@ interface RenderListItem {
 }
 
 const HorizontalList: FC<{
-  initialIndex?: number;
+  index: number;
   itemCount: number;
   Item: FC<ItemProps>;
-}> = ({ initialIndex = 0, itemCount, Item }) => {
-  const [index, setIndex] = useState(initialIndex);
+  onIndexChange: (index: number) => void;
+}> = ({ index, itemCount, Item, onIndexChange }) => {
   const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
 
   const [
@@ -116,9 +116,9 @@ const HorizontalList: FC<{
       const delta = (wrapper.scrollLeft - scrollLeft) / itemWidth;
 
       if (delta >= 1) {
-        setIndex((index) => clamp(index + 1, 0, itemCount - 1));
+        onIndexChange(clamp(index + 1, 0, itemCount - 1));
       } else if (delta <= -1) {
-        setIndex((index) => clamp(index - 1, 0, itemCount - 1));
+        onIndexChange(clamp(index - 1, 0, itemCount - 1));
       }
     };
 

@@ -157,6 +157,14 @@ const Database = {
       .getAll();
   },
 
+  selectAlbum: async (itemId: string): Promise<Album | null> => {
+    return database
+      .transaction('albums', 'readonly')
+      .objectStore('albums')
+      .get(itemId)
+      .then((album) => album || null);
+  },
+
   selectPhoto: async (itemId: string): Promise<Photo | null> => {
     return database
       .transaction('photos', 'readonly')

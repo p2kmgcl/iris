@@ -1,5 +1,4 @@
 import React, { FC, useCallback } from 'react';
-import { Album } from '../../../types/Schema';
 import Modal from '../../atoms/Modal';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
@@ -8,32 +7,40 @@ import PhotoLoader from '../../utils/PhotoLoader';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 
 const AlbumModal: FC<{
-  album: Album;
+  albumId: string;
   onCloseButtonClick: () => void;
-}> = ({ album, onCloseButtonClick }) => {
+}> = ({ albumId, onCloseButtonClick }) => {
+  const album = useAsyncMemo(
+    () => (albumId ? Database.selectAlbum(albumId) : Promise.resolve(null)),
+    [albumId],
+    null,
+  );
+
   const photoCount = useAsyncMemo<number>(
-    () => Database.selectPhotoCount(album.itemId),
-    [album.itemId],
+    () => Database.selectPhotoCount(albumId),
+    [albumId],
     0,
   );
 
   const Photo = useCallback(
     function PhotoCallback({ index }: ItemProps) {
       const photo = useAsyncMemo(
-        () => PhotoLoader.getLoadedPhotoFromIndex(index, album.itemId),
-        [index, album.itemId],
+        () => PhotoLoader.getLoadedPhotoFromIndex(index, albumId),
+        [index, albumId],
         null,
       );
 
-      return photo ? (
-        <PhotoThumbnail index={index} photo={photo} album={album} />
-      ) : null;
+      return photo ? <PhotoThumbnail index={index} photo={photo} /> : null;
     },
-    [album.itemId],
+    [albumId],
   );
 
+  if (!album) {
+    return null;
+  }
+
   return (
-    <Modal onCloseButtonClick={onCloseButtonClick}>
+    <Modal priority={1} onCloseButtonClick={onCloseButtonClick}>
       <header style={{ padding: '3em 1em 1em 1em' }}>
         {isFinite(album.dateTime) ? (
           <p>{new Date(album.dateTime).toLocaleDateString()}</p>

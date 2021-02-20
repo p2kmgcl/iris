@@ -4,6 +4,7 @@ import { render } from 'react-dom';
 import Database from './utils/Database';
 import ScanContextProvider from './contexts/ScanContext';
 import IconStyleContextProvider from './contexts/IconStyleContext';
+import RouteContextProvider from './contexts/RouteContext';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 
@@ -24,9 +25,11 @@ const LazySetup = React.lazy(() => import('./organisms/Setup'));
   render(
     <IconStyleContextProvider>
       <ScanContextProvider>
-        <Suspense fallback={<></>}>
-          <MainComponent />
-        </Suspense>
+        <RouteContextProvider>
+          <Suspense fallback={<></>}>
+            <MainComponent />
+          </Suspense>
+        </RouteContextProvider>
       </ScanContextProvider>
     </IconStyleContextProvider>,
     appElement,

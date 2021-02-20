@@ -19,9 +19,7 @@ const AllPhotosTab: FC = () => {
       null,
     );
 
-    return photo ? (
-      <PhotoThumbnail index={index} photo={photo} album={null} />
-    ) : null;
+    return photo ? <PhotoThumbnail index={index} photo={photo} /> : null;
   }, []);
 
   return <Grid itemCount={photoCount} Item={Photo} />;
