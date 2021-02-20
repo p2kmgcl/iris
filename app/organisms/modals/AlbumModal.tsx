@@ -34,7 +34,7 @@ const AlbumModal: FC<{
 
   return (
     <Modal onCloseButtonClick={onCloseButtonClick}>
-      <header style={{ padding: '1em' }}>
+      <header style={{ padding: '3em 1em 1em 1em' }}>
         {isFinite(album.dateTime) ? (
           <p>{new Date(album.dateTime).toLocaleDateString()}</p>
         ) : null}

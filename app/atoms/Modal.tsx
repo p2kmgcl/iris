@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { CSSProperties, FC } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Modal.css';
 import { MdClose } from 'react-icons/all';
@@ -6,17 +6,19 @@ import { MdClose } from 'react-icons/all';
 const Modal: FC<{
   background?: 'default' | 'black';
   onCloseButtonClick: () => void;
-}> = ({ background = 'default', children, onCloseButtonClick }) => (
-  <>
-    {createPortal(
-      <div
-        className={styles.modal}
-        style={{
-          backgroundColor:
+}> = ({ background = 'default', children, onCloseButtonClick }) => {
+  return createPortal(
+    <div
+      className={styles.modal}
+      style={
+        {
+          '--background-color':
             background === 'default' ? 'var(--dark)' : 'var(--black)',
-        }}
-      >
-        <div className={styles.header}>
+        } as CSSProperties
+      }
+    >
+      <div className={styles.header}>
+        <div className={styles.headerContent}>
           <button
             className={styles.closeButton}
             type="button"
@@ -28,12 +30,12 @@ const Modal: FC<{
             <span className={styles.closeButtonLabel}>Close</span>
           </button>
         </div>
+      </div>
 
-        <div className={styles.content}>{children}</div>
-      </div>,
-      document.body,
-    )}
-  </>
-);
+      <div className={styles.content}>{children}</div>
+    </div>,
+    document.body,
+  );
+};
 
 export default Modal;
