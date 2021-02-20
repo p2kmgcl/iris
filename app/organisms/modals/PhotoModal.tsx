@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../../atoms/Modal';
 import PhotoLoader, { LoadedPhoto } from '../../utils/PhotoLoader';
 import { Album } from '../../../types/Schema';
@@ -6,6 +6,7 @@ import useAsyncMemo from '../../hooks/useAsyncMemo';
 import styles from './PhotoModal.css';
 import HorizontalList from '../../atoms/HorizontalList';
 import Database from '../../utils/Database';
+import LoadingMask from '../../atoms/LoadingMask';
 
 const PhotoModal: FC<{
   index: number;
@@ -19,7 +20,7 @@ const PhotoModal: FC<{
   );
 
   const PhotoCallback = useCallback(
-    ({ index, itemHeight, itemWidth }) => {
+    ({ index, itemHeight, itemWidth, isVisible }) => {
       const photo = useAsyncMemo(
         () => PhotoLoader.getLoadedPhotoFromIndex(index, album?.itemId),
         [index, album?.itemId],
@@ -27,7 +28,12 @@ const PhotoModal: FC<{
       );
 
       return photo ? (
-        <PhotoSlide photo={photo} maxWidth={itemWidth} maxHeight={itemHeight} />
+        <PhotoSlide
+          photo={photo}
+          maxWidth={itemWidth}
+          maxHeight={itemHeight}
+          isVisible={isVisible}
+        />
       ) : null;
     },
     [album],
@@ -48,7 +54,12 @@ const PhotoSlide: FC<{
   photo: LoadedPhoto;
   maxWidth: number;
   maxHeight: number;
-}> = ({ photo, maxHeight, maxWidth }) => {
+  isVisible: boolean;
+}> = ({ photo, maxHeight, maxWidth, isVisible }) => {
+  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
+    null,
+  );
+
   const url = useAsyncMemo(
     () => PhotoLoader.getDownloadURLFromItemId(photo.itemId),
     [photo.itemId],
@@ -75,21 +86,33 @@ const PhotoSlide: FC<{
     return [width, height];
   }, [maxWidth, maxHeight]);
 
+  useEffect(() => {
+    if (videoElement) {
+      if (isVisible) {
+        videoElement.play();
+      } else {
+        videoElement.pause();
+      }
+    }
+  }, [videoElement, isVisible]);
+
   return (
     <div className={styles.photoSlide}>
-      {photo.isVideo ? (
-        <video
-          src={url}
-          controls
-          autoPlay
-          loop
-          poster={photo.thumbnailURL}
-          width={width}
-          height={height}
-        />
-      ) : (
-        <img src={url || photo.thumbnailURL} width={width} height={height} />
-      )}
+      <LoadingMask loading={!url}>
+        {photo.isVideo ? (
+          <video
+            loop
+            src={url}
+            controls
+            poster={photo.thumbnailURL}
+            width={width}
+            height={height}
+            ref={setVideoElement}
+          />
+        ) : (
+          <img src={url || photo.thumbnailURL} width={width} height={height} />
+        )}
+      </LoadingMask>
     </div>
   );
 };

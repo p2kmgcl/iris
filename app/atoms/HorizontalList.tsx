@@ -3,6 +3,7 @@ import styles from './HorizontalList.css';
 
 export interface ItemProps {
   index: number;
+  isVisible: boolean;
   itemHeight: number;
   itemWidth: number;
 }
@@ -68,7 +69,7 @@ const HorizontalList: FC<{
 
     const handleScroll = () => {
       const left = wrapper.scrollLeft;
-      const overScan = listContext.itemWidth * 2;
+      const overScan = listContext.itemWidth;
       const from = Math.max(left - overScan, 0);
       const to = from + listContext.itemWidth + overScan;
 
@@ -92,6 +93,7 @@ const HorizontalList: FC<{
           },
           itemProps: {
             index: i,
+            isVisible: left === i * listContext.itemWidth,
             itemWidth: listContext.itemWidth,
             itemHeight: listContext.itemHeight,
           },
@@ -112,7 +114,10 @@ const HorizontalList: FC<{
     }
 
     const { itemWidth } = listContext;
-    let scrollLeft = 0;
+    const minScrollLeft = 0;
+    const maxScrollLeft = (itemCount - 1) * itemWidth;
+
+    let scrollLeft = minScrollLeft;
     let touchStartX: number | null = null;
     let delta: number | null = null;
 
@@ -136,9 +141,9 @@ const HorizontalList: FC<{
     const handleTouchEnd = () => {
       if (delta !== null) {
         if (delta < -itemWidth * 0.25) {
-          scrollLeft -= itemWidth;
+          scrollLeft = Math.max(scrollLeft - itemWidth, minScrollLeft);
         } else if (delta > itemWidth * 0.25) {
-          scrollLeft += itemWidth;
+          scrollLeft = Math.min(scrollLeft + itemWidth, maxScrollLeft);
         }
 
         wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' });
@@ -150,10 +155,10 @@ const HorizontalList: FC<{
 
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.code === 'ArrowLeft') {
-        scrollLeft -= itemWidth;
+        scrollLeft = Math.max(scrollLeft - itemWidth, minScrollLeft);
         wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' });
       } else if (event.code === 'ArrowRight') {
-        scrollLeft += itemWidth;
+        scrollLeft = Math.min(scrollLeft + itemWidth, maxScrollLeft);
         wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' });
       }
     };
@@ -169,7 +174,7 @@ const HorizontalList: FC<{
       wrapper.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [wrapper, listContext, initialIndex]);
+  }, [wrapper, listContext, initialIndex, itemCount]);
 
   return (
     <div ref={setWrapper} className={styles.wrapper}>
