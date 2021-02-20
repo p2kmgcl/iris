@@ -89,7 +89,7 @@ const PhotoSlide: FC<{
   useEffect(() => {
     if (videoElement) {
       if (isVisible) {
-        videoElement.play();
+        videoElement.play().catch(() => {});
       } else {
         videoElement.pause();
       }
