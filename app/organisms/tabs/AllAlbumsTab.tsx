@@ -15,15 +15,25 @@ const AllAlbumsTab: FC = () => {
         <AlbumModal album={album} onCloseButtonClick={() => setAlbum(null)} />
       ) : null}
 
-      {albumList.map((album) => (
-        <Button
-          onClick={() => setAlbum(album)}
-          key={album.itemId}
-          type="button"
-        >
-          {album.title}
-        </Button>
-      ))}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}
+      >
+        {albumList.map((album) => (
+          <div style={{ display: 'inline-block', margin: 10 }}>
+            <Button
+              onClick={() => setAlbum(album)}
+              key={album.itemId}
+              type="button"
+            >
+              {album.title}
+            </Button>
+          </div>
+        ))}
+      </div>
     </>
   );
 };
