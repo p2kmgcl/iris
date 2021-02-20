@@ -35,13 +35,11 @@ const PhotoModal: FC<{
 
   return (
     <Modal background="black" onCloseButtonClick={onCloseButtonClick}>
-      <div className={styles.wrapper}>
-        <HorizontalList
-          initialIndex={index}
-          itemCount={photoCount}
-          Item={PhotoCallback}
-        />
-      </div>
+      <HorizontalList
+        initialIndex={index}
+        itemCount={photoCount}
+        Item={PhotoCallback}
+      />
     </Modal>
   );
 };
