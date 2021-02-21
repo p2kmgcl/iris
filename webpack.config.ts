@@ -87,6 +87,26 @@ export const developmentPlugins = [
 export const devtool =
   process.env.NODE_ENV === 'development' ? 'eval-source-map' : false;
 
+const devServer: Record<string, any> = {
+  hot: true,
+  port: 9000,
+  contentBase: path.resolve(__dirname, DESTINATION_DIRECTORY),
+};
+
+if (fs.existsSync(path.resolve(__dirname, CERTIFICATE_DIRECTORY))) {
+  devServer.https = {
+    key: fs.readFileSync(
+      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.key'),
+    ),
+    cert: fs.readFileSync(
+      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.crt'),
+    ),
+    ca: fs.readFileSync(
+      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localca.pem'),
+    ),
+  };
+}
+
 export default {
   entry: {
     app: './app/index.tsx',
@@ -108,25 +128,5 @@ export default {
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
   },
-  ...(process.env.NODE_ENV === 'development'
-    ? {
-        devServer: {
-          hot: true,
-          host: '0.0.0.0',
-          https: {
-            key: fs.readFileSync(
-              path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.key'),
-            ),
-            cert: fs.readFileSync(
-              path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.crt'),
-            ),
-            ca: fs.readFileSync(
-              path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localca.pem'),
-            ),
-          },
-          port: 9000,
-          contentBase: path.resolve(__dirname, DESTINATION_DIRECTORY),
-        },
-      }
-    : {}),
+  ...(process.env.NODE_ENV === 'development' ? { devServer } : {}),
 };

@@ -1,4 +1,11 @@
-import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import React, {
+  CSSProperties,
+  FC,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import styles from './HorizontalList.css';
 
 export interface ItemProps {
@@ -21,6 +28,16 @@ interface RenderListItem {
   itemProps: ItemProps;
 }
 
+function clamp(value: number, min: number, max: number) {
+  if (value < min) {
+    return min;
+  } else if (value > max) {
+    return max;
+  } else {
+    return value;
+  }
+}
+
 const HorizontalList: FC<{
   index: number;
   itemCount: number;
@@ -29,10 +46,9 @@ const HorizontalList: FC<{
 }> = ({ index, itemCount, Item, onIndexChange }) => {
   const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
 
-  const [
-    { itemWidth, itemHeight, listStyle },
-    setListContext,
-  ] = useState<ListContext>(() => ({
+  const [{ itemWidth, itemHeight, listStyle }, setListContext] = useState<
+    ListContext
+  >(() => ({
     itemWidth: 0,
     itemHeight: 0,
     listStyle: {},
@@ -98,33 +114,43 @@ const HorizontalList: FC<{
   }, [wrapper, itemCount]);
 
   useEffect(() => {
-    if (!wrapper || !itemWidth) {
-      return;
-    }
-
-    wrapper.scrollTo({ left: index * itemWidth, behavior: 'auto' });
-  }, [wrapper, index, itemWidth]);
-
-  useEffect(() => {
     if (!wrapper) {
       return;
     }
 
     const scrollLeft = index * itemWidth;
+    let isNaturalScroll = false;
 
     const handleScroll = () => {
+      if (!isNaturalScroll) {
+        isNaturalScroll = true;
+        return;
+      }
+
       const delta = (wrapper.scrollLeft - scrollLeft) / itemWidth;
 
+      let nextIndex = index;
+
       if (delta >= 1) {
-        onIndexChange(clamp(index + 1, 0, itemCount - 1));
+        nextIndex = clamp(index + 1, 0, itemCount - 1);
       } else if (delta <= -1) {
-        onIndexChange(clamp(index - 1, 0, itemCount - 1));
+        nextIndex = clamp(index - 1, 0, itemCount - 1);
+      }
+
+      if (nextIndex !== index) {
+        isNaturalScroll = false;
+        onIndexChange(nextIndex);
       }
     };
 
     wrapper.addEventListener('scroll', handleScroll);
+
     return () => wrapper.removeEventListener('scroll', handleScroll);
-  }, [wrapper, itemWidth, index, itemCount]);
+  }, [wrapper, itemWidth, index, itemCount, onIndexChange]);
+
+  requestAnimationFrame(() => {
+    wrapper?.scrollTo({ left: index * itemWidth, behavior: 'auto' });
+  });
 
   return (
     <div ref={setWrapper} className={styles.wrapper}>
@@ -142,15 +168,5 @@ const HorizontalList: FC<{
     </div>
   );
 };
-
-function clamp(value: number, min: number, max: number) {
-  if (value < min) {
-    return min;
-  } else if (value > max) {
-    return max;
-  } else {
-    return value;
-  }
-}
 
 export default HorizontalList;

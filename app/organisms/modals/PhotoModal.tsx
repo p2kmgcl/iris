@@ -41,6 +41,13 @@ const PhotoModal: FC<{
     [albumId],
   );
 
+  const handleIndexChange = useCallback(
+    (nextIndex: number) => {
+      setIndex(nextIndex.toString());
+    },
+    [setIndex],
+  );
+
   return (
     <Modal
       priority={2}
@@ -51,7 +58,7 @@ const PhotoModal: FC<{
         itemCount={photoCount}
         Item={PhotoCallback}
         index={index}
-        onIndexChange={(nextIndex) => setIndex(nextIndex.toString())}
+        onIndexChange={handleIndexChange}
       />
     </Modal>
   );
@@ -91,7 +98,7 @@ const PhotoSlide: FC<{
     }
 
     return [width, height];
-  }, [maxWidth, maxHeight]);
+  }, [maxWidth, maxHeight, photo.width, photo.height]);
 
   useEffect(() => {
     if (videoElement) {

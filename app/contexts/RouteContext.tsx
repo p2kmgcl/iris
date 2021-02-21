@@ -19,7 +19,7 @@ const RouteContext = createContext<Channel<Record<string, string>>>(
 const RouteContextProvider: FC = ({ children }) => {
   const [initialRoute] = useState(() => {
     const initialRoute: Record<string, string> = {};
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
 
     url.searchParams.forEach((value, key) => {
       initialRoute[key] = value;
@@ -33,7 +33,7 @@ const RouteContextProvider: FC = ({ children }) => {
   useEffect(() => {
     const handlePopState = () => {
       const nextRoute: Record<string, string> = {};
-      const url = new URL(location.href);
+      const url = new URL(window.location.href);
 
       url.searchParams.forEach((value, key) => {
         nextRoute[key] = value;
@@ -55,8 +55,18 @@ const RouteContextProvider: FC = ({ children }) => {
 
 export function useRouteKey(key: string) {
   const routeChannel = useContext(RouteContext);
-  const route = useChannelData(routeChannel);
-  return route[key];
+  const [value, setValue] = useState(() => routeChannel.getLastData()[key]);
+
+  useEffect(() => {
+    const handleChange = (nextRoute: Record<string, string>) => {
+      setValue(nextRoute[key]);
+    };
+
+    routeChannel.addListener(handleChange);
+    return () => routeChannel.removeListener(handleChange);
+  }, [routeChannel, key]);
+
+  return value;
 }
 
 export function useSetRouteKey(key: string) {
@@ -65,7 +75,7 @@ export function useSetRouteKey(key: string) {
   return useCallback(
     (value: string) => {
       const nextRoute = { ...routeChannel.getLastData(), [key]: value };
-      const url = new URL(location.href);
+      const url = new URL(window.location.href);
 
       if (value) {
         url.searchParams.set(key, value);
@@ -73,7 +83,7 @@ export function useSetRouteKey(key: string) {
         url.searchParams.delete(key);
       }
 
-      history.pushState(null, document.title, url.toString());
+      window.history.pushState(null, document.title, url.toString());
       routeChannel.emit(nextRoute);
     },
     [key, routeChannel],

@@ -7,7 +7,7 @@
     "check-format": "prettier --list-different .",
     "format": "prettier --write .",
     "show-changelog": "conventional-changelog -p angular -r 2",
-    "lint": "eslint --max-warnings 0 --fix app/**/*.ts app/**/*.tsx service-worker/**/*.ts",
+    "lint": "eslint --max-warnings 0 --fix app/**/*.ts app/**/*.tsx",
     "build": "NODE_ENV=production webpack --mode production --config webpack.config.ts",
     "start": "NODE_ENV=development webpack serve --mode development --config webpack.config.ts",
     "start:production": "NODE_ENV=production http-server -a 0.0.0.0 --port 9000 --gzip --ssl --cert ./build/development-certificate/localhost.crt --key ./build/development-certificate/localhost.key ./build/app/",

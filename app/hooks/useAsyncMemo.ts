@@ -1,4 +1,4 @@
-import { DependencyList, useEffect, useState } from 'react';
+import { DependencyList, useCallback, useEffect, useState } from 'react';
 
 export default function useAsyncMemo<T>(
   factory: () => Promise<T>,
@@ -8,12 +8,15 @@ export default function useAsyncMemo<T>(
   const [value, setValue] = useState<T>(initial);
   const [error, setError] = useState<Error | null>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const factoryCallback = useCallback(factory, [...dependencies]);
+
   useEffect(() => {
     let stop = false;
 
     setError(null);
 
-    factory()
+    factoryCallback()
       .then((nextValue) => {
         if (!stop) {
           setValue(nextValue);
@@ -28,7 +31,7 @@ export default function useAsyncMemo<T>(
     return () => {
       stop = true;
     };
-  }, dependencies);
+  }, [factoryCallback]);
 
   if (error) {
     throw error;

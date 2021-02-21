@@ -9,6 +9,26 @@ class AbortError extends Error {
   }
 }
 
+function getMetadataFilePhoto(
+  driveItem: DriveItem,
+  driveItemSiblings: DriveItem[],
+) {
+  const photoName = driveItem.name?.replace(/\.xmp$/i, '') ?? '';
+
+  return (
+    (photoName &&
+      photoName !== driveItem.name &&
+      driveItemSiblings.find(
+        (sibling) => sibling.name && sibling.name === photoName,
+      )) ??
+    null
+  );
+}
+
+function driveItemIsPhoto(driveItem: DriveItem) {
+  return !!(driveItem.video?.width || driveItem.image?.width);
+}
+
 const Scanner = {
   scan: async (
     driveItemId: string,
@@ -107,25 +127,5 @@ const Scanner = {
     );
   },
 };
-
-function getMetadataFilePhoto(
-  driveItem: DriveItem,
-  driveItemSiblings: DriveItem[],
-) {
-  const photoName = driveItem.name?.replace(/\.xmp$/i, '') ?? '';
-
-  return (
-    (photoName &&
-      photoName !== driveItem.name &&
-      driveItemSiblings.find(
-        (sibling) => sibling.name && sibling.name === photoName,
-      )) ??
-    null
-  );
-}
-
-function driveItemIsPhoto(driveItem: DriveItem) {
-  return !!(driveItem.video?.width || driveItem.image?.width);
-}
 
 export default Scanner;

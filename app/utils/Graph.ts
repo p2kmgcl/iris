@@ -10,6 +10,22 @@ const client = Client.initWithMiddleware({
   },
 });
 
+async function graphAPI(query: string): Promise<GraphRequest> {
+  tokenRef.current = await Authentication.getFreshAccessToken();
+  return client.api(query);
+}
+
+async function graphGet<T>(query: string): Promise<T> {
+  return (await graphAPI(query)).get().catch(async (error: Error) => {
+    // Expired refresh token error
+    if (error.toString().includes('80049228')) {
+      await Authentication.logout();
+    }
+
+    throw error;
+  });
+}
+
 const Graph = {
   getItem: (itemId: string) => graphGet<DriveItem>(`/me/drive/items/${itemId}`),
 
@@ -23,21 +39,5 @@ const Graph = {
       `/me/drive/items/${itemId}/thumbnails`,
     ).then(({ value }) => value[0]),
 };
-
-async function graphAPI(query: string): Promise<GraphRequest> {
-  tokenRef.current = await Authentication.getFreshAccessToken();
-  return client.api(query);
-}
-
-async function graphGet<T>(query: string): Promise<T> {
-  return (await graphAPI(query)).get().catch(async (error) => {
-    // Expired refresh token error
-    if (error.toString().includes('80049228')) {
-      await Authentication.logout();
-    }
-
-    throw error;
-  });
-}
 
 export default Graph;

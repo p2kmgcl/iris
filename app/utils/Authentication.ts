@@ -10,6 +10,59 @@ const SCOPES = [
   'Files.Read.All',
 ];
 
+function getRandomString(length: number) {
+  const array = new Uint32Array(length);
+  crypto.getRandomValues(array);
+  return Array.from(array, (dec) => ('0' + dec.toString(16)).substr(-2)).join(
+    '',
+  );
+}
+
+async function getCodeChallenge(codeVerifier: string) {
+  function sha256(str: string) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    return window.crypto.subtle.digest('SHA-256', data);
+  }
+
+  function base64urlencode(arrayBuffer: ArrayBuffer) {
+    const chars = (new Uint8Array(arrayBuffer) as unknown) as number[];
+
+    return btoa(String.fromCharCode.apply(null, chars))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  }
+
+  return base64urlencode(await sha256(codeVerifier));
+}
+
+async function requestAccessToken(formData: FormData) {
+  const response = await fetch(
+    'https://login.microsoftonline.com/consumers/oauth2/v2.0/token',
+    {
+      method: 'POST',
+      body: formData,
+    },
+  );
+
+  const json: Record<string, any> = await response.json();
+
+  if (
+    json.access_token &&
+    json.id_token &&
+    json.refresh_token &&
+    json.expires_in
+  ) {
+    await Database.setConfiguration({
+      accessToken: json.access_token,
+      accessTokenExpirationTime: Date.now() + json.expires_in,
+      refreshToken: json.refresh_token,
+      refreshTokenExpirationTime: Date.now() + 1000 * 60 * 60 * 24,
+    });
+  }
+}
+
 const Authentication = {
   login: async (popupWindow: Window) => {
     const state = getRandomString(16);
@@ -103,7 +156,10 @@ const Authentication = {
     formData.set('client_id', clientId);
     formData.set('grant_type', 'authorization_code');
     formData.set('code', code);
-    formData.set('redirect_uri', `${location.origin}${location.pathname}`);
+    formData.set(
+      'redirect_uri',
+      `${window.location.origin}${window.location.pathname}`,
+    );
     formData.set('code_verifier', codeVerifier);
 
     await requestAccessToken(formData);
@@ -113,61 +169,8 @@ const Authentication = {
       state,
     });
 
-    close();
+    window.close();
   },
 };
-
-function getRandomString(length: number) {
-  const array = new Uint32Array(length);
-  crypto.getRandomValues(array);
-  return Array.from(array, (dec) => ('0' + dec.toString(16)).substr(-2)).join(
-    '',
-  );
-}
-
-async function getCodeChallenge(codeVerifier: string) {
-  function sha256(str: string) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    return window.crypto.subtle.digest('SHA-256', data);
-  }
-
-  function base64urlencode(arrayBuffer: ArrayBuffer) {
-    const chars = (new Uint8Array(arrayBuffer) as unknown) as number[];
-
-    return btoa(String.fromCharCode.apply(null, chars))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-  }
-
-  return base64urlencode(await sha256(codeVerifier));
-}
-
-async function requestAccessToken(formData: FormData) {
-  const response = await fetch(
-    'https://login.microsoftonline.com/consumers/oauth2/v2.0/token',
-    {
-      method: 'POST',
-      body: formData,
-    },
-  );
-
-  const json: Record<string, any> = await response.json();
-
-  if (
-    json.access_token &&
-    json.id_token &&
-    json.refresh_token &&
-    json.expires_in
-  ) {
-    await Database.setConfiguration({
-      accessToken: json.access_token,
-      accessTokenExpirationTime: Date.now() + json.expires_in,
-      refreshToken: json.refresh_token,
-      refreshTokenExpirationTime: Date.now() + 1000 * 60 * 60 * 24,
-    });
-  }
-}
 
 export default Authentication;
