@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC } from 'react';
 import { createPortal } from 'react-dom';
+import { MdClose } from 'react-icons/md';
 import styles from './Modal.css';
-import { MdClose } from 'react-icons/all';
 
 const Modal: FC<{
   priority: number;

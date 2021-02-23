@@ -129,4 +129,9 @@ export default {
     extensions: ['.js', '.ts', '.tsx'],
   },
   ...(process.env.NODE_ENV === 'development' ? { devServer } : {}),
+  ignoreWarnings: [
+    {
+      message: /Should not import the named export/,
+    },
+  ],
 };

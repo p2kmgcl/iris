@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { MdPhoto, MdPhotoAlbum, MdSettings } from 'react-icons/md';
 import BottomTabs from './BottomTabs';
-import { MdPhoto, MdPhotoAlbum, MdSettings } from 'react-icons/all';
 
 export default {
   title: 'atoms/BottomTabs',

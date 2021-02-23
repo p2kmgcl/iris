@@ -1,12 +1,8 @@
 import React from 'react';
+import { BiFoodTag } from 'react-icons/bi';
+import { FaCat, FaPizzaSlice } from 'react-icons/fa';
+import { GiCheeseWedge, GiGoat } from 'react-icons/gi';
 import FileBrowser from './FileBrowser';
-import {
-  BiFoodTag,
-  FaCat,
-  FaPizzaSlice,
-  GiCheeseWedge,
-  GiGoat,
-} from 'react-icons/all';
 
 export default {
   title: 'atoms/FileBrowser',

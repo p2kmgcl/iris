@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { LoadedPhotoModel } from '../../types/LoadedPhotoModel';
 import styles from './PhotoThumbnail.css';
-import { MdLocalMovies } from 'react-icons/all';
 import { useSetRouteKey } from '../contexts/RouteContext';
+import { MdLocalMovies } from 'react-icons/md';
 
 const PhotoThumbnail: FC<{
   photo: LoadedPhotoModel;
