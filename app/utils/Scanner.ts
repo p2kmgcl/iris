@@ -1,7 +1,7 @@
 import { DriveItem } from '@microsoft/microsoft-graph-types';
 import Database from './Database';
 import Graph from './Graph';
-import { Photo } from '../../types/Schema';
+import { PhotoModel } from '../../types/Schema';
 
 class AbortError extends Error {
   toString() {
@@ -33,7 +33,7 @@ const Scanner = {
   scan: async (
     driveItemId: string,
     abortSignal: AbortSignal,
-    onStatusUpdate: (lastScannedPhoto: Photo | null) => void,
+    onStatusUpdate: (lastScannedPhoto: PhotoModel | null) => void,
   ) => {
     async function scanItem(
       driveItem: DriveItem,

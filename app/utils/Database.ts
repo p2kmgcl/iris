@@ -1,6 +1,11 @@
 import { IDBPDatabase, openDB } from 'idb';
 import pkg from '../../package.json';
-import Schema, { Album, Item, MetadataFile, Photo } from '../../types/Schema';
+import Schema, {
+  AlbumModel,
+  ItemModel,
+  MetadataFileModel,
+  PhotoModel,
+} from '../../types/Schema';
 
 const DATABASE_NAME = 'database';
 const DATABASE_VERSION = pkg.version;
@@ -149,7 +154,7 @@ const Database = {
     return database.get('items', itemId);
   },
 
-  selectAlbumList: (): Promise<Album[]> => {
+  selectAlbumList: (): Promise<AlbumModel[]> => {
     return database
       .transaction('albums', 'readonly')
       .objectStore('albums')
@@ -157,7 +162,7 @@ const Database = {
       .getAll();
   },
 
-  selectAlbum: async (itemId: string): Promise<Album | null> => {
+  selectAlbum: async (itemId: string): Promise<AlbumModel | null> => {
     return database
       .transaction('albums', 'readonly')
       .objectStore('albums')
@@ -165,7 +170,7 @@ const Database = {
       .then((album) => album || null);
   },
 
-  selectPhoto: async (itemId: string): Promise<Photo | null> => {
+  selectPhoto: async (itemId: string): Promise<PhotoModel | null> => {
     return database
       .transaction('photos', 'readonly')
       .objectStore('photos')
@@ -177,12 +182,12 @@ const Database = {
     from: number,
     to: number,
     albumItemId: string | null = null,
-  ): Promise<Photo[]> => {
+  ): Promise<PhotoModel[]> => {
     const photosStore = database
       .transaction('photos', 'readonly')
       .objectStore('photos');
 
-    const photos: Photo[] = [];
+    const photos: PhotoModel[] = [];
 
     if (albumItemId) {
       let cursor = await photosStore
@@ -233,7 +238,7 @@ const Database = {
       : photosStore.count();
   },
 
-  addItem: (item: Item) => {
+  addItem: (item: ItemModel) => {
     const transaction = database.transaction('items', 'readwrite');
 
     transaction.objectStore('items').add({
@@ -247,7 +252,7 @@ const Database = {
     });
   },
 
-  addAlbum: (album: Album & Item) => {
+  addAlbum: (album: AlbumModel & ItemModel) => {
     const transaction = database.transaction(['items', 'albums'], 'readwrite');
 
     transaction.objectStore('items').add({
@@ -268,7 +273,7 @@ const Database = {
   },
 
   addPhoto: async (
-    photo: Omit<Photo, 'thumbnail'> & Item & { thumbnailURI: string },
+    photo: Omit<PhotoModel, 'thumbnail'> & ItemModel & { thumbnailURI: string },
   ) => {
     const thumbnail = await fetch(photo.thumbnailURI).then((response) =>
       response.arrayBuffer().then((arrayBuffer) => ({
@@ -300,7 +305,7 @@ const Database = {
     });
   },
 
-  addMetadataFile: (metadataFile: MetadataFile & Item) => {
+  addMetadataFile: (metadataFile: MetadataFileModel & ItemModel) => {
     const transaction = database.transaction(
       ['items', 'metadataFiles'],
       'readwrite',

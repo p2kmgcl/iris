@@ -1,18 +1,18 @@
 import { DBSchema } from 'idb';
 
-export interface Item {
+export interface ItemModel {
   itemId: string;
   fileName: string;
   updateTime: number;
 }
 
-export interface Album {
+export interface AlbumModel {
   itemId: string;
   title: string;
   dateTime: number;
 }
 
-export interface Photo {
+export interface PhotoModel {
   itemId: string;
   albumItemId: string;
   dateTime: number;
@@ -25,7 +25,7 @@ export interface Photo {
   isVideo: boolean;
 }
 
-export interface MetadataFile {
+export interface MetadataFileModel {
   itemId: string;
   photoItemId: string;
 }
@@ -49,7 +49,7 @@ export default interface Schema extends DBSchema {
 
   items: {
     key: string;
-    value: Item;
+    value: ItemModel;
     indexes: {
       byItemId: string;
     };
@@ -57,7 +57,7 @@ export default interface Schema extends DBSchema {
 
   albums: {
     key: string;
-    value: Album;
+    value: AlbumModel;
     indexes: {
       byItemId: string;
       byDateTime: number;
@@ -66,7 +66,7 @@ export default interface Schema extends DBSchema {
 
   photos: {
     key: string;
-    value: Photo;
+    value: PhotoModel;
     indexes: {
       byItemId: string;
       byDateTime: number;
@@ -76,7 +76,7 @@ export default interface Schema extends DBSchema {
 
   metadataFiles: {
     key: string;
-    value: MetadataFile;
+    value: MetadataFileModel;
     indexes: {
       byItemId: string;
       byPhotoItemId: string;

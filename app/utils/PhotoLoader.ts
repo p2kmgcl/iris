@@ -1,16 +1,12 @@
 import Database from './Database';
-import { Photo } from '../../types/Schema';
 import Graph from './Graph';
+import { LoadedPhotoModel } from '../../types/LoadedPhotoModel';
 
 const CHUNK_SIZE = 30;
 
-export interface LoadedPhoto extends Photo {
-  thumbnailURL: string;
-}
-
 const cache: {
   albumId: string | null;
-  chunks: Promise<LoadedPhoto[]>[];
+  chunks: Promise<LoadedPhotoModel[]>[];
 } = {
   albumId: null,
   chunks: [],

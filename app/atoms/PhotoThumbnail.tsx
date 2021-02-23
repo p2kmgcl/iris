@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { LoadedPhoto } from '../utils/PhotoLoader';
+import { LoadedPhotoModel } from '../../types/LoadedPhotoModel';
 import styles from './PhotoThumbnail.css';
 import { MdLocalMovies } from 'react-icons/all';
 import { useSetRouteKey } from '../contexts/RouteContext';
 
 const PhotoThumbnail: FC<{
-  photo: LoadedPhoto;
+  photo: LoadedPhotoModel;
   index: number;
 }> = ({ photo, index }) => {
   const setPhotoIndex = useSetRouteKey('photo');

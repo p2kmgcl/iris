@@ -1,6 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../../atoms/Modal';
-import PhotoLoader, { LoadedPhoto } from '../../utils/PhotoLoader';
+import PhotoLoader from '../../utils/PhotoLoader';
+import { LoadedPhotoModel } from '../../utils/LoadedPhotoModel';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import styles from './PhotoModal.css';
 import HorizontalList from '../../atoms/HorizontalList';
@@ -64,7 +65,7 @@ const PhotoModal: FC<{
 };
 
 const PhotoSlide: FC<{
-  photo: LoadedPhoto;
+  photo: LoadedPhotoModel;
   maxWidth: number;
   maxHeight: number;
   isVisible: boolean;

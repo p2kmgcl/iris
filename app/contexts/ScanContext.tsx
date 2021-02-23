@@ -5,7 +5,7 @@ import React, {
   useContext,
   useRef,
 } from 'react';
-import { Photo } from '../../types/Schema';
+import { PhotoModel } from '../../types/Schema';
 import Database from '../utils/Database';
 import Scanner from '../utils/Scanner';
 import useChannel, {
@@ -19,7 +19,7 @@ const ScanContext = createContext<{
   scanErrorChannel: Channel<Error | null>;
   scanStatusChannel: Channel<{
     description: string;
-    relatedPhoto: Photo | null;
+    relatedPhoto: PhotoModel | null;
   }>;
   toggleScan: () => void;
 }>({
@@ -34,7 +34,7 @@ const ScanContextProvider: FC = ({ children }) => {
   const scanErrorChannel = useChannel<Error | null>(null);
   const scanStatusChannel = useChannel<{
     description: string;
-    relatedPhoto: Photo | null;
+    relatedPhoto: PhotoModel | null;
   }>({ description: 'Not scanning', relatedPhoto: null });
   const abortControllerRef = useRef<AbortController | null>(null);
 
