@@ -4,7 +4,7 @@
   "description": "The missing OneDrive gallery.",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "natural",
   "theme_color": "#fff",
   "background_color": "#000",
   "lang": "en-US",
