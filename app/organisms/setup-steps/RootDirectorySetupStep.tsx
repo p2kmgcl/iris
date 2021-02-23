@@ -4,7 +4,6 @@ import Graph from '../../utils/Graph';
 import { DriveItem } from '@microsoft/microsoft-graph-types';
 import LoadingMask from '../../atoms/LoadingMask';
 import Database from '../../utils/Database';
-import SetupStepTitle from '../../atoms/SetupStepTitle';
 import Button from '../../atoms/Button';
 import {
   AiOutlineArrowUp,
@@ -13,6 +12,7 @@ import {
 } from 'react-icons/ai';
 import Spacer from '../../atoms/Spacer';
 import FileBrowser from '../../atoms/FileBrowser';
+import SetupStep from '../../atoms/SetupStep';
 
 const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [itemId, setItemId] = useState('root');
@@ -92,9 +92,7 @@ const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   }, [itemId]);
 
   return (
-    <>
-      <SetupStepTitle>Gallery folder</SetupStepTitle>
-
+    <SetupStep title="Gallery folder">
       <LoadingMask loading={loading}>
         <FileBrowser path={path} items={children} onItemClick={setItemId} />
       </LoadingMask>
@@ -106,7 +104,7 @@ const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
           {`Choose ${item?.name}`}
         </Button>
       ) : null}
-    </>
+    </SetupStep>
   );
 };
 

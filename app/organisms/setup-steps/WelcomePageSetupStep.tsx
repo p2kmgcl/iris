@@ -1,17 +1,16 @@
 import React, { FC } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
-import SetupStepTitle from '../../atoms/SetupStepTitle';
 import Button from '../../atoms/Button';
+import SetupStep from '../../atoms/SetupStep';
 
 const WelcomePageSetupStep: FC<SetupStepProps> = ({ stepReady }) => (
-  <>
-    <SetupStepTitle>Iris</SetupStepTitle>
+  <SetupStep title="Iris">
     <p>The missing OneDrive gallery.</p>
 
     <Button type="button" onClick={() => stepReady()}>
       Start
     </Button>
-  </>
+  </SetupStep>
 );
 
 export default WelcomePageSetupStep;

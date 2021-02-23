@@ -5,7 +5,6 @@ import App from './App';
 import LoginSetupStep from './setup-steps/LoginSetupStep';
 import RootDirectorySetupStep from './setup-steps/RootDirectorySetupStep';
 import ReadySetupStep from './setup-steps/ReadySetupStep';
-import SetupStep from '../atoms/SetupStep';
 
 const SetupSteps: Array<FC<SetupStepProps>> = [
   WelcomePageSetupStep,
@@ -30,9 +29,5 @@ export default function Setup() {
     setStepIndex((prevStepIndex) => prevStepIndex + 1);
   };
 
-  return (
-    <SetupStep>
-      <StepComponent stepReady={handleStepReady} />
-    </SetupStep>
-  );
+  return <StepComponent stepReady={handleStepReady} />;
 }

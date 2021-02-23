@@ -2,11 +2,11 @@ import React, { FC, FormEventHandler, useEffect, useState } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Database from '../../utils/Database';
 import Authentication from '../../utils/Authentication';
-import SetupStepTitle from '../../atoms/SetupStepTitle';
 import Button from '../../atoms/Button';
 import Input from '../../atoms/Input';
 import { AiOutlineUser } from 'react-icons/ai';
 import Spacer from '../../atoms/Spacer';
+import SetupStep from '../../atoms/SetupStep';
 
 const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [clientId, setClientId] = useState('');
@@ -42,9 +42,7 @@ const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   }, []);
 
   return (
-    <>
-      <SetupStepTitle>Account</SetupStepTitle>
-
+    <SetupStep title="Account">
       <form onSubmit={handleSubmit}>
         <Input
           disabled={loading}
@@ -61,7 +59,7 @@ const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
           {loading ? 'Signing in' : 'Sign in'}
         </Button>
       </form>
-    </>
+    </SetupStep>
   );
 };
 

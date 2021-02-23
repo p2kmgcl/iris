@@ -1,4 +1,4 @@
-import { cssRule, urlRule } from '../webpack.config';
+import { cssRule } from '../webpack.config';
 
 export default {
   stories: ['../app/**/*.stories.tsx'],
@@ -9,7 +9,7 @@ export default {
   }) => {
     config.module.rules = config.module.rules
       .filter((rule) => rule.test?.toString() !== '/\\.css$/')
-      .concat([cssRule, urlRule]);
+      .concat([cssRule]);
 
     return config;
   },

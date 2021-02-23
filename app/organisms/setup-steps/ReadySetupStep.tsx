@@ -1,17 +1,15 @@
 import React, { FC } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
-import SetupStepTitle from '../../atoms/SetupStepTitle';
 import Button from '../../atoms/Button';
+import SetupStep from '../../atoms/SetupStep';
 
 const ReadySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   return (
-    <>
-      <SetupStepTitle>You're ready to go!</SetupStepTitle>
-
+    <SetupStep title="You're ready to go!">
       <Button type="button" onClick={() => stepReady()}>
         Start scanning photos
       </Button>
-    </>
+    </SetupStep>
   );
 };
 
