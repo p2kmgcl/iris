@@ -5,6 +5,7 @@ import Database from './utils/Database';
 import ScanContextProvider from './contexts/ScanContext';
 import IconStyleContextProvider from './contexts/IconStyleContext';
 import RouteContextProvider from './contexts/RouteContext';
+import Authentication from './utils/Authentication';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 
@@ -17,7 +18,10 @@ const LazySetup = React.lazy(() => import('./organisms/Setup'));
 
   const isSetupReady = await (async function () {
     const configuration = await Database.getConfiguration();
-    return Object.values(configuration).every((value) => !!value);
+    return (
+      Object.values(configuration).every((value) => !!value) &&
+      !!(await Authentication.getFreshAccessToken())
+    );
   })();
 
   const MainComponent = isSetupReady ? LazyApp : LazySetup;

@@ -16,14 +16,7 @@ async function graphAPI(query: string): Promise<GraphRequest> {
 }
 
 async function graphGet<T>(query: string): Promise<T> {
-  return (await graphAPI(query)).get().catch(async (error: Error) => {
-    // Expired refresh token error
-    if (error.toString().includes('80049228')) {
-      await Authentication.logout();
-    }
-
-    throw error;
-  });
+  return (await graphAPI(query)).get();
 }
 
 const Graph = {

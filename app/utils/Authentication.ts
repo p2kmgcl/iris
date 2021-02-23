@@ -116,6 +116,7 @@ const Authentication = {
 
   getFreshAccessToken: async () => {
     const now = Date.now();
+
     const {
       accessTokenExpirationTime,
       clientId,
@@ -124,7 +125,8 @@ const Authentication = {
     } = await Database.getConfiguration();
 
     if (now >= refreshTokenExpirationTime) {
-      console.error('NEEDS LOGIN');
+      console.error('Refresh token expired');
+      await Authentication.logout();
     } else if (now >= accessTokenExpirationTime) {
       const formData = new FormData();
       formData.set('client_id', clientId);
