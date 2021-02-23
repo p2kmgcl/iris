@@ -59,9 +59,13 @@ const Scanner = {
       }
 
       if (driveItemIsPhoto(driveItem)) {
-        const thumbnailURI = (
-          await Graph.getItemThumbnails(driveItem.id as string)
-        ).medium?.url as string;
+        const thumbnails = await Graph.getItemThumbnails(
+          driveItem.id as string,
+        );
+
+        const thumbnailURI = (thumbnails.large?.url ||
+          thumbnails.medium?.url ||
+          thumbnails.small?.url) as string;
 
         const dateTime: number = new Date(
           driveItem.photo?.takenDateTime ||
