@@ -13,11 +13,40 @@ import {
   AiOutlineLogout,
   AiOutlineWarning,
 } from 'react-icons/ai';
+import useAsyncMemo from '../../hooks/useAsyncMemo';
 
 const SettingsTab: FC = () => {
   const isScanning = useIsScanning();
   const toggleScan = useToggleScan();
   const scanStatus = useScanStatus();
+
+  const space = useAsyncMemo(
+    () =>
+      window.navigator.storage.estimate().then((estimation: any) =>
+        estimation
+          ? `total: ${
+              estimation.usage
+                ? Math.round(estimation.usage / Math.pow(2, 20))
+                : '???'
+            }/${
+              estimation.quota
+                ? Math.round(estimation.quota / Math.pow(2, 20))
+                : '???'
+            }MB\n${Object.entries(estimation.usageDetails)
+              .map(
+                ([key, value]) =>
+                  `${key}: ${
+                    typeof value === 'number'
+                      ? Math.round(value / Math.pow(2, 20))
+                      : '???'
+                  }MB`,
+              )
+              .join('\n')}`
+          : '???',
+      ),
+    [],
+    '',
+  );
 
   return (
     <List>
@@ -66,6 +95,10 @@ const SettingsTab: FC = () => {
           <AiOutlineInfo />
           <span>Version</span>
           <span>{pkg.version}</span>
+        </ListItem>
+        <ListItem>
+          <span>Used space</span>
+          <span>{space}</span>
         </ListItem>
       </SubList>
     </List>
