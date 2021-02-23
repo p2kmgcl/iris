@@ -5,11 +5,14 @@ import Database from '../../utils/Database';
 import Grid, { ItemProps } from '../../atoms/Grid';
 import PhotoLoader from '../../utils/PhotoLoader';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
+import { useSetRouteKey } from '../../contexts/RouteContext';
 
 const AlbumModal: FC<{
   albumId: string;
   onCloseButtonClick: () => void;
 }> = ({ albumId, onCloseButtonClick }) => {
+  const setPhotoIndex = useSetRouteKey('photo');
+
   const album = useAsyncMemo(
     () => (albumId ? Database.selectAlbum(albumId) : Promise.resolve(null)),
     [albumId],
@@ -30,9 +33,15 @@ const AlbumModal: FC<{
         null,
       );
 
-      return photo ? <PhotoThumbnail index={index} photo={photo} /> : null;
+      return photo ? (
+        <PhotoThumbnail
+          url={photo.thumbnailURL}
+          onClick={() => setPhotoIndex(index.toString())}
+          showVideoIcon={photo.isVideo}
+        />
+      ) : null;
     },
-    [albumId],
+    [albumId, setPhotoIndex],
   );
 
   if (!album) {
