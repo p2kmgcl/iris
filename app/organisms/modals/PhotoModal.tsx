@@ -5,7 +5,6 @@ import useAsyncMemo from '../../hooks/useAsyncMemo';
 import styles from './PhotoModal.css';
 import HorizontalList from '../../atoms/HorizontalList';
 import Database from '../../utils/Database';
-import LoadingMask from '../../atoms/LoadingMask';
 import { useSetRouteKey } from '../../contexts/RouteContext';
 
 const PhotoModal: FC<{
@@ -112,21 +111,19 @@ const PhotoSlide: FC<{
 
   return (
     <div className={styles.photoSlide}>
-      <LoadingMask loading={!url}>
-        {photo.isVideo ? (
-          <video
-            loop
-            src={url}
-            controls
-            poster={photo.thumbnailURL}
-            width={width}
-            height={height}
-            ref={setVideoElement}
-          />
-        ) : (
-          <img src={url || photo.thumbnailURL} width={width} height={height} />
-        )}
-      </LoadingMask>
+      {photo.isVideo ? (
+        <video
+          loop
+          src={url}
+          controls
+          poster={photo.thumbnailURL}
+          width={width}
+          height={height}
+          ref={setVideoElement}
+        />
+      ) : (
+        <img src={url || photo.thumbnailURL} width={width} height={height} />
+      )}
     </div>
   );
 };
