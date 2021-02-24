@@ -112,11 +112,6 @@ const Database = {
 
       await database.add('configuration', {
         version: DATABASE_VERSION,
-        clientId: '',
-        accessToken: '',
-        accessTokenExpirationTime: 0,
-        refreshToken: '',
-        refreshTokenExpirationTime: 0,
         rootDirectoryId: '',
       });
     }

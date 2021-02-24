@@ -35,11 +35,6 @@ export default interface Schema extends DBSchema {
     key: string;
     value: {
       version: string;
-      clientId: string;
-      accessToken: string;
-      accessTokenExpirationTime: number;
-      refreshToken: string;
-      refreshTokenExpirationTime: number;
       rootDirectoryId: string;
     };
     indexes: {

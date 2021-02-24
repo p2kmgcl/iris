@@ -12,6 +12,7 @@ const client = Client.initWithMiddleware({
 
 async function graphAPI(query: string): Promise<GraphRequest> {
   tokenRef.current = await Authentication.getFreshAccessToken();
+  console.log(tokenRef.current);
   return client.api(query);
 }
 
