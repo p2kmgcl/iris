@@ -13,31 +13,34 @@ const LazyApp = React.lazy(() => import('./organisms/App'));
 const LazySetup = React.lazy(() => import('./organisms/Setup'));
 
 (async function () {
-  await Database.open();
-  await registerServiceWorker();
+  try {
+    await Database.open();
+    await registerServiceWorker();
+    await Authentication.init();
 
-  const isSetupReady = await (async function () {
-    const configuration = await Database.getConfiguration();
-    return (
-      Object.values(configuration).every((value) => !!value) &&
-      !!(await Authentication.getFreshAccessToken())
+    const isSetupReady =
+      (await Authentication.isAuthenticated()) &&
+      Object.values(await Database.getConfiguration()).every(
+        (value) => !!value,
+      );
+
+    const MainComponent = isSetupReady ? LazyApp : LazySetup;
+
+    render(
+      <IconStyleContextProvider>
+        <ScanContextProvider>
+          <RouteContextProvider>
+            <Suspense fallback={<>Loading...</>}>
+              <MainComponent />
+            </Suspense>
+          </RouteContextProvider>
+        </ScanContextProvider>
+      </IconStyleContextProvider>,
+      appElement,
     );
-  })();
-
-  const MainComponent = isSetupReady ? LazyApp : LazySetup;
-
-  render(
-    <IconStyleContextProvider>
-      <ScanContextProvider>
-        <RouteContextProvider>
-          <Suspense fallback={<>Loading...</>}>
-            <MainComponent />
-          </Suspense>
-        </RouteContextProvider>
-      </ScanContextProvider>
-    </IconStyleContextProvider>,
-    appElement,
-  );
+  } catch (error) {
+    appElement.innerHTML = error.toString();
+  }
 })();
 
 async function registerServiceWorker() {

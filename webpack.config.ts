@@ -65,6 +65,11 @@ export const plugins = [
       { from: 'static', to: path.resolve(__dirname, DESTINATION_DIRECTORY) },
     ],
   }),
+
+  new webpack.DefinePlugin({
+    'process.env.AUTH_SCOPE': JSON.stringify(process.env.AUTH_SCOPE),
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  }),
 ];
 
 export const productionPlugins = [
@@ -110,7 +115,6 @@ if (fs.existsSync(path.resolve(__dirname, CERTIFICATE_DIRECTORY))) {
 export default {
   entry: {
     app: './app/index.tsx',
-    'auth-redirection': './app/auth-redirection.ts',
   },
   output: {
     filename: '[name].js',

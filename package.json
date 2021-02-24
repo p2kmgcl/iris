@@ -1,6 +1,6 @@
 {
   "name": "iris",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "private": true,
   "scripts": {
     "analyze-bundle": "NODE_ENV=production webpack --profile --json --config webpack.config.ts > build/bundle-profile.json && webpack-bundle-analyzer build/bundle-profile.json build/app",
@@ -31,6 +31,7 @@
     "*.tsx": "eslint --max-warnings 0 --fix"
   },
   "dependencies": {
+    "@auth0/auth0-spa-js": "1.13.6",
     "@azure/msal-browser": "^2.11.1",
     "@microsoft/microsoft-graph-client": "^2.2.1",
     "@microsoft/microsoft-graph-types": "^1.30.0",
