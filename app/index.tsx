@@ -30,7 +30,7 @@ const LazySetup = React.lazy(() => import('./organisms/Setup'));
     <IconStyleContextProvider>
       <ScanContextProvider>
         <RouteContextProvider>
-          <Suspense fallback={<></>}>
+          <Suspense fallback={<>Loading...</>}>
             <MainComponent />
           </Suspense>
         </RouteContextProvider>
