@@ -1,0 +1,14 @@
+[build]
+  publish = "build/app/"
+  command = "yarn run build"
+  functions = "functions/"
+
+[dev]
+  framework = "#custom"
+  command = "yarn run start:development"
+  targetPort = 9000
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

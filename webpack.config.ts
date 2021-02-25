@@ -62,7 +62,14 @@ export const rules = [cssRule, jsRule, urlRule];
 export const plugins = [
   new CopyPlugin({
     patterns: [
-      { from: 'static', to: path.resolve(__dirname, DESTINATION_DIRECTORY) },
+      {
+        from: 'static',
+        to: path.resolve(__dirname, DESTINATION_DIRECTORY),
+      },
+      {
+        from: 'functions/**/*.js',
+        to: path.resolve(__dirname, DESTINATION_DIRECTORY),
+      },
     ],
   }),
 
