@@ -30,7 +30,8 @@ const Authentication = {
     );
 
     await new Promise((resolve, reject) => {
-      window.addEventListener('message', (event) => {
+      const handleMessage = (event: MessageEvent) => {
+        window.removeEventListener('message', handleMessage);
         popup?.close();
 
         try {
@@ -53,7 +54,9 @@ const Authentication = {
         } catch (error) {
           reject(error);
         }
-      });
+      };
+
+      window.addEventListener('message', handleMessage);
     });
   },
 
