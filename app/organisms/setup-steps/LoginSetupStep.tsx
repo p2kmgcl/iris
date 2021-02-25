@@ -1,4 +1,4 @@
-import React, { FC, useState, MouseEventHandler } from 'react';
+import React, { FC, useState, MouseEventHandler, useEffect } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Authentication from '../../utils/Authentication';
 import Button from '../../atoms/Button';
@@ -22,6 +22,15 @@ const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
       setLoginError(error.toString());
     }
   };
+
+  useEffect(() => {
+    Authentication.isAuthenticated().then((isAuthenticated) => {
+      if (isAuthenticated) {
+        setLoading(true);
+        stepReady();
+      }
+    });
+  }, [stepReady]);
 
   return (
     <SetupStep title="Account">
