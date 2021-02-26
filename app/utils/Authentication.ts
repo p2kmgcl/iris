@@ -38,7 +38,17 @@ const setAuth = (nextAuth: {
 const Authentication = {
   init: async () => {
     try {
-      auth = JSON.parse(localStorage.getItem(LOCAL_STORAGE_AUTH_KEY) as string);
+      const storedAuth = JSON.parse(
+        localStorage.getItem(LOCAL_STORAGE_AUTH_KEY) as string,
+      );
+
+      if (
+        storedAuth.access_token &&
+        storedAuth.refresh_token &&
+        storedAuth.expiration_date
+      ) {
+        auth = storedAuth;
+      }
     } catch (_error) {
       // noop
     }
