@@ -6,6 +6,33 @@ let auth: {
   access_token: string;
   refresh_token: string;
   expiration_date: number;
+} = {
+  access_token: '',
+  refresh_token: '',
+  expiration_date: 0,
+};
+
+const setAuth = (nextAuth: {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+}) => {
+  if (
+    !nextAuth.access_token ||
+    !nextAuth.refresh_token ||
+    !nextAuth.expires_in
+  ) {
+    throw new Error(`Invalid auth ${JSON.stringify(nextAuth)}`);
+  }
+
+  const parsedAuth = {
+    access_token: nextAuth.access_token,
+    refresh_token: nextAuth.refresh_token,
+    expiration_date: Date.now() + nextAuth.expires_in * 900,
+  };
+
+  localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify(parsedAuth));
+  auth = parsedAuth;
 };
 
 const Authentication = {
@@ -18,7 +45,11 @@ const Authentication = {
   },
 
   isAuthenticated: async () => {
-    return !!auth;
+    return !!(
+      auth.access_token &&
+      auth.expiration_date &&
+      auth.expiration_date
+    );
   },
 
   login: async () => {
@@ -41,15 +72,7 @@ const Authentication = {
             throw new Error('Invalid auth state');
           }
 
-          localStorage.setItem(
-            LOCAL_STORAGE_AUTH_KEY,
-            JSON.stringify({
-              access_token: data.access_token,
-              refresh_token: data.refresh_token,
-              expiration_date: Date.now() + data.expires_in * 900,
-            }),
-          );
-
+          setAuth(data);
           resolve();
         } catch (error) {
           reject(error);
@@ -61,8 +84,15 @@ const Authentication = {
   },
 
   logout: () => {
+    auth = {
+      access_token: '',
+      refresh_token: '',
+      expiration_date: 0,
+    };
+
     localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
     window.location.reload();
+
     // Wait until page reload
     return new Promise(() => {});
   },
@@ -82,16 +112,7 @@ const Authentication = {
           }),
         });
 
-        const data = await response.json();
-
-        localStorage.setItem(
-          LOCAL_STORAGE_AUTH_KEY,
-          JSON.stringify({
-            access_token: data.access_token,
-            refresh_token: data.refresh_token,
-            expiration_date: Date.now() + data.expires_in * 900,
-          }),
-        );
+        setAuth(await response.json());
       } catch (_error) {
         console.log(_error);
         await new Promise(() => {});
