@@ -1,16 +1,25 @@
 import './index.css';
-import React, { Suspense } from 'react';
+import React from 'react';
 import { render } from 'react-dom';
 import Database from './utils/Database';
 import ScanContextProvider from './contexts/ScanContext';
 import IconStyleContextProvider from './contexts/IconStyleContext';
 import RouteContextProvider from './contexts/RouteContext';
 import Authentication from './utils/Authentication';
+import App from './organisms/App';
+import Setup from './organisms/Setup';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 
-const LazyApp = React.lazy(() => import('./organisms/App'));
-const LazySetup = React.lazy(() => import('./organisms/Setup'));
+async function registerServiceWorker() {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    return navigator.serviceWorker
+      .register('/service-worker.js')
+      .catch((registrationError) => {
+        console.error('SW registration failed: ', registrationError);
+      });
+  }
+}
 
 (async function () {
   try {
@@ -24,15 +33,13 @@ const LazySetup = React.lazy(() => import('./organisms/Setup'));
         (value) => !!value,
       );
 
-    const MainComponent = isSetupReady ? LazyApp : LazySetup;
+    const MainComponent = isSetupReady ? App : Setup;
 
     render(
       <IconStyleContextProvider>
         <ScanContextProvider>
           <RouteContextProvider>
-            <Suspense fallback={<>Loading...</>}>
-              <MainComponent />
-            </Suspense>
+            <MainComponent />
           </RouteContextProvider>
         </ScanContextProvider>
       </IconStyleContextProvider>,
@@ -42,16 +49,3 @@ const LazySetup = React.lazy(() => import('./organisms/Setup'));
     appElement.innerHTML = error.toString();
   }
 })();
-
-async function registerServiceWorker() {
-  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    return navigator.serviceWorker
-      .register('/service-worker.js')
-      .then(() => {
-        console.log('SW registered');
-      })
-      .catch((registrationError) => {
-        console.error('SW registration failed: ', registrationError);
-      });
-  }
-}
