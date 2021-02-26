@@ -3,11 +3,9 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import WorkboxPlugin from 'workbox-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import webpack from 'webpack';
-import fs from 'fs';
 import path from 'path';
 
 const DESTINATION_DIRECTORY = './build/app';
-const CERTIFICATE_DIRECTORY = './build/development-certificate';
 
 export const cssRule = {
   test: /\.css$/,
@@ -104,20 +102,6 @@ const devServer: Record<string, any> = {
   port: 9000,
   contentBase: path.resolve(__dirname, DESTINATION_DIRECTORY),
 };
-
-if (fs.existsSync(path.resolve(__dirname, CERTIFICATE_DIRECTORY))) {
-  devServer.https = {
-    key: fs.readFileSync(
-      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.key'),
-    ),
-    cert: fs.readFileSync(
-      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localhost.crt'),
-    ),
-    ca: fs.readFileSync(
-      path.resolve(__dirname, CERTIFICATE_DIRECTORY, './localca.pem'),
-    ),
-  };
-}
 
 export default {
   entry: {
