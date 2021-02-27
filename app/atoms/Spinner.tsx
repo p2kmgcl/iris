@@ -8,7 +8,7 @@ const Spinner: FC<{ size: 'regular' | 'large'; spinning?: boolean }> = ({
   <div
     style={{
       fontSize: {
-        regular: 2.5,
+        regular: 2.2,
         large: 10,
       }[size],
     }}
