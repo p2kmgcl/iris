@@ -88,15 +88,8 @@ const Scanner = {
 
         onStatusUpdate(await Database.selectPhoto(driveItem.id as string));
       } else if (children.some((child) => driveItemIsPhoto(child))) {
-        const titleRegExp = /^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})\s([^\n]+)$/;
-        let title = driveItem.name as string;
-        let dateTime = Infinity;
-
-        if (titleRegExp.test(title)) {
-          const [, dateText, titleText] = titleRegExp.exec(title) as string[];
-          title = titleText;
-          dateTime = new Date(dateText).getTime();
-        }
+        const title = driveItem.name as string;
+        const dateTime = Infinity;
 
         await Database.addAlbum({
           itemId: driveItem.id as string,
@@ -116,6 +109,9 @@ const Scanner = {
           itemId: driveItem.id as string,
           fileName: driveItem.name as string,
           updateTime: lastModifiedDateTime,
+          contentURI: (driveItem as { '@microsoft.graph.downloadUrl': string })[
+            '@microsoft.graph.downloadUrl'
+          ],
         });
       } else {
         await Database.addItem({

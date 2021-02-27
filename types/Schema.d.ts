@@ -28,6 +28,7 @@ export interface PhotoModel {
 export interface MetadataFileModel {
   itemId: string;
   photoItemId: string;
+  content: string;
 }
 
 export default interface Schema extends DBSchema {

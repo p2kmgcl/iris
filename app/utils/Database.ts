@@ -300,7 +300,14 @@ const Database = {
     });
   },
 
-  addMetadataFile: (metadataFile: MetadataFileModel & ItemModel) => {
+  addMetadataFile: async (
+    metadataFile: Omit<MetadataFileModel, 'content'> &
+      ItemModel & { contentURI: string },
+  ) => {
+    const content = await fetch(metadataFile.contentURI).then((response) =>
+      response.text(),
+    );
+
     const transaction = database.transaction(
       ['items', 'metadataFiles'],
       'readwrite',
@@ -315,6 +322,7 @@ const Database = {
     transaction.objectStore('metadataFiles').add({
       itemId: metadataFile.itemId,
       photoItemId: metadataFile.photoItemId,
+      content,
     });
 
     return transaction.done.catch((error) => {
