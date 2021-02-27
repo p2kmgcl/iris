@@ -1,20 +1,17 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../../atoms/Modal';
 import PhotoLoader from '../../utils/PhotoLoader';
-import { LoadedPhotoModel } from '../../utils/LoadedPhotoModel';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import styles from './PhotoModal.css';
 import HorizontalList from '../../atoms/HorizontalList';
 import Database from '../../utils/Database';
-import { useSetRouteKey } from '../../contexts/RouteContext';
+import { LoadedPhotoModel } from '../../../types/LoadedPhotoModel';
 
 const PhotoModal: FC<{
-  index: number;
+  initialIndex: number;
   albumId: string | null;
   onCloseButtonClick: () => void;
-}> = ({ index, albumId = null, onCloseButtonClick }) => {
-  const setIndex = useSetRouteKey('photo');
-
+}> = ({ initialIndex, albumId = null, onCloseButtonClick }) => {
   const photoCount = useAsyncMemo<number>(
     () => Database.selectPhotoCount(albumId),
     [albumId],
@@ -41,13 +38,6 @@ const PhotoModal: FC<{
     [albumId],
   );
 
-  const handleIndexChange = useCallback(
-    (nextIndex: number) => {
-      setIndex(nextIndex.toString());
-    },
-    [setIndex],
-  );
-
   return (
     <Modal
       priority={2}
@@ -57,8 +47,7 @@ const PhotoModal: FC<{
       <HorizontalList
         itemCount={photoCount}
         Item={PhotoCallback}
-        index={index}
-        onIndexChange={handleIndexChange}
+        initialIndex={initialIndex}
       />
     </Modal>
   );

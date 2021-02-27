@@ -4,7 +4,6 @@ import { render } from 'react-dom';
 import Database from './utils/Database';
 import ScanContextProvider from './contexts/ScanContext';
 import IconStyleContextProvider from './contexts/IconStyleContext';
-import RouteContextProvider from './contexts/RouteContext';
 import Authentication from './utils/Authentication';
 import App from './organisms/App';
 import Setup from './organisms/Setup';
@@ -38,9 +37,7 @@ async function registerServiceWorker() {
     render(
       <IconStyleContextProvider>
         <ScanContextProvider>
-          <RouteContextProvider>
-            <MainComponent />
-          </RouteContextProvider>
+          <MainComponent />
         </ScanContextProvider>
       </IconStyleContextProvider>,
       appElement,

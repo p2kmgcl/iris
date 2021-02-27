@@ -7,7 +7,7 @@ export default {
 };
 
 export const Default = () => (
-  <Modal onCloseButtonClick={() => {}}>
+  <Modal priority={0} onCloseButtonClick={() => {}}>
     <article
       style={{
         padding: '0 4em 4em 4em',
@@ -154,7 +154,7 @@ export const Default = () => (
 );
 
 export const Black = () => (
-  <Modal background="black" onCloseButtonClick={() => {}}>
+  <Modal priority={0} background="black" onCloseButtonClick={() => {}}>
     <article
       style={{
         padding: '0 1em 4em 1em',

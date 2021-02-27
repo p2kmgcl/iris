@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import HorizontalList, { ItemProps } from './HorizontalList';
 
 export default {
@@ -31,68 +31,24 @@ function Item(props: ItemProps) {
 }
 
 export const Default = () => (
-  <HorizontalList
-    index={0}
-    onIndexChange={() => {}}
-    itemCount={10}
-    Item={Item}
-  />
+  <HorizontalList initialIndex={0} itemCount={10} Item={Item} />
 );
 export const OneHundred = () => (
-  <HorizontalList
-    index={0}
-    onIndexChange={() => {}}
-    itemCount={100}
-    Item={Item}
-  />
+  <HorizontalList initialIndex={0} itemCount={100} Item={Item} />
 );
 export const TenHundred = () => (
-  <HorizontalList
-    index={0}
-    onIndexChange={() => {}}
-    itemCount={1000}
-    Item={Item}
-  />
+  <HorizontalList initialIndex={0} itemCount={1000} Item={Item} />
 );
 export const TenThousand = () => (
-  <HorizontalList
-    index={0}
-    onIndexChange={() => {}}
-    itemCount={10000}
-    Item={Item}
-  />
+  <HorizontalList initialIndex={0} itemCount={10000} Item={Item} />
 );
 export const OneMillion = () => (
-  <HorizontalList
-    index={0}
-    onIndexChange={() => {}}
-    itemCount={1000000}
-    Item={Item}
-  />
+  <HorizontalList initialIndex={0} itemCount={1000000} Item={Item} />
 );
 
-export const WithControlledScrollIndex = () => {
-  const [index, setIndex] = useState(500);
-
-  return (
-    <div style={{ width: '100%', height: '100%' }}>
-      <input
-        type="number"
-        min={0}
-        max={999}
-        value={index}
-        onChange={(event) => setIndex(Number(event.target.value))}
-      />
-
-      <HorizontalList
-        index={index}
-        onIndexChange={setIndex}
-        itemCount={1000}
-        Item={Item}
-      />
-    </div>
-  );
-};
+export const WidthInitialIndex = () => (
+  <HorizontalList initialIndex={500} itemCount={1000} Item={Item} />
+);
 
 export const WithHeader = () => (
   <div
@@ -107,12 +63,7 @@ export const WithHeader = () => (
   >
     <h1>Nice grid</h1>
     <div style={{ flexGrow: 1 }}>
-      <HorizontalList
-        index={0}
-        onIndexChange={() => {}}
-        itemCount={100}
-        Item={Item}
-      />
+      <HorizontalList initialIndex={0} itemCount={100} Item={Item} />
     </div>
   </div>
 );

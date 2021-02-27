@@ -1,19 +1,23 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import Grid, { ItemProps } from '../../atoms/Grid';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import PhotoLoader from '../../utils/PhotoLoader';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
-import { useSetRouteKey } from '../../contexts/RouteContext';
+import PhotoModal from '../modals/PhotoModal';
 
 const AllPhotosTab: FC = () => {
-  const setPhotoIndex = useSetRouteKey('photo');
+  const [photoIndex, setPhotoIndex] = useState(-1);
 
   const photoCount = useAsyncMemo<number>(
     () => Database.selectPhotoCount(),
     [],
     0,
   );
+
+  const handleCloseButtonClick = useCallback(() => {
+    setPhotoIndex(-1);
+  }, []);
 
   const Photo = useCallback(
     function PhotoCallback({ index }: ItemProps) {
@@ -26,7 +30,7 @@ const AllPhotosTab: FC = () => {
       return photo ? (
         <PhotoThumbnail
           url={photo.thumbnailURL}
-          onClick={() => setPhotoIndex(index.toString())}
+          onClick={() => setPhotoIndex(index)}
           showVideoIcon={photo.isVideo}
         />
       ) : null;
@@ -34,7 +38,19 @@ const AllPhotosTab: FC = () => {
     [setPhotoIndex],
   );
 
-  return <Grid itemCount={photoCount} Item={Photo} />;
+  return (
+    <>
+      {photoIndex !== -1 ? (
+        <PhotoModal
+          albumId={null}
+          initialIndex={photoIndex}
+          onCloseButtonClick={handleCloseButtonClick}
+        />
+      ) : null}
+
+      <Grid itemCount={photoCount} Item={Photo} />
+    </>
+  );
 };
 
 export default AllPhotosTab;

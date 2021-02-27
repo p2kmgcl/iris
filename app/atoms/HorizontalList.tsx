@@ -39,16 +39,17 @@ function clamp(value: number, min: number, max: number) {
 }
 
 const HorizontalList: FC<{
-  index: number;
+  initialIndex: number;
   itemCount: number;
   Item: FC<ItemProps>;
-  onIndexChange: (index: number) => void;
-}> = ({ index, itemCount, Item, onIndexChange }) => {
+}> = ({ initialIndex, itemCount, Item }) => {
+  const [index, setIndex] = useState(initialIndex);
   const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
 
-  const [{ itemWidth, itemHeight, listStyle }, setListContext] = useState<
-    ListContext
-  >(() => ({
+  const [
+    { itemWidth, itemHeight, listStyle },
+    setListContext,
+  ] = useState<ListContext>(() => ({
     itemWidth: 0,
     itemHeight: 0,
     listStyle: {},
@@ -139,14 +140,14 @@ const HorizontalList: FC<{
 
       if (nextIndex !== index) {
         isNaturalScroll = false;
-        onIndexChange(nextIndex);
+        setIndex(nextIndex);
       }
     };
 
     wrapper.addEventListener('scroll', handleScroll);
 
     return () => wrapper.removeEventListener('scroll', handleScroll);
-  }, [wrapper, itemWidth, index, itemCount, onIndexChange]);
+  }, [wrapper, itemWidth, index, itemCount]);
 
   requestAnimationFrame(() => {
     wrapper?.scrollTo({ left: index * itemWidth, behavior: 'auto' });
