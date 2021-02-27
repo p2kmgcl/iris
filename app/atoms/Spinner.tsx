@@ -1,7 +1,10 @@
 import React, { FC } from 'react';
 import styles from './Spinner.css';
 
-const Spinner: FC<{ size: 'regular' | 'large' }> = ({ size }) => (
+const Spinner: FC<{ size: 'regular' | 'large'; spinning?: boolean }> = ({
+  size,
+  spinning = true,
+}) => (
   <div
     style={{
       fontSize: {
@@ -9,7 +12,7 @@ const Spinner: FC<{ size: 'regular' | 'large' }> = ({ size }) => (
         large: 10,
       }[size],
     }}
-    className={styles.spinner}
+    className={`${styles.spinner} ${spinning ? styles.spinning : ''}`}
   />
 );
 

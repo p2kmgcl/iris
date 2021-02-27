@@ -18,10 +18,14 @@
   margin: 0 auto;
   position: relative;
   text-indent: -9999em;
-  border-top: 1.1em solid var(--dark-l2);
-  border-right: 1.1em solid var(--dark-l2);
-  border-bottom: 1.1em solid var(--dark-l2);
-  border-left: 1.1em solid var(--primary-l2);
+  border: 1.1em solid var(--dark-l2);
   transform: translateZ(0);
+  transition: border-color ease var(--transition-duration);
   animation: spinner 1.1s infinite linear;
+  animation-play-state: paused;
+}
+
+.spinning {
+  border-left-color: var(--primary-l2);
+  animation-play-state: running;
 }
