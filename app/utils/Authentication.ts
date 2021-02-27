@@ -2,6 +2,8 @@ import pkg from '../../package.json';
 
 const LOCAL_STORAGE_AUTH_KEY = `__${pkg.name}_auth__`;
 
+let refreshPromise: Promise<void> = Promise.resolve();
+
 let auth: {
   access_token: string;
   refresh_token: string;
@@ -104,30 +106,31 @@ const Authentication = {
     window.location.reload();
 
     // Wait until page reload
-    return new Promise(() => {});
+    return new Promise<void>(() => {});
   },
 
   getFreshAccessToken: async () => {
+    // Wait if token is being refreshed
+    await refreshPromise;
+
     if (!(await Authentication.isAuthenticated())) {
       // User will be redirected
       await new Promise(() => {});
     }
 
     if (auth.expiration_date <= Date.now()) {
-      try {
-        const response = await fetch('/api/auth-refresh', {
-          method: 'POST',
-          body: JSON.stringify({
-            refresh_token: auth.refresh_token,
-          }),
+      refreshPromise = fetch('/api/auth-refresh', {
+        method: 'POST',
+        body: JSON.stringify({
+          refresh_token: auth.refresh_token,
+        }),
+      })
+        .then((response) => response.json())
+        .then((json) => setAuth(json))
+        .catch((error) => {
+          console.error(error);
+          return Authentication.logout();
         });
-
-        setAuth(await response.json());
-      } catch (_error) {
-        console.log(_error);
-        await new Promise(() => {});
-        await Authentication.logout();
-      }
     }
 
     return auth.access_token;
