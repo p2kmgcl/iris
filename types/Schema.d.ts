@@ -10,6 +10,7 @@ export interface AlbumModel {
   itemId: string;
   title: string;
   dateTime: number;
+  coverItemId: string;
 }
 
 export interface PhotoModel {

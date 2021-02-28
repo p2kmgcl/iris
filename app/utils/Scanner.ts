@@ -97,6 +97,9 @@ const Scanner = {
           updateTime: lastModifiedDateTime,
           title,
           dateTime,
+          coverItemId: (children.find((child) =>
+            driveItemIsPhoto(child),
+          ) as DriveItem).id as string,
         });
       } else if (getMetadataFilePhoto(driveItem, driveItemSiblings)) {
         const photoItem = getMetadataFilePhoto(

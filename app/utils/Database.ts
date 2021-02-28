@@ -260,6 +260,7 @@ const Database = {
       itemId: album.itemId,
       dateTime: album.dateTime,
       title: album.title,
+      coverItemId: album.coverItemId,
     });
 
     return transaction.done.catch((error) => {
