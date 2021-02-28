@@ -25,7 +25,7 @@ const CardGrid: FC<{
   onCardClick: (itemId: string) => void;
 }> = ({ cards, onCardClick }) => {
   return (
-    <div>
+    <div className={styles.grid}>
       {cards.map((card) => (
         <Card key={card.itemId} card={card} onClick={onCardClick} />
       ))}

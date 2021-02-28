@@ -1,8 +1,46 @@
+.grid {
+  --spacing: clamp(
+    calc(var(--spacing-unit) * 2),
+    2vw,
+    calc(var(--spacing-unit) * 4)
+  );
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-gap: var(--spacing);
+  padding: var(--spacing);
+  width: 100%;
+  align-items: flex-start;
+}
+
 .card {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+
+  overflow: hidden;
+  text-align: left;
 }
 
 .thumbnail {
+  display: block;
+  width: 100%;
+  padding-top: 100%;
+  background: var(--dark-l1);
+  border-radius: var(--roundness);
 }
 
 .title {
+  display: block;
+  padding: var(--spacing-unit);
+  word-break: break-word;
+  max-height: 3.5em;
+  font-size: 0.875em;
 }
