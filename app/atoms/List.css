@@ -4,6 +4,7 @@
   max-width: 60ch;
   box-shadow: 0 0 0 1px var(--dark-l1);
   list-style: none;
+  height: 100%;
 }
 
 .listItem {
