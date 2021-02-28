@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import pkg from '../../../package.json';
 import Authentication from '../../utils/Authentication';
 import Database from '../../utils/Database';
@@ -13,7 +13,6 @@ import {
   AiOutlineHdd,
   AiOutlineInfoCircle,
   AiOutlineLogout,
-  AiOutlineWarning,
 } from 'react-icons/ai';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import List, {

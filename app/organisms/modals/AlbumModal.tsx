@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import Modal from '../../atoms/Modal';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';

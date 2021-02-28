@@ -1,4 +1,4 @@
-import React, { FC, Suspense, useLayoutEffect, useRef } from 'react';
+import { FC, Suspense, useLayoutEffect, useRef } from 'react';
 import styles from './BottomTabs.css';
 import Spinner from './Spinner';
 

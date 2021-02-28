@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useEffect } from 'react';
+import { CSSProperties, FC, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { MdClose } from 'react-icons/md';
 import styles from './Modal.css';

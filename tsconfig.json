@@ -1,15 +1,22 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
     "allowJs": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "module": "commonjs",
+
+    "moduleResolution": "node",
+    "sourceMap": true,
+
+    "alwaysStrict": true,
+    "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "strict": true,
-    "jsx": "preserve",
-    "lib": ["ES2018", "DOM", "WebWorker"],
-    "target": "ES2018"
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "lib": ["ESNext", "DOM", "WebWorker"],
+    "target": "ES2015"
   },
   "include": ["app", "types"]
 }

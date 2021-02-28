@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import styles from './SetupStep.css';
 
 const SetupStep: FC<{ title: string }> = ({ title, children }) => {

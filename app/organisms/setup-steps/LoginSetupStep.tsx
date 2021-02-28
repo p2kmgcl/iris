@@ -1,4 +1,4 @@
-import React, { FC, useState, MouseEventHandler, useEffect } from 'react';
+import { FC, useState, MouseEventHandler, useEffect } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Authentication from '../../utils/Authentication';
 import Button from '../../atoms/Button';

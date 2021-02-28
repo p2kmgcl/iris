@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import WelcomePageSetupStep from './setup-steps/WelcomePageSetupStep';
 import SetupStepProps from '../../types/SetupStepProps';
 import App from './App';

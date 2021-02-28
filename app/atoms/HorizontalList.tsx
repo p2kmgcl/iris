@@ -1,11 +1,4 @@
-import React, {
-  CSSProperties,
-  FC,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import styles from './HorizontalList.css';
 
 export interface ItemProps {

@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useMemo } from 'react';
+import { FC, ReactElement, useMemo } from 'react';
 import styles from './List.css';
 
 let nextCheckboxId = 0;

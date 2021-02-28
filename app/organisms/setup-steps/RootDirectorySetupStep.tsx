@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Graph from '../../utils/Graph';
 import { DriveItem } from '@microsoft/microsoft-graph-types';

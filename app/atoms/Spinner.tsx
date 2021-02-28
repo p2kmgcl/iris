@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import styles from './Spinner.css';
 
 const Spinner: FC<{ size: 'regular' | 'large'; spinning?: boolean }> = ({

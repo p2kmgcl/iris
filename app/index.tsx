@@ -1,5 +1,4 @@
 import './index.css';
-import React from 'react';
 import { render } from 'react-dom';
 import Database from './utils/Database';
 import ScanContextProvider from './contexts/ScanContext';

@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  FC,
-  useCallback,
-  useContext,
-  useRef,
-} from 'react';
+import { createContext, FC, useCallback, useContext, useRef } from 'react';
 import { PhotoModel } from '../../types/Schema';
 import Database from '../utils/Database';
 import Scanner from '../utils/Scanner';

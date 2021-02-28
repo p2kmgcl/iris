@@ -1,5 +1,4 @@
 import CopyPlugin from 'copy-webpack-plugin';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import WorkboxPlugin from 'workbox-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import webpack from 'webpack';
@@ -16,26 +15,7 @@ export const cssRule = {
 export const jsRule = {
   test: /\.tsx?$/,
   include: path.join(__dirname, 'app'),
-  use: {
-    loader: 'babel-loader',
-    options: {
-      presets: [
-        '@babel/preset-typescript',
-        '@babel/preset-react',
-        [
-          '@babel/preset-env',
-          {
-            targets: ['last 2 Chrome versions', 'last 2 iOS versions'],
-          },
-        ],
-      ],
-      plugins: [
-        ...(process.env.NODE_ENV === 'development'
-          ? [require.resolve('react-refresh/babel')]
-          : []),
-      ],
-    },
-  },
+  use: 'ts-loader',
 };
 
 export const urlRule = {
@@ -89,10 +69,7 @@ export const productionPlugins = [
   }),
 ];
 
-export const developmentPlugins = [
-  new webpack.HotModuleReplacementPlugin(),
-  new ReactRefreshWebpackPlugin(),
-];
+export const developmentPlugins = [new webpack.HotModuleReplacementPlugin()];
 
 export const devtool =
   process.env.NODE_ENV === 'development' ? 'eval-source-map' : false;

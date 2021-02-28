@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Button from '../../atoms/Button';
 import SetupStep from '../../atoms/SetupStep';

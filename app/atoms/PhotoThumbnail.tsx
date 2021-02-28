@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import styles from './PhotoThumbnail.css';
 import { MdLocalMovies } from 'react-icons/md';
 

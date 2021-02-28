@@ -72,7 +72,7 @@ const Authentication = {
       '_blank',
     );
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       const handleMessage = (event: MessageEvent) => {
         window.removeEventListener('message', handleMessage);
         popup?.close();
