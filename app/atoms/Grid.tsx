@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import styles from './Grid.css';
 
-const MIN_ITEM_SIZE = 128;
+const MAX_ITEM_SIZE = 256;
 
 export interface ItemProps {
   index: number;
@@ -22,7 +22,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
     rowCount: number;
     gridStyle: CSSProperties;
   }>(() => ({
-    itemSize: MIN_ITEM_SIZE,
+    itemSize: 0,
     columnCount: 0,
     rowCount: 0,
     gridStyle: {},
@@ -45,7 +45,15 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
     const handleResize = () => {
       const { width: wrapperWidth } = wrapperElement.getBoundingClientRect();
 
-      const nextColumnCount = Math.floor(wrapperWidth / MIN_ITEM_SIZE);
+      const nextColumnCount = Math.floor(
+        wrapperWidth /
+          Math.min(
+            MAX_ITEM_SIZE,
+            // Try having at least three columns
+            Math.min(window.innerWidth, window.innerHeight) / 3.25,
+          ),
+      );
+
       const nextRowCount = Math.ceil(itemCount / nextColumnCount);
       const nextItemSize = Math.floor(wrapperWidth / nextColumnCount);
 
