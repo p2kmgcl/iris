@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useState } from 'react';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
-import Button from '../../atoms/Button';
 import AlbumModal from '../modals/AlbumModal';
+import CardGrid from '../../atoms/CardGrid';
 
 const AllAlbumsTab: FC = () => {
   const albumList = useAsyncMemo(() => Database.selectAlbumList(), [], []);
@@ -27,17 +27,7 @@ const AllAlbumsTab: FC = () => {
         />
       ) : null}
 
-      {albumList.map((album) => (
-        <div key={album.itemId} style={{ display: 'inline-block', margin: 10 }}>
-          <Button
-            onClick={() => setAlbumId(album.itemId)}
-            key={album.itemId}
-            type="button"
-          >
-            {album.title}
-          </Button>
-        </div>
-      ))}
+      <CardGrid cards={albumList} onCardClick={setAlbumId} />
     </div>
   );
 };
