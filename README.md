@@ -27,3 +27,17 @@ The missing OneDrive gallery.
 
 > _Warning_: The backend authentication process needs `AUTH_HOST` environment variable
 > to be pointing to the netlify server host, so it needs to be overridden for production/development environments.
+
+## Thoughts
+
+### Why not using a CSS/Styles/Components library?
+
+I love writing CSS, and you learn lots of things doing that. For company/time-money-driven projects it might be too expensive (sometimes), but for personal projects it's very fun.
+
+### What about `react-window`/`react-virtualized`?
+
+I tried using them, but I found that the usecases I am trying to develop here are quite specific. I don't think it makes sense to include a generic library like `react-virtualized` if the resulting code is more or less equal. `react-window`, on the other hand, doesn't solve the windowscroller behavior that I want to implement (there is a [documented issue](https://github.com/bvaughn/react-window/issues/30) about this). When I tried using both of them I ended up with too many -empty- elements being rendered, and the result was laggy.
+
+### About IndexedDB performance and image storage
+
+Currently I have a `PhotoModel` entity inside my database that keeps image information (ex. `itemId`) and the image data itself all together. _Maybe_ splitting this information will allow me to load the whole list of indexes, so I can resuse DOM elements: https://github.com/p2kmgcl/iris/blob/master/app/atoms/Grid.tsx#L116
