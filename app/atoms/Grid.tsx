@@ -74,11 +74,14 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
   }, [wrapperElement, itemCount]);
 
   useEffect(() => {
-    if (!wrapperElement) {
+    if (!wrapperElement || !gridContext.itemSize) {
       return;
     }
 
     const container = wrapperElement.parentElement || window;
+
+    let lastFromRowIndex = 0;
+    let lastToRowIndex = 0;
 
     const handleScroll = () => {
       const overScan = window.innerHeight;
@@ -89,6 +92,14 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
 
       const fromRowIndex = Math.floor(from / gridContext.itemSize);
       const toRowIndex = Math.ceil(to / gridContext.itemSize);
+
+      // Do not trigger render unless visible area has changed
+      if (fromRowIndex === lastFromRowIndex && toRowIndex === lastToRowIndex) {
+        return;
+      }
+
+      lastFromRowIndex = fromRowIndex;
+      lastToRowIndex = toRowIndex;
 
       const nextRenderGrid = [];
 
