@@ -46,6 +46,11 @@ const Database = {
           multiEntry: false,
         });
 
+        itemsStore.createIndex('byParentItemId', 'parentItemId', {
+          unique: false,
+          multiEntry: false,
+        });
+
         const albumsStore = database.createObjectStore('albums', {
           keyPath: 'itemId',
         });
@@ -238,6 +243,7 @@ const Database = {
 
     transaction.objectStore('items').add({
       itemId: item.itemId,
+      parentItemId: item.parentItemId,
       updateTime: item.updateTime,
       fileName: item.fileName,
     });
@@ -252,6 +258,7 @@ const Database = {
 
     transaction.objectStore('items').add({
       itemId: album.itemId,
+      parentItemId: album.parentItemId,
       fileName: album.fileName,
       updateTime: album.updateTime,
     });
@@ -282,6 +289,7 @@ const Database = {
 
     transaction.objectStore('items').add({
       itemId: photo.itemId,
+      parentItemId: photo.parentItemId,
       fileName: photo.fileName,
       updateTime: photo.updateTime,
     });
@@ -316,6 +324,7 @@ const Database = {
 
     transaction.objectStore('items').add({
       itemId: metadataFile.itemId,
+      parentItemId: metadataFile.parentItemId,
       updateTime: metadataFile.updateTime,
       fileName: metadataFile.fileName,
     });

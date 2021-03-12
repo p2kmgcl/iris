@@ -3,9 +3,9 @@ import Database from './Database';
 import Graph from './Graph';
 import { PhotoModel } from '../../types/Schema';
 
-class AbortError extends Error {
+class ScannerManualAbortError extends Error {
   toString() {
-    return 'AbortError';
+    return 'ScannerManualAbortError';
   }
 }
 
@@ -55,7 +55,7 @@ const Scanner = {
 
       for (const child of children) {
         await scanItem(child, driveItem, children);
-        if (abortSignal.aborted) throw new AbortError();
+        if (abortSignal.aborted) throw new ScannerManualAbortError();
       }
 
       if (driveItemIsPhoto(driveItem)) {
@@ -75,6 +75,7 @@ const Scanner = {
 
         await Database.addPhoto({
           itemId: driveItem.id as string,
+          parentItemId: driveItemParent.id as string,
           fileName: driveItem.name as string,
           updateTime: lastModifiedDateTime,
           thumbnailURI,
@@ -93,6 +94,7 @@ const Scanner = {
 
         await Database.addAlbum({
           itemId: driveItem.id as string,
+          parentItemId: driveItemParent.id as string,
           fileName: driveItem.name as string,
           updateTime: lastModifiedDateTime,
           title,
@@ -110,6 +112,7 @@ const Scanner = {
         await Database.addMetadataFile({
           photoItemId: photoItem.id as string,
           itemId: driveItem.id as string,
+          parentItemId: driveItemParent.id as string,
           fileName: driveItem.name as string,
           updateTime: lastModifiedDateTime,
           contentURI: (driveItem as { '@microsoft.graph.downloadUrl': string })[
@@ -119,6 +122,7 @@ const Scanner = {
       } else {
         await Database.addItem({
           itemId: driveItem.id as string,
+          parentItemId: driveItemParent.id as string,
           fileName: driveItem.name as string,
           updateTime: lastModifiedDateTime,
         });

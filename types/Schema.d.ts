@@ -2,6 +2,7 @@ import { DBSchema } from 'idb';
 
 export interface ItemModel {
   itemId: string;
+  parentItemId: string;
   fileName: string;
   updateTime: number;
 }
@@ -49,6 +50,7 @@ export default interface Schema extends DBSchema {
     value: ItemModel;
     indexes: {
       byItemId: string;
+      byParentItemId: string;
     };
   };
 
