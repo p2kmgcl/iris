@@ -2,6 +2,7 @@ import { DriveItem } from '@microsoft/microsoft-graph-types';
 import Database from './Database';
 import Graph from './Graph';
 import { PhotoModel } from '../../types/Schema';
+import Authentication from './Authentication';
 
 class ScannerManualAbortError extends Error {
   toString() {
@@ -139,8 +140,10 @@ const Scanner = {
       }
     }
 
-    await Graph.getItem(driveItemId).then((driveItem) =>
-      scanItem(driveItem, driveItem, []),
+    await Authentication.getFreshAccessToken().then(() =>
+      Graph.getItem(driveItemId).then((driveItem) =>
+        scanItem(driveItem, driveItem, []),
+      ),
     );
   },
 };
