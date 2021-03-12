@@ -154,6 +154,14 @@ const Database = {
     return database.get('items', itemId);
   },
 
+  selectItemsFromParentItemId: async (parentItemId: string) => {
+    return database
+      .transaction('items', 'readonly')
+      .objectStore('items')
+      .index('byParentItemId')
+      .getAll(parentItemId);
+  },
+
   selectAlbumList: (): Promise<AlbumModel[]> => {
     return database
       .transaction('albums', 'readonly')
@@ -168,6 +176,14 @@ const Database = {
       .objectStore('albums')
       .get(itemId)
       .then((album) => album || null);
+  },
+
+  selectMetadataFile: (itemId: string): Promise<MetadataFileModel | null> => {
+    return database
+      .transaction('metadataFiles', 'readonly')
+      .objectStore('metadataFiles')
+      .get(itemId)
+      .then((metadataFile) => metadataFile || null);
   },
 
   selectPhoto: async (itemId: string): Promise<PhotoModel | null> => {
@@ -251,6 +267,13 @@ const Database = {
     return transaction.done.catch((error) => {
       throw new Error(`Item ${item.fileName}: ${error.toString()}`);
     });
+  },
+
+  removeItem: async (itemId: string) => {
+    await database.delete('items', itemId);
+    await database.delete('albums', itemId);
+    await database.delete('photos', itemId);
+    await database.delete('metadataFiles', itemId);
   },
 
   addAlbum: (album: AlbumModel & ItemModel) => {

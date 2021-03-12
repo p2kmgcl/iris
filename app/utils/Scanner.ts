@@ -53,6 +53,16 @@ const Scanner = {
         ? await Graph.getItemChildren(driveItem.id as string)
         : [];
 
+      const removedChildren = (
+        await Database.selectItemsFromParentItemId(driveItem.id as string)
+      ).filter((storedChild) =>
+        children.every((child) => child.id !== storedChild.itemId),
+      );
+
+      for (const removedChild of removedChildren) {
+        await Database.removeItem(removedChild.itemId);
+      }
+
       for (const child of children) {
         await scanItem(child, driveItem, children);
         if (abortSignal.aborted) throw new ScannerManualAbortError();
