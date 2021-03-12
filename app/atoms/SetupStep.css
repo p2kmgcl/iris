@@ -2,7 +2,10 @@
   height: 100%;
   width: 100%;
   overflow: auto;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .wrapper::before {
@@ -22,11 +25,6 @@
 }
 
 .content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  text-align: center;
   z-index: 3;
   max-width: 100%;
   padding: 1rem;
