@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import styles from './FileBrowser.css';
 import Spinner from './Spinner';
 
@@ -18,20 +18,13 @@ const FileBrowser: FC<{
         <>
           <ol className={styles.breadcrumbList}>
             {filteredPath.map((item, index) => (
-              <>
+              <React.Fragment key={`${item}-${index}`}>
                 {index > 0 ? (
-                  <span
-                    key={`${item}-${index}-separator`}
-                    className={styles.breadcrumbSeparator}
-                  >
-                    /
-                  </span>
+                  <span className={styles.breadcrumbSeparator}>/</span>
                 ) : null}
 
-                <li className={styles.breadcrumbItem} key={`${item}-${index}`}>
-                  {item}
-                </li>
-              </>
+                <li className={styles.breadcrumbItem}>{item}</li>
+              </React.Fragment>
             ))}
           </ol>
 
