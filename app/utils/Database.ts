@@ -257,7 +257,7 @@ const Database = {
   addItem: (item: ItemModel) => {
     const transaction = database.transaction('items', 'readwrite');
 
-    transaction.objectStore('items').add({
+    transaction.objectStore('items').put({
       itemId: item.itemId,
       parentItemId: item.parentItemId,
       updateTime: item.updateTime,
@@ -279,14 +279,14 @@ const Database = {
   addAlbum: (album: AlbumModel & ItemModel) => {
     const transaction = database.transaction(['items', 'albums'], 'readwrite');
 
-    transaction.objectStore('items').add({
+    transaction.objectStore('items').put({
       itemId: album.itemId,
       parentItemId: album.parentItemId,
       fileName: album.fileName,
       updateTime: album.updateTime,
     });
 
-    transaction.objectStore('albums').add({
+    transaction.objectStore('albums').put({
       itemId: album.itemId,
       dateTime: album.dateTime,
       title: album.title,
@@ -310,14 +310,14 @@ const Database = {
 
     const transaction = database.transaction(['items', 'photos'], 'readwrite');
 
-    transaction.objectStore('items').add({
+    transaction.objectStore('items').put({
       itemId: photo.itemId,
       parentItemId: photo.parentItemId,
       fileName: photo.fileName,
       updateTime: photo.updateTime,
     });
 
-    transaction.objectStore('photos').add({
+    transaction.objectStore('photos').put({
       itemId: photo.itemId,
       dateTime: photo.dateTime,
       height: photo.height,
@@ -345,14 +345,14 @@ const Database = {
       'readwrite',
     );
 
-    transaction.objectStore('items').add({
+    transaction.objectStore('items').put({
       itemId: metadataFile.itemId,
       parentItemId: metadataFile.parentItemId,
       updateTime: metadataFile.updateTime,
       fileName: metadataFile.fileName,
     });
 
-    transaction.objectStore('metadataFiles').add({
+    transaction.objectStore('metadataFiles').put({
       itemId: metadataFile.itemId,
       photoItemId: metadataFile.photoItemId,
       content,
