@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import WelcomePageSetupStep from './setup-steps/WelcomePageSetupStep';
 import SetupStepProps from '../../types/SetupStepProps';
 import App from './App';
@@ -17,6 +17,10 @@ export default function Setup() {
   const [stepIndex, setStepIndex] = useState(0);
   const StepComponent = SetupSteps[stepIndex];
 
+  const handleStepReady = useCallback(() => {
+    setStepIndex((prevStepIndex) => prevStepIndex + 1);
+  }, []);
+
   if (stepIndex >= SetupSteps.length) {
     return <App />;
   }
@@ -24,10 +28,6 @@ export default function Setup() {
   if (!StepComponent) {
     throw new Error('Setup not ready, but there is no StepComponent');
   }
-
-  const handleStepReady = () => {
-    setStepIndex((prevStepIndex) => prevStepIndex + 1);
-  };
 
   return <StepComponent stepReady={handleStepReady} />;
 }

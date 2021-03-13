@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import pkg from '../../../package.json';
 import Authentication from '../../utils/Authentication';
 import Database from '../../utils/Database';
@@ -14,7 +14,6 @@ import {
   AiOutlineInfoCircle,
   AiOutlineLogout,
 } from 'react-icons/ai';
-import useAsyncMemo from '../../hooks/useAsyncMemo';
 import List, {
   ListButtonItem,
   ListItem,
@@ -22,23 +21,41 @@ import List, {
   SubList,
 } from '../../atoms/List';
 
+const UsedSpace = () => {
+  const [space, setSpace] = useState<JSX.Element>(<></>);
+
+  useEffect(() => {
+    const updateSpace = async () => {
+      const estimation = await window.navigator?.storage?.estimate?.();
+      const megaBytes = Math.round((estimation?.usage || 0) / Math.pow(2, 20));
+      const photoCount = await Database.selectPhotoCount();
+      const albumCount = await Database.selectAlbumCount();
+
+      setSpace(
+        <>
+          <div>
+            {photoCount} photos in {albumCount} albums
+          </div>
+          <div>{megaBytes} megabytes</div>
+        </>,
+      );
+    };
+
+    updateSpace();
+    const intervalId = setInterval(updateSpace, 10000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  return space;
+};
+
 const SettingsTab: FC = () => {
   const isScanning = useIsScanning();
   const toggleScan = useToggleScan();
   const scanStatus = useScanStatus();
-
-  const space = useAsyncMemo(
-    () =>
-      window.navigator?.storage
-        ?.estimate?.()
-        .then((estimation: any) =>
-          estimation?.usage
-            ? `${Math.round(estimation.usage / Math.pow(2, 20))} MB`
-            : '???',
-        ) ?? '???',
-    [],
-    '',
-  );
 
   return (
     <List>
@@ -77,7 +94,11 @@ const SettingsTab: FC = () => {
           title="Version"
           subtitle={pkg.version}
         />
-        <ListItem icon={<AiOutlineHdd />} title="Used space" subtitle={space} />
+        <ListItem
+          icon={<AiOutlineHdd />}
+          title="Used space"
+          subtitle={<UsedSpace />}
+        />
       </SubList>
     </List>
   );

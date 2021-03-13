@@ -4,14 +4,17 @@ import styles from './Grid.css';
 const MAX_ITEM_SIZE = 256;
 
 export interface ItemProps {
-  index: number;
+  itemId: string;
   itemSize: number;
 }
 
-const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
-  itemCount,
-  Item,
-}) => {
+type GridProps<T> = {
+  itemIdList: string[];
+  itemProps: T;
+  Item: FC<T & ItemProps>;
+};
+
+function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(
     null,
   );
@@ -38,7 +41,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
   >(() => []);
 
   useEffect(() => {
-    if (!wrapperElement || !itemCount) {
+    if (!wrapperElement || !itemIdList.length) {
       return;
     }
 
@@ -54,7 +57,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
           ),
       );
 
-      const nextRowCount = Math.ceil(itemCount / nextColumnCount);
+      const nextRowCount = Math.ceil(itemIdList.length / nextColumnCount);
       const nextItemSize = Math.floor(wrapperWidth / nextColumnCount);
 
       setGridContext({
@@ -71,7 +74,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [wrapperElement, itemCount]);
+  }, [wrapperElement, itemIdList]);
 
   useEffect(() => {
     if (!wrapperElement || !gridContext.itemSize) {
@@ -107,7 +110,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
         for (let j = 0; j < gridContext.columnCount; j++) {
           const index = i * gridContext.columnCount + j;
 
-          if (index >= itemCount) {
+          if (index >= itemIdList.length) {
             break;
           }
 
@@ -122,7 +125,7 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
               height: gridContext.itemSize,
             },
             itemProps: {
-              index,
+              itemId: itemIdList[index],
               itemSize: gridContext.itemSize,
             },
           });
@@ -141,16 +144,16 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
       container.removeEventListener('scroll', handleScroll);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [wrapperElement, gridContext, itemCount]);
+  }, [wrapperElement, gridContext, itemIdList]);
 
   return (
     <div ref={setWrapperElement} className={styles.wrapper}>
-      {itemCount && gridContext.columnCount ? (
+      {itemIdList.length && gridContext.columnCount ? (
         <div className={styles.grid} style={gridContext.gridStyle}>
           {renderGrid.map((cell) => (
             <div key={cell.key} className={cell.className} style={cell.style}>
               <div className={styles.cellContent}>
-                <Item {...cell.itemProps} />
+                <Item {...itemProps} {...cell.itemProps} />
               </div>
             </div>
           ))}
@@ -158,6 +161,6 @@ const Grid: FC<{ itemCount: number; Item: FC<ItemProps> }> = ({
       ) : null}
     </div>
   );
-};
+}
 
 export default Grid;

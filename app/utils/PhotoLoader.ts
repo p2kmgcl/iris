@@ -1,22 +1,19 @@
 import Database from './Database';
 import Graph from './Graph';
 import { LoadedPhotoModel } from '../../types/LoadedPhotoModel';
+import { ThumbnailModel } from '../../types/Schema';
 
 const CHUNK_SIZE = 30;
 
 const cache: {
-  albumId: string | null;
+  albumId?: string;
   chunks: Promise<LoadedPhotoModel[]>[];
 } = {
-  albumId: null,
   chunks: [],
 };
 
 const PhotoLoader = {
-  getLoadedPhotoFromIndex: async (
-    index: number,
-    albumId: string | null = null,
-  ) => {
+  getLoadedPhotoFromIndex: async (index: number, albumId?: string) => {
     if (cache.albumId !== albumId) {
       cache.albumId = albumId;
 
@@ -36,16 +33,23 @@ const PhotoLoader = {
 
     cache.chunks[chunkIndex] =
       cache.chunks[chunkIndex] ||
-      Database.selectPhotosFromIndex(index, index + CHUNK_SIZE, albumId).then(
-        (photos) =>
-          photos.map((photo) => ({
-            ...photo,
-            thumbnailURL: URL.createObjectURL(
-              new File([photo.thumbnail.arrayBuffer], photo.itemId, {
-                type: photo.thumbnail.contentType,
-              }),
-            ),
-          })),
+      Database.selectPhotoList(albumId).then((photos) =>
+        Promise.all(
+          photos.slice(index, index + CHUNK_SIZE).map(async (photo) => {
+            const thumbnail = (await Database.selectThumbnail(
+              photo.itemId,
+            )) as ThumbnailModel;
+
+            return {
+              ...photo,
+              thumbnailURL: URL.createObjectURL(
+                new File([thumbnail.arrayBuffer], photo.itemId, {
+                  type: thumbnail.contentType,
+                }),
+              ),
+            };
+          }),
+        ),
       );
 
     return cache.chunks[chunkIndex].then((chunk) => chunk[photoIndex]);

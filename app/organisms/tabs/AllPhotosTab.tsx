@@ -1,54 +1,56 @@
-import { FC, useCallback, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
 import Grid, { ItemProps } from '../../atoms/Grid';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
-import PhotoLoader from '../../utils/PhotoLoader';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 import PhotoModal from '../modals/PhotoModal';
+import { usePhotoThumbnail } from '../../hooks/usePhotoThumbnail';
+
+interface PhotoProps {
+  setPhotoId: Dispatch<SetStateAction<string>>;
+}
+
+const Photo = function ({ itemId, setPhotoId }: ItemProps & PhotoProps) {
+  const url = usePhotoThumbnail(itemId);
+
+  const showVideoIcon = useAsyncMemo(
+    () => Database.selectPhoto(itemId).then((photo) => photo?.isVideo || false),
+    [itemId],
+    false,
+  );
+
+  return url ? (
+    <PhotoThumbnail
+      url={url}
+      onClick={() => setPhotoId(itemId)}
+      showVideoIcon={showVideoIcon}
+    />
+  ) : null;
+};
 
 const AllPhotosTab: FC = () => {
-  const [photoIndex, setPhotoIndex] = useState(-1);
+  const [photoId, setPhotoId] = useState('');
 
-  const photoCount = useAsyncMemo<number>(
-    () => Database.selectPhotoCount(),
+  const photoKeyList = useAsyncMemo<string[]>(
+    () => Database.selectPhotoKeyList(),
     [],
-    0,
+    [],
   );
 
   const handleCloseButtonClick = useCallback(() => {
-    setPhotoIndex(-1);
+    setPhotoId('');
   }, []);
-
-  const Photo = useCallback(
-    function PhotoCallback({ index }: ItemProps) {
-      const photo = useAsyncMemo(
-        () => PhotoLoader.getLoadedPhotoFromIndex(index),
-        [index],
-        null,
-      );
-
-      return photo ? (
-        <PhotoThumbnail
-          url={photo.thumbnailURL}
-          onClick={() => setPhotoIndex(index)}
-          showVideoIcon={photo.isVideo}
-        />
-      ) : null;
-    },
-    [setPhotoIndex],
-  );
 
   return (
     <>
-      {photoIndex !== -1 ? (
+      {photoId ? (
         <PhotoModal
-          albumId={null}
-          initialIndex={photoIndex}
+          photoId={photoId}
           onCloseButtonClick={handleCloseButtonClick}
         />
       ) : null}
 
-      <Grid itemCount={photoCount} Item={Photo} />
+      <Grid itemIdList={photoKeyList} itemProps={{ setPhotoId }} Item={Photo} />
     </>
   );
 };

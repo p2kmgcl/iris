@@ -1,5 +1,4 @@
 import { createContext, FC, useCallback, useContext, useRef } from 'react';
-import { PhotoModel } from '../../types/Schema';
 import Database from '../utils/Database';
 import Scanner from '../utils/Scanner';
 import useChannel, {
@@ -10,10 +9,9 @@ import useChannel, {
 
 const ScanContext = createContext<{
   isScanningChannel: Channel<boolean>;
-  scanErrorChannel: Channel<Error | null>;
+  scanErrorChannel: Channel<Error | undefined>;
   scanStatusChannel: Channel<{
     description: string;
-    relatedPhoto: PhotoModel | null;
   }>;
   toggleScan: () => void;
 }>({
@@ -25,34 +23,27 @@ const ScanContext = createContext<{
 
 const ScanContextProvider: FC = ({ children }) => {
   const isScanningChannel = useChannel<boolean>(false);
-  const scanErrorChannel = useChannel<Error | null>(null);
-  const scanStatusChannel = useChannel<{
-    description: string;
-    relatedPhoto: PhotoModel | null;
-  }>({ description: 'Not scanning', relatedPhoto: null });
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const scanErrorChannel = useChannel<Error | undefined>(undefined);
+  const scanStatusChannel = useChannel<{ description: string }>({
+    description: 'Not scanning',
+  });
+  const abortControllerRef = useRef<AbortController>();
 
   const toggleScan = useCallback(() => {
     if (abortControllerRef.current) {
-      scanStatusChannel.emit({
-        description: 'Scanning stopped',
-        relatedPhoto: null,
-      });
+      scanStatusChannel.emit({ description: 'Scanning stopped' });
       isScanningChannel.emit(false);
       abortControllerRef.current.abort();
-      abortControllerRef.current = null;
+      abortControllerRef.current = undefined;
       return;
     }
 
     const abortController = new AbortController();
 
     abortControllerRef.current = abortController;
-    scanErrorChannel.emit(null);
+    scanErrorChannel.emit(undefined);
     isScanningChannel.emit(true);
-    scanStatusChannel.emit({
-      description: 'Initializing...',
-      relatedPhoto: null,
-    });
+    scanStatusChannel.emit({ description: 'Initializing...' });
 
     Database.getConfiguration().then(({ rootDirectoryId }) => {
       if (!abortControllerRef.current) {
@@ -62,39 +53,30 @@ const ScanContextProvider: FC = ({ children }) => {
       return Scanner.scan(
         rootDirectoryId,
         abortControllerRef.current.signal,
-        (photo) => {
+        (item) => {
           if (abortControllerRef.current === abortController) {
             scanStatusChannel.emit(
-              photo
-                ? {
-                    description: `Added ${new Date(
-                      photo.dateTime,
-                    ).toLocaleString()}`,
-                    relatedPhoto: photo,
-                  }
-                : { description: 'Scan in progress...', relatedPhoto: null },
+              item
+                ? { description: `Added ${item.fileName}` }
+                : { description: 'Scan in progress...' },
             );
           }
         },
       )
         .then(() => {
           if (abortControllerRef.current === abortController) {
-            abortControllerRef.current = null;
+            abortControllerRef.current = undefined;
             isScanningChannel.emit(false);
             scanStatusChannel.emit({
               description: `Completed at ${new Date().toLocaleString()}`,
-              relatedPhoto: null,
             });
           }
         })
         .catch((error) => {
           if (abortControllerRef.current === abortController) {
-            abortControllerRef.current = null;
+            abortControllerRef.current = undefined;
             isScanningChannel.emit(false);
-            scanStatusChannel.emit({
-              description: error.toString(),
-              relatedPhoto: null,
-            });
+            scanStatusChannel.emit({ description: error.toString() });
           }
         });
     });
@@ -103,7 +85,7 @@ const ScanContextProvider: FC = ({ children }) => {
       abortController.abort();
 
       if (abortControllerRef.current === abortController) {
-        abortControllerRef.current = null;
+        abortControllerRef.current = undefined;
       }
     };
   }, [isScanningChannel, scanErrorChannel, scanStatusChannel]);

@@ -16,7 +16,7 @@ import SetupStep from '../../atoms/SetupStep';
 
 const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [itemId, setItemId] = useState('root');
-  const [item, setItem] = useState<DriveItem | null>(null);
+  const [item, setItem] = useState<DriveItem>();
   const [path, setPath] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [children, setChildren] = useState<
@@ -38,7 +38,7 @@ const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
         setLoading(false);
       }
     });
-  }, []);
+  }, [stepReady]);
 
   useEffect(() => {
     setLoading(true);

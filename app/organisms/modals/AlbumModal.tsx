@@ -1,17 +1,39 @@
-import { FC, useCallback, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
 import Modal from '../../atoms/Modal';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import Grid, { ItemProps } from '../../atoms/Grid';
-import PhotoLoader from '../../utils/PhotoLoader';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 import PhotoModal from './PhotoModal';
+import { usePhotoThumbnail } from '../../hooks/usePhotoThumbnail';
+
+interface PhotoProps {
+  setPhotoId: Dispatch<SetStateAction<string>>;
+}
+
+const Photo = function ({ itemId, setPhotoId }: ItemProps & PhotoProps) {
+  const url = usePhotoThumbnail(itemId);
+
+  const showVideoIcon = useAsyncMemo(
+    () => Database.selectPhoto(itemId).then((photo) => photo?.isVideo || false),
+    [itemId],
+    false,
+  );
+
+  return url ? (
+    <PhotoThumbnail
+      url={url}
+      onClick={() => setPhotoId(itemId)}
+      showVideoIcon={showVideoIcon}
+    />
+  ) : null;
+};
 
 const AlbumModal: FC<{
   albumId: string;
   onCloseButtonClick: () => void;
 }> = ({ albumId, onCloseButtonClick }) => {
-  const [photoIndex, setPhotoIndex] = useState(-1);
+  const [photoId, setPhotoId] = useState('');
 
   const album = useAsyncMemo(
     () => (albumId ? Database.selectAlbum(albumId) : Promise.resolve(null)),
@@ -19,29 +41,10 @@ const AlbumModal: FC<{
     null,
   );
 
-  const photoCount = useAsyncMemo<number>(
-    () => Database.selectPhotoCount(albumId),
+  const photoKeyList = useAsyncMemo<string[]>(
+    () => Database.selectPhotoKeyList(albumId),
     [albumId],
-    0,
-  );
-
-  const Photo = useCallback(
-    function PhotoCallback({ index }: ItemProps) {
-      const photo = useAsyncMemo(
-        () => PhotoLoader.getLoadedPhotoFromIndex(index, albumId),
-        [index, albumId],
-        null,
-      );
-
-      return photo ? (
-        <PhotoThumbnail
-          url={photo.thumbnailURL}
-          onClick={() => setPhotoIndex(index)}
-          showVideoIcon={photo.isVideo}
-        />
-      ) : null;
-    },
-    [albumId, setPhotoIndex],
+    [],
   );
 
   if (!album) {
@@ -50,11 +53,11 @@ const AlbumModal: FC<{
 
   return (
     <Modal priority={1} onCloseButtonClick={onCloseButtonClick}>
-      {photoIndex !== -1 ? (
+      {photoId ? (
         <PhotoModal
           albumId={albumId}
-          initialIndex={photoIndex}
-          onCloseButtonClick={() => setPhotoIndex(-1)}
+          photoId={photoId}
+          onCloseButtonClick={() => setPhotoId('')}
         />
       ) : null}
 
@@ -65,7 +68,7 @@ const AlbumModal: FC<{
         <h1>{album.title}</h1>
       </header>
 
-      <Grid itemCount={photoCount} Item={Photo} />
+      <Grid itemIdList={photoKeyList} itemProps={{ setPhotoId }} Item={Photo} />
     </Modal>
   );
 };

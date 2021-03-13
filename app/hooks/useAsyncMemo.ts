@@ -6,7 +6,7 @@ export default function useAsyncMemo<T>(
   initial: T | (() => T),
 ): T {
   const [value, setValue] = useState<T>(initial);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<Error>();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const factoryCallback = useCallback(factory, [...dependencies]);
@@ -14,7 +14,7 @@ export default function useAsyncMemo<T>(
   useEffect(() => {
     let stop = false;
 
-    setError(null);
+    setError(undefined);
 
     factoryCallback()
       .then((nextValue) => {

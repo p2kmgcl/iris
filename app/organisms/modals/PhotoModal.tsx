@@ -1,75 +1,47 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useMemo } from 'react';
 import Modal from '../../atoms/Modal';
-import PhotoLoader from '../../utils/PhotoLoader';
+import HorizontalList, { ItemProps } from '../../atoms/HorizontalList';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
-import styles from './PhotoModal.css';
-import HorizontalList from '../../atoms/HorizontalList';
 import Database from '../../utils/Database';
-import { LoadedPhotoModel } from '../../../types/LoadedPhotoModel';
+import { PhotoModel } from '../../../types/Schema';
+import PhotoLoader from '../../utils/PhotoLoader';
+import { usePhotoThumbnail } from '../../hooks/usePhotoThumbnail';
+import styles from './PhotoModal.css';
 
-const PhotoModal: FC<{
-  initialIndex: number;
-  albumId: string | null;
-  onCloseButtonClick: () => void;
-}> = ({ initialIndex, albumId = null, onCloseButtonClick }) => {
-  const photoCount = useAsyncMemo<number>(
-    () => Database.selectPhotoCount(albumId),
-    [albumId],
-    0,
+const PhotoSlide: FC<ItemProps> = ({
+  itemId,
+  itemHeight: maxHeight,
+  itemWidth: maxWidth,
+}) => {
+  const photo = useAsyncMemo<PhotoModel | undefined>(
+    () => Database.selectPhoto(itemId),
+    [itemId],
+    undefined,
   );
 
-  const PhotoCallback = useCallback(
-    ({ index, itemHeight, itemWidth, isVisible }) => {
-      const photo = useAsyncMemo(
-        () => PhotoLoader.getLoadedPhotoFromIndex(index, albumId),
-        [index, albumId],
-        null,
-      );
-
-      return photo ? (
-        <PhotoSlide
-          photo={photo}
-          maxWidth={itemWidth}
-          maxHeight={itemHeight}
-          isVisible={isVisible}
-        />
-      ) : null;
-    },
-    [albumId],
-  );
-
-  return (
-    <Modal
-      priority={2}
-      background="black"
-      onCloseButtonClick={onCloseButtonClick}
-    >
-      <HorizontalList
-        itemCount={photoCount}
-        Item={PhotoCallback}
-        initialIndex={initialIndex}
-      />
-    </Modal>
-  );
-};
-
-const PhotoSlide: FC<{
-  photo: LoadedPhotoModel;
-  maxWidth: number;
-  maxHeight: number;
-  isVisible: boolean;
-}> = ({ photo, maxHeight, maxWidth, isVisible }) => {
-  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
-    null,
-  );
+  const thumbnailURL = usePhotoThumbnail(itemId);
 
   const url = useAsyncMemo(
-    () => PhotoLoader.getDownloadURLFromItemId(photo.itemId),
-    [photo.itemId],
+    async () => {
+      const nextURL = await PhotoLoader.getDownloadURLFromItemId(itemId);
+      const image = document.createElement('img');
+      const imageLoadPromise = new Promise<void>((resolve) => {
+        image.addEventListener('load', () => resolve());
+      });
+
+      image.src = nextURL;
+      await imageLoadPromise;
+      return nextURL;
+    },
+    [itemId],
     '',
   );
 
   const [width, height] = useMemo(() => {
+    if (!photo) {
+      return [0, 0];
+    }
+
     let width = photo.width;
     let height = photo.height;
     let ratio = 0;
@@ -87,34 +59,55 @@ const PhotoSlide: FC<{
     }
 
     return [width, height];
-  }, [maxWidth, maxHeight, photo.width, photo.height]);
+  }, [maxWidth, maxHeight, photo]);
 
-  useEffect(() => {
-    if (videoElement) {
-      if (isVisible) {
-        videoElement.play().catch(() => {});
-      } else {
-        videoElement.pause();
-      }
-    }
-  }, [videoElement, isVisible]);
+  if (!photo || !thumbnailURL) {
+    return null;
+  }
 
   return (
     <div className={styles.photoSlide}>
-      {photo.isVideo ? (
+      {photo?.isVideo ? (
         <video
           loop
           src={url}
           controls
-          poster={photo.thumbnailURL}
+          poster={thumbnailURL}
           width={width}
           height={height}
-          ref={setVideoElement}
         />
       ) : (
-        <img src={url || photo.thumbnailURL} width={width} height={height} />
+        <img src={url || thumbnailURL} width={width} height={height} />
       )}
     </div>
+  );
+};
+
+const PhotoModal: FC<{
+  albumId?: string;
+  photoId: string;
+  onCloseButtonClick: () => void;
+}> = ({ albumId, photoId, onCloseButtonClick }) => {
+  const photoKeyList = useAsyncMemo(
+    () => Database.selectPhotoKeyList(albumId),
+    [albumId],
+    [],
+  );
+
+  return (
+    <Modal
+      priority={2}
+      background="black"
+      onCloseButtonClick={onCloseButtonClick}
+    >
+      {photoKeyList.length ? (
+        <HorizontalList
+          itemIdList={photoKeyList}
+          initialItemId={photoId}
+          Item={PhotoSlide}
+        />
+      ) : null}
+    </Modal>
   );
 };
 

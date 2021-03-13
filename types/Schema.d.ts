@@ -18,13 +18,15 @@ export interface PhotoModel {
   itemId: string;
   albumItemId: string;
   dateTime: number;
-  thumbnail: {
-    arrayBuffer: ArrayBuffer;
-    contentType: string;
-  };
   width: number;
   height: number;
   isVideo: boolean;
+}
+
+export interface ThumbnailModel {
+  itemId: string;
+  arrayBuffer: ArrayBuffer;
+  contentType: string;
 }
 
 export interface MetadataFileModel {
@@ -70,6 +72,14 @@ export default interface Schema extends DBSchema {
       byItemId: string;
       byDateTime: number;
       byAlbumItemId: string;
+    };
+  };
+
+  thumbnails: {
+    key: string;
+    value: ThumbnailModel;
+    indexes: {
+      byItemId: string;
     };
   };
 

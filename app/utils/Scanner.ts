@@ -1,7 +1,7 @@
 import { DriveItem } from '@microsoft/microsoft-graph-types';
 import Database from './Database';
 import Graph from './Graph';
-import { PhotoModel } from '../../types/Schema';
+import { ItemModel } from '../../types/Schema';
 import Authentication from './Authentication';
 
 class ScannerManualAbortError extends Error {
@@ -34,7 +34,7 @@ const Scanner = {
   scan: async (
     driveItemId: string,
     abortSignal: AbortSignal,
-    onStatusUpdate: (lastScannedPhoto: PhotoModel | null) => void,
+    onStatusUpdate: (lastScannedItem?: ItemModel) => void,
   ) => {
     async function scanItem(
       driveItem: DriveItem,
@@ -97,8 +97,6 @@ const Scanner = {
             driveItem.video?.height) as number,
           isVideo: !!driveItem.video,
         });
-
-        onStatusUpdate(await Database.selectPhoto(driveItem.id as string));
       } else if (children.some((child) => driveItemIsPhoto(child))) {
         const title = driveItem.name as string;
         const dateTime = Infinity;
@@ -138,6 +136,8 @@ const Scanner = {
           updateTime: lastModifiedDateTime,
         });
       }
+
+      onStatusUpdate(await Database.selectItem(driveItem.id as string));
     }
 
     await Authentication.getFreshAccessToken().then(() =>

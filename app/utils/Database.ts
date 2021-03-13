@@ -84,6 +84,15 @@ const Database = {
           multiEntry: false,
         });
 
+        const thumbnailsStore = database.createObjectStore('thumbnails', {
+          keyPath: 'itemId',
+        });
+
+        thumbnailsStore.createIndex('byItemId', 'itemId', {
+          unique: true,
+          multiEntry: false,
+        });
+
         const metadataFilesStore = database.createObjectStore('metadataFiles', {
           keyPath: 'itemId',
         });
@@ -150,109 +159,7 @@ const Database = {
     });
   },
 
-  selectItem: async (itemId: string) => {
-    return database.get('items', itemId);
-  },
-
-  selectItemsFromParentItemId: async (parentItemId: string) => {
-    return database
-      .transaction('items', 'readonly')
-      .objectStore('items')
-      .index('byParentItemId')
-      .getAll(parentItemId);
-  },
-
-  selectAlbumList: (): Promise<AlbumModel[]> => {
-    return database
-      .transaction('albums', 'readonly')
-      .objectStore('albums')
-      .index('byDateTime')
-      .getAll();
-  },
-
-  selectAlbum: async (itemId: string): Promise<AlbumModel | null> => {
-    return database
-      .transaction('albums', 'readonly')
-      .objectStore('albums')
-      .get(itemId)
-      .then((album) => album || null);
-  },
-
-  selectMetadataFile: (itemId: string): Promise<MetadataFileModel | null> => {
-    return database
-      .transaction('metadataFiles', 'readonly')
-      .objectStore('metadataFiles')
-      .get(itemId)
-      .then((metadataFile) => metadataFile || null);
-  },
-
-  selectPhoto: async (itemId: string): Promise<PhotoModel | null> => {
-    return database
-      .transaction('photos', 'readonly')
-      .objectStore('photos')
-      .get(itemId)
-      .then((photo) => photo || null);
-  },
-
-  selectPhotosFromIndex: async (
-    from: number,
-    to: number,
-    albumItemId: string | null = null,
-  ): Promise<PhotoModel[]> => {
-    const photosStore = database
-      .transaction('photos', 'readonly')
-      .objectStore('photos');
-
-    const photos: PhotoModel[] = [];
-
-    if (albumItemId) {
-      let cursor = await photosStore
-        .index('byAlbumItemId')
-        .openCursor(albumItemId, 'prev');
-
-      if (cursor && from) {
-        cursor = await cursor.advance(from);
-      }
-
-      let position = from;
-
-      while (position < to && cursor) {
-        photos.push(cursor.value);
-        cursor = await cursor.continue();
-        position++;
-      }
-    } else {
-      let cursor = await photosStore
-        .index('byDateTime')
-        .openCursor(null, 'prev');
-
-      if (cursor && from) {
-        cursor = await cursor.advance(from);
-      }
-
-      let position = from;
-
-      while (position < to && cursor) {
-        photos.push(cursor.value);
-        cursor = await cursor.continue();
-        position++;
-      }
-    }
-
-    return photos;
-  },
-
-  selectPhotoCount: async (
-    albumItemId: string | null = null,
-  ): Promise<number> => {
-    const photosStore = database
-      .transaction('photos', 'readonly')
-      .objectStore('photos');
-
-    return albumItemId
-      ? photosStore.index('byAlbumItemId').count(albumItemId)
-      : photosStore.count();
-  },
+  // Add items
 
   addItem: (item: ItemModel) => {
     const transaction = database.transaction('items', 'readwrite');
@@ -267,13 +174,6 @@ const Database = {
     return transaction.done.catch((error) => {
       throw new Error(`Item ${item.fileName}: ${error.toString()}`);
     });
-  },
-
-  removeItem: async (itemId: string) => {
-    await database.delete('items', itemId);
-    await database.delete('albums', itemId);
-    await database.delete('photos', itemId);
-    await database.delete('metadataFiles', itemId);
   },
 
   addAlbum: (album: AlbumModel & ItemModel) => {
@@ -308,7 +208,10 @@ const Database = {
       })),
     );
 
-    const transaction = database.transaction(['items', 'photos'], 'readwrite');
+    const transaction = database.transaction(
+      ['items', 'photos', 'thumbnails'],
+      'readwrite',
+    );
 
     transaction.objectStore('items').put({
       itemId: photo.itemId,
@@ -324,7 +227,12 @@ const Database = {
       width: photo.width,
       isVideo: photo.isVideo,
       albumItemId: photo.albumItemId,
-      thumbnail,
+    });
+
+    transaction.objectStore('thumbnails').put({
+      itemId: photo.itemId,
+      arrayBuffer: thumbnail.arrayBuffer,
+      contentType: thumbnail.contentType,
     });
 
     return transaction.done.catch((error) => {
@@ -363,6 +271,65 @@ const Database = {
         `Metadata file ${metadataFile.fileName}: ${error.toString()}`,
       );
     });
+  },
+
+  // Remove items
+
+  removeItem: async (itemId: string) => {
+    await database.delete('items', itemId);
+    await database.delete('albums', itemId);
+    await database.delete('photos', itemId);
+    await database.delete('thumbnails', itemId);
+    await database.delete('metadataFiles', itemId);
+  },
+
+  // Select items
+
+  selectItem: (itemId: string) => {
+    return database.get('items', itemId);
+  },
+
+  selectItemsFromParentItemId: (parentItemId: string) => {
+    return database.getAllFromIndex('items', 'byParentItemId', parentItemId);
+  },
+
+  selectAlbumCount: () => {
+    return database
+      .transaction('albums', 'readonly')
+      .objectStore('albums')
+      .count();
+  },
+
+  selectAlbumList: () => {
+    return database.getAllFromIndex('albums', 'byDateTime');
+  },
+
+  selectAlbum: (itemId: string) => {
+    return database.get('albums', itemId);
+  },
+
+  selectPhotoCount: (albumItemId?: string) => {
+    return database
+      .transaction('photos', 'readonly')
+      .objectStore('photos')
+      .index('byAlbumItemId')
+      .count(albumItemId);
+  },
+
+  selectPhotoKeyList: (albumItemId?: string) => {
+    return database.getAllKeysFromIndex('photos', 'byAlbumItemId', albumItemId);
+  },
+
+  selectPhotoList: (albumItemId?: string) => {
+    return database.getAllFromIndex('photos', 'byAlbumItemId', albumItemId);
+  },
+
+  selectPhoto: (itemId: string) => {
+    return database.get('photos', itemId);
+  },
+
+  selectThumbnail: (itemId: string) => {
+    return database.get('thumbnails', itemId);
   },
 };
 

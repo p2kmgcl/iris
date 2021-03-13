@@ -2,8 +2,7 @@ import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import styles from './HorizontalList.css';
 
 export interface ItemProps {
-  index: number;
-  isVisible: boolean;
+  itemId: string;
   itemHeight: number;
   itemWidth: number;
 }
@@ -32,11 +31,11 @@ function clamp(value: number, min: number, max: number) {
 }
 
 const HorizontalList: FC<{
-  initialIndex: number;
-  itemCount: number;
+  itemIdList: string[];
+  initialItemId: string;
   Item: FC<ItemProps>;
-}> = ({ initialIndex, itemCount, Item }) => {
-  const [index, setIndex] = useState(initialIndex);
+}> = ({ itemIdList, initialItemId, Item }) => {
+  const [index, setIndex] = useState(() => itemIdList.indexOf(initialItemId));
   const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
 
   const [
@@ -58,13 +57,17 @@ const HorizontalList: FC<{
     const to = from + itemWidth + overScan;
 
     const fromIndex = Math.floor(from / itemWidth);
-    const toIndex = Math.min(Math.ceil(to / itemWidth), itemCount);
+    const toIndex = Math.min(Math.ceil(to / itemWidth), itemIdList.length);
 
     const nextListItems = [];
 
     for (let i = fromIndex; i <= toIndex; i++) {
+      if (!itemIdList[i]) {
+        continue;
+      }
+
       nextListItems.push({
-        key: `${itemCount}-${i}`,
+        key: `${itemIdList.length}-${i}`,
         className: styles.cell,
         style: {
           top: 0,
@@ -73,8 +76,7 @@ const HorizontalList: FC<{
           width: itemWidth,
         },
         itemProps: {
-          index: i,
-          isVisible: i === index,
+          itemId: itemIdList[i],
           itemWidth: itemWidth,
           itemHeight: itemHeight,
         },
@@ -82,10 +84,10 @@ const HorizontalList: FC<{
     }
 
     return nextListItems;
-  }, [index, itemWidth, itemHeight, itemCount]);
+  }, [index, itemWidth, itemHeight, itemIdList]);
 
   useEffect(() => {
-    if (!wrapper || !itemCount) {
+    if (!wrapper || !itemIdList.length) {
       return;
     }
 
@@ -98,14 +100,14 @@ const HorizontalList: FC<{
       setListContext({
         itemWidth: wrapperWidth,
         itemHeight: wrapperHeight,
-        listStyle: { width: wrapperWidth * itemCount },
+        listStyle: { width: wrapperWidth * itemIdList.length },
       });
     };
 
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [wrapper, itemCount]);
+  }, [wrapper, itemIdList]);
 
   useEffect(() => {
     if (!wrapper) {
@@ -126,9 +128,9 @@ const HorizontalList: FC<{
       let nextIndex = index;
 
       if (delta >= 1) {
-        nextIndex = clamp(index + 1, 0, itemCount - 1);
+        nextIndex = clamp(index + 1, 0, itemIdList.length - 1);
       } else if (delta <= -1) {
-        nextIndex = clamp(index - 1, 0, itemCount - 1);
+        nextIndex = clamp(index - 1, 0, itemIdList.length - 1);
       }
 
       if (nextIndex !== index) {
@@ -138,9 +140,8 @@ const HorizontalList: FC<{
     };
 
     wrapper.addEventListener('scroll', handleScroll);
-
     return () => wrapper.removeEventListener('scroll', handleScroll);
-  }, [wrapper, itemWidth, index, itemCount]);
+  }, [wrapper, itemWidth, index, itemIdList.length]);
 
   requestAnimationFrame(() => {
     wrapper?.scrollTo({ left: index * itemWidth, behavior: 'auto' });
@@ -148,7 +149,7 @@ const HorizontalList: FC<{
 
   return (
     <div ref={setWrapper} className={styles.wrapper}>
-      {itemCount && itemWidth ? (
+      {itemIdList.length && itemWidth ? (
         <div className={styles.list} style={listStyle}>
           {listItems.map((cell) => (
             <div key={cell.key} className={cell.className} style={cell.style}>
