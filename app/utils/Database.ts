@@ -84,15 +84,6 @@ const Database = {
           multiEntry: false,
         });
 
-        const thumbnailsStore = database.createObjectStore('thumbnails', {
-          keyPath: 'itemId',
-        });
-
-        thumbnailsStore.createIndex('byItemId', 'itemId', {
-          unique: true,
-          multiEntry: false,
-        });
-
         const metadataFilesStore = database.createObjectStore('metadataFiles', {
           keyPath: 'itemId',
         });
@@ -198,20 +189,8 @@ const Database = {
     });
   },
 
-  addPhoto: async (
-    photo: Omit<PhotoModel, 'thumbnail'> & ItemModel & { thumbnailURI: string },
-  ) => {
-    const thumbnail = await fetch(photo.thumbnailURI).then((response) =>
-      response.arrayBuffer().then((arrayBuffer) => ({
-        arrayBuffer,
-        contentType: response.headers.get('content-type') || '',
-      })),
-    );
-
-    const transaction = database.transaction(
-      ['items', 'photos', 'thumbnails'],
-      'readwrite',
-    );
+  addPhoto: async (photo: PhotoModel & ItemModel) => {
+    const transaction = database.transaction(['items', 'photos'], 'readwrite');
 
     transaction.objectStore('items').put({
       itemId: photo.itemId,
@@ -227,12 +206,6 @@ const Database = {
       width: photo.width,
       isVideo: photo.isVideo,
       albumItemId: photo.albumItemId,
-    });
-
-    transaction.objectStore('thumbnails').put({
-      itemId: photo.itemId,
-      arrayBuffer: thumbnail.arrayBuffer,
-      contentType: thumbnail.contentType,
     });
 
     return transaction.done.catch((error) => {
@@ -279,7 +252,6 @@ const Database = {
     await database.delete('items', itemId);
     await database.delete('albums', itemId);
     await database.delete('photos', itemId);
-    await database.delete('thumbnails', itemId);
     await database.delete('metadataFiles', itemId);
   },
 
@@ -326,10 +298,6 @@ const Database = {
 
   selectPhoto: (itemId: string) => {
     return database.get('photos', itemId);
-  },
-
-  selectThumbnail: (itemId: string) => {
-    return database.get('thumbnails', itemId);
   },
 };
 

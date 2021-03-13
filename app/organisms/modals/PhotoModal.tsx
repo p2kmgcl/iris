@@ -5,7 +5,6 @@ import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import { PhotoModel } from '../../../types/Schema';
 import PhotoLoader from '../../utils/PhotoLoader';
-import { usePhotoThumbnail } from '../../hooks/usePhotoThumbnail';
 import styles from './PhotoModal.css';
 
 const PhotoSlide: FC<ItemProps> = ({
@@ -19,7 +18,7 @@ const PhotoSlide: FC<ItemProps> = ({
     undefined,
   );
 
-  const thumbnailURL = usePhotoThumbnail(itemId);
+  const thumbnailURL = PhotoLoader.getPhotoThumbnailURL(itemId);
 
   const url = useAsyncMemo(
     async () => {

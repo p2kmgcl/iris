@@ -4,28 +4,26 @@ import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 import PhotoModal from '../modals/PhotoModal';
-import { usePhotoThumbnail } from '../../hooks/usePhotoThumbnail';
+import PhotoLoader from '../../utils/PhotoLoader';
 
 interface PhotoProps {
   setPhotoId: Dispatch<SetStateAction<string>>;
 }
 
 const Photo = function ({ itemId, setPhotoId }: ItemProps & PhotoProps) {
-  const url = usePhotoThumbnail(itemId);
-
   const showVideoIcon = useAsyncMemo(
     () => Database.selectPhoto(itemId).then((photo) => photo?.isVideo || false),
     [itemId],
     false,
   );
 
-  return url ? (
+  return (
     <PhotoThumbnail
-      url={url}
+      url={PhotoLoader.getPhotoThumbnailURL(itemId)}
       onClick={() => setPhotoId(itemId)}
       showVideoIcon={showVideoIcon}
     />
-  ) : null;
+  );
 };
 
 const AllPhotosTab: FC = () => {

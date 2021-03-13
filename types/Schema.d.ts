@@ -23,12 +23,6 @@ export interface PhotoModel {
   isVideo: boolean;
 }
 
-export interface ThumbnailModel {
-  itemId: string;
-  arrayBuffer: ArrayBuffer;
-  contentType: string;
-}
-
 export interface MetadataFileModel {
   itemId: string;
   photoItemId: string;
@@ -72,14 +66,6 @@ export default interface Schema extends DBSchema {
       byItemId: string;
       byDateTime: number;
       byAlbumItemId: string;
-    };
-  };
-
-  thumbnails: {
-    key: string;
-    value: ThumbnailModel;
-    indexes: {
-      byItemId: string;
     };
   };
 

@@ -12,7 +12,7 @@ const LazyApp = React.lazy(() => Promise.resolve({ default: App }));
 const LazySetup = React.lazy(() => import('./organisms/Setup'));
 
 async function registerServiceWorker() {
-  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) {
     return navigator.serviceWorker
       .register('/service-worker.js')
       .catch((registrationError) => {

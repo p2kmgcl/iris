@@ -14,7 +14,10 @@ export const cssRule = {
 
 export const jsRule = {
   test: /\.tsx?$/,
-  include: path.join(__dirname, 'app'),
+  include: [
+    path.join(__dirname, 'app'),
+    path.join(__dirname, 'service-worker'),
+  ],
   use: 'ts-loader',
 };
 
@@ -55,17 +58,21 @@ export const plugins = [
     'process.env.AUTH_SCOPE': JSON.stringify(process.env.AUTH_SCOPE),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   }),
+
+  new WorkboxPlugin.GenerateSW({
+    clientsClaim: true,
+    skipWaiting: true,
+    importScriptsViaChunks: ['serviceWorker'],
+    exclude:
+      process.env.NODE_ENV === 'development'
+        ? [/\.js$/]
+        : [/^functions\/[^.]+\.js$/],
+  }),
 ];
 
 export const productionPlugins = [
   new CompressionPlugin({
     test: /\.(js|css)$/i,
-  }),
-
-  new WorkboxPlugin.GenerateSW({
-    clientsClaim: true,
-    skipWaiting: true,
-    exclude: ['CNAME'],
   }),
 ];
 
@@ -83,6 +90,7 @@ const devServer: Record<string, any> = {
 export default {
   entry: {
     app: './app/index.tsx',
+    serviceWorker: './service-worker/index.ts',
   },
   output: {
     filename: '[name].js',

@@ -20,6 +20,7 @@ import List, {
   ListToggleItem,
   SubList,
 } from '../../atoms/List';
+import PhotoLoader from '../../utils/PhotoLoader';
 
 const UsedSpace = () => {
   const [space, setSpace] = useState<JSX.Element>(<></>);
@@ -86,6 +87,7 @@ const SettingsTab: FC = () => {
           onClick={() => {
             if (confirm('Are you sure?')) {
               Database.destroy();
+              PhotoLoader.clearThumbnailCache();
             }
           }}
         />

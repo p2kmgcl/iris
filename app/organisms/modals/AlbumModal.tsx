@@ -5,28 +5,26 @@ import Database from '../../utils/Database';
 import Grid, { ItemProps } from '../../atoms/Grid';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 import PhotoModal from './PhotoModal';
-import { usePhotoThumbnail } from '../../hooks/usePhotoThumbnail';
+import PhotoLoader from '../../utils/PhotoLoader';
 
 interface PhotoProps {
   setPhotoId: Dispatch<SetStateAction<string>>;
 }
 
 const Photo = function ({ itemId, setPhotoId }: ItemProps & PhotoProps) {
-  const url = usePhotoThumbnail(itemId);
-
   const showVideoIcon = useAsyncMemo(
     () => Database.selectPhoto(itemId).then((photo) => photo?.isVideo || false),
     [itemId],
     false,
   );
 
-  return url ? (
+  return (
     <PhotoThumbnail
-      url={url}
+      url={PhotoLoader.getPhotoThumbnailURL(itemId)}
       onClick={() => setPhotoId(itemId)}
       showVideoIcon={showVideoIcon}
     />
-  ) : null;
+  );
 };
 
 const AlbumModal: FC<{

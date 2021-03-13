@@ -3,6 +3,7 @@ import Database from './Database';
 import Graph from './Graph';
 import { ItemModel } from '../../types/Schema';
 import Authentication from './Authentication';
+import PhotoLoader from './PhotoLoader';
 
 class ScannerManualAbortError extends Error {
   toString() {
@@ -36,7 +37,7 @@ const Scanner = {
     abortSignal: AbortSignal,
     onStatusUpdate: (lastScannedItem?: ItemModel) => void,
   ) => {
-    async function scanItem(
+    async function synchronizeItem(
       driveItem: DriveItem,
       driveItemParent: DriveItem,
       driveItemSiblings: DriveItem[],
@@ -62,10 +63,11 @@ const Scanner = {
 
       for (const removedChild of removedChildren) {
         await Database.removeItem(removedChild.itemId);
+        await PhotoLoader.removePhotoThumbnail(removedChild.itemId);
       }
 
       for (const child of children) {
-        await scanItem(child, driveItem, children);
+        await synchronizeItem(child, driveItem, children);
         if (abortSignal.aborted) throw new ScannerManualAbortError();
       }
 
@@ -84,12 +86,16 @@ const Scanner = {
             lastModifiedDateTime,
         ).getTime();
 
+        await PhotoLoader.addPhotoThumbnail(
+          driveItem.id as string,
+          thumbnailURI,
+        );
+
         await Database.addPhoto({
           itemId: driveItem.id as string,
           parentItemId: driveItemParent.id as string,
           fileName: driveItem.name as string,
           updateTime: lastModifiedDateTime,
-          thumbnailURI,
           dateTime,
           albumItemId: driveItemParent.id as string,
           width: (driveItem.image?.width || driveItem.video?.width) as number,
@@ -142,7 +148,7 @@ const Scanner = {
 
     await Authentication.getFreshAccessToken().then(() =>
       Graph.getItem(driveItemId).then((driveItem) =>
-        scanItem(driveItem, driveItem, []),
+        synchronizeItem(driveItem, driveItem, []),
       ),
     );
   },
