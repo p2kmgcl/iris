@@ -1,12 +1,7 @@
-import {
-  CSSProperties,
-  FC,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from 'react';
+import { FC, useEffect, useState } from 'react';
 import styles from './Slides.css';
+
+const SLIDE_OVERSCAN = 2;
 
 export interface SlideProps {
   itemId: string;
@@ -14,193 +9,90 @@ export interface SlideProps {
   slideWidth: number;
 }
 
-interface SlideItem {
-  itemId: string;
-  slideWrapperProps: {
-    key: string;
-    className: string;
-    style: CSSProperties;
-  };
-  slideProps: SlideProps;
-}
-
 const Slides: FC<{
   slideIdList: string[];
   initialSlideId: string;
   Slide: FC<SlideProps>;
 }> = ({ slideIdList, initialSlideId, Slide }) => {
-  const initialIndex = useMemo(() => {
-    return slideIdList.indexOf(initialSlideId);
-  }, [slideIdList, initialSlideId]);
-
   const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
-  const [list, setList] = useState<HTMLDivElement | null>(null);
-  const [slideSize, setSlideSize] = useState({ width: 0, height: 0 });
-
-  const [slides, setSlides] = useReducer(
-    (prevSlides: SlideItem[], nextSlides: SlideItem[]) =>
-      nextSlides.length === prevSlides.length &&
-      nextSlides.every((nextSlide) =>
-        prevSlides.find(
-          (prevSlide) =>
-            nextSlide.itemId === prevSlide.itemId &&
-            nextSlide.slideProps.slideWidth === prevSlide.slideProps.slideWidth,
-        ),
-      )
-        ? prevSlides
-        : nextSlides,
-    [],
-  );
+  const [wrapperSize, setWrapperSize] = useState({ width: 0, height: 0 });
+  const [renderedSlides, setRenderedSlides] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!wrapper || !list) {
-      return;
-    }
+    if (!wrapper) return;
 
-    const updateSlideSize = () => {
-      const slideSize = wrapper.getBoundingClientRect();
-      list.style.height = `${slideSize.height}px`;
-      list.style.width = `${slideIdList.length * slideSize.width}px`;
-
-      wrapper.scrollTo({
-        left:
-          Math.round(wrapper.scrollLeft / slideSize.width) * slideSize.width,
-      });
-
-      setSlideSize(slideSize);
+    const updateWrapperSize = () => {
+      setWrapperSize(wrapper.getBoundingClientRect());
     };
 
-    updateSlideSize();
-
-    if (initialIndex) {
-      const initialSlideSize = wrapper.getBoundingClientRect();
-      wrapper.scrollTo({ left: initialIndex * initialSlideSize.width });
-    }
-
-    window.addEventListener('resize', updateSlideSize);
-    return () => window.removeEventListener('resize', updateSlideSize);
-  }, [wrapper, list, initialIndex, slideIdList]);
+    updateWrapperSize();
+    window.addEventListener('resize', updateWrapperSize);
+    return () => window.removeEventListener('resize', updateWrapperSize);
+  }, [wrapper]);
 
   useEffect(() => {
-    if (!wrapper || !slideSize.width) {
-      return;
-    }
+    if (!wrapper || wrapperSize.width === 0) return;
 
-    const updateSlides = () => {
-      const overScan = slideSize.width;
-      const from = Math.max(wrapper.scrollLeft - overScan, 0);
-      const to = from + slideSize.width + overScan;
+    let index = slideIdList.indexOf(initialSlideId);
+    let initialScrollLeft = wrapper.scrollLeft;
 
-      const fromIndex = Math.floor(from / slideSize.width);
+    const throttle = (fn: (...args: any[]) => void, delay: number) => {
+      let lastExecutionTime = new Date('1991-10-01').getTime();
 
-      const toIndex = Math.min(
-        Math.ceil(to / slideSize.width),
-        slideIdList.length,
-      );
+      return (...args: any[]) => {
+        const now = Date.now();
 
-      const nextSlides = [];
-
-      for (let i = fromIndex; i <= toIndex; i++) {
-        if (!slideIdList[i]) {
-          continue;
+        if (now - lastExecutionTime > delay) {
+          lastExecutionTime = now;
+          fn(...args);
         }
-
-        nextSlides.push({
-          itemId: slideIdList[i],
-          slideWrapperProps: {
-            key: slideIdList[i],
-            className: styles.slide,
-            style: {
-              top: 0,
-              left: i * slideSize.width,
-              height: slideSize.height,
-              width: slideSize.width,
-            },
-          },
-          slideProps: {
-            itemId: slideIdList[i],
-            slideWidth: slideSize.width,
-            slideHeight: slideSize.height,
-          },
-        });
-      }
-
-      setSlides(nextSlides);
+      };
     };
 
-    updateSlides();
-    wrapper.addEventListener('scroll', updateSlides);
-    return () => wrapper.removeEventListener('scroll', updateSlides);
-  }, [wrapper, slideSize, slideIdList]);
+    const updateRenderedSlides = throttle((nextIndex: number) => {
+      index = nextIndex;
 
-  useEffect(() => {
-    if (!wrapper || !slideSize.width) {
-      return;
-    }
+      const from = Math.max(index - SLIDE_OVERSCAN, 0);
+      const to = Math.min(index + SLIDE_OVERSCAN + 1, slideIdList.length);
 
-    let initialClientX: number | undefined;
+      const nextRenderedSlides = slideIdList.slice(from, to);
+      const slideId = slideIdList[index];
+      const slideIndex = nextRenderedSlides.indexOf(slideId);
 
-    const handleSlideStart = (event: TouchEvent) => {
-      event.preventDefault();
+      setRenderedSlides(nextRenderedSlides);
 
-      if (event.touches.length === 1) {
-        initialClientX = event.touches.item(0)?.clientX || 0;
+      initialScrollLeft = slideIndex * wrapperSize.width;
+      wrapper.scrollLeft = initialScrollLeft;
+
+      console.log(index, slideIndex, wrapper.scrollLeft);
+    }, 500);
+
+    const handleScroll = () => {
+      const scrollLeft = wrapper.scrollLeft - initialScrollLeft;
+
+      if (scrollLeft >= wrapperSize.width) {
+        updateRenderedSlides(Math.min(index + 1, slideIdList.length - 1));
+      } else if (scrollLeft <= -wrapperSize.width) {
+        updateRenderedSlides(Math.max(index - 1, 0));
       }
     };
 
-    const handleSlideMove = (event: TouchEvent) => {
-      event.preventDefault();
-
-      let clientX;
-
-      if (event.touches.length === 1) {
-        clientX = event.touches.item(0)?.clientX || 0;
-      }
-
-      if (
-        initialClientX !== undefined &&
-        clientX !== undefined &&
-        clientX !== initialClientX
-      ) {
-        const targetScroll =
-          wrapper.scrollLeft +
-          (clientX > initialClientX ? -slideSize.width : slideSize.width);
-
-        wrapper.scrollTo({
-          left: targetScroll,
-          behavior: 'smooth',
-        });
-
-        initialClientX = undefined;
-      }
-    };
-
-    const handleSlideEnd = () => {
-      initialClientX = undefined;
-    };
-
-    wrapper.addEventListener('touchstart', handleSlideStart);
-    wrapper.addEventListener('touchmove', handleSlideMove);
-    wrapper.addEventListener('touchend', handleSlideEnd);
-    wrapper.addEventListener('touchcancel', handleSlideEnd);
-
-    return () => {
-      wrapper.removeEventListener('touchstart', handleSlideStart);
-      wrapper.removeEventListener('touchmove', handleSlideMove);
-      wrapper.removeEventListener('touchend', handleSlideEnd);
-      wrapper.removeEventListener('touchcancel', handleSlideEnd);
-    };
-  }, [wrapper, slideSize]);
+    updateRenderedSlides(index);
+    wrapper?.addEventListener('scroll', handleScroll);
+    return () => wrapper?.removeEventListener('scroll', handleScroll);
+  }, [initialSlideId, slideIdList, wrapper, wrapperSize]);
 
   return (
     <div ref={setWrapper} className={styles.wrapper}>
-      <div ref={setList} className={styles.list}>
-        {slides.map((slide) => (
-          <div {...slide.slideWrapperProps}>
-            <Slide {...slide.slideProps} />
-          </div>
-        ))}
-      </div>
+      {renderedSlides.map((slideId) => (
+        <div key={slideId} className={styles.slide}>
+          <Slide
+            itemId={slideId}
+            slideWidth={wrapperSize.width}
+            slideHeight={wrapperSize.height}
+          />
+        </div>
+      ))}
     </div>
   );
 };
