@@ -78,6 +78,15 @@ const Database = {
           unique: false,
           multiEntry: false,
         });
+
+        photosStore.createIndex(
+          'byAlbumItemIdAndDate',
+          ['albumItemId', 'dateTime'],
+          {
+            unique: false,
+            multiEntry: false,
+          },
+        );
       },
     });
 
@@ -220,7 +229,9 @@ const Database = {
   },
 
   selectAlbumList: () => {
-    return database.getAllFromIndex('albums', 'byDateTime');
+    return database
+      .getAllFromIndex('albums', 'byDateTime')
+      .then((albums) => albums.reverse());
   },
 
   selectAlbum: (itemId: string) => {
@@ -236,11 +247,19 @@ const Database = {
   },
 
   selectPhotoKeyList: (albumItemId?: string) => {
-    return database.getAllKeysFromIndex('photos', 'byAlbumItemId', albumItemId);
-  },
-
-  selectPhotoList: (albumItemId?: string) => {
-    return database.getAllFromIndex('photos', 'byAlbumItemId', albumItemId);
+    return (albumItemId
+      ? database.getAllKeysFromIndex(
+          'photos',
+          'byAlbumItemIdAndDate',
+          IDBKeyRange.bound(
+            [albumItemId, 0],
+            [albumItemId, Infinity],
+            false,
+            false,
+          ),
+        )
+      : database.getAllKeysFromIndex('photos', 'byDateTime')
+    ).then((keys) => keys.reverse());
   },
 
   selectPhoto: (itemId: string) => {

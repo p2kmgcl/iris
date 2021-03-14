@@ -32,7 +32,7 @@
   --primary-l1: #e8e1f4;
   --primary-l2: #f4f0f9;
 
-  --roundness: 4px;
+  --roundness: 8px;
   --spacing-unit: 8px;
   --transition-duration: 0.3s;
 }

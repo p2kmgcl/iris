@@ -61,7 +61,12 @@ const AlbumModal: FC<{
 
       <header style={{ padding: '3em 1em 1em 1em' }}>
         {isFinite(album.dateTime) ? (
-          <p>{new Date(album.dateTime).toLocaleDateString()}</p>
+          <p>
+            {new Date(album.dateTime).toLocaleDateString(
+              navigator.language || 'en-US',
+              { year: 'numeric', month: 'long', day: 'numeric' },
+            )}
+          </p>
         ) : null}
         <h1>{album.title}</h1>
       </header>

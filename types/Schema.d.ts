@@ -60,6 +60,7 @@ export default interface Schema extends DBSchema {
       byItemId: string;
       byDateTime: number;
       byAlbumItemId: string;
+      byAlbumItemIdAndDate: string;
     };
   };
 }

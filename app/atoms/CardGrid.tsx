@@ -4,6 +4,7 @@ import styles from './CardGrid.css';
 interface Card {
   itemId: string;
   title: string;
+  coverItemId: string;
 }
 
 const Card: FC<{ card: Card; onClick: (itemId: string) => void }> = ({
@@ -15,7 +16,12 @@ const Card: FC<{ card: Card; onClick: (itemId: string) => void }> = ({
     type="button"
     onClick={() => onClick(card.itemId)}
   >
-    <span className={styles.thumbnail} role="img" />
+    <span
+      className={styles.thumbnail}
+      role="img"
+      style={{ backgroundImage: `url(/thumbnail?itemId=${card.coverItemId})` }}
+    />
+
     <span className={styles.title}>{card.title}</span>
   </button>
 );

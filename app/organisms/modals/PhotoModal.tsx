@@ -66,18 +66,27 @@ const PhotoSlide: FC<SlideProps> = ({
 
   return (
     <div className={styles.photoSlide}>
-      {photo?.isVideo ? (
-        <video
-          loop
-          src={url}
-          controls
-          poster={thumbnailURL}
-          width={width}
-          height={height}
-        />
-      ) : (
-        <img src={url || thumbnailURL} width={width} height={height} />
-      )}
+      <div>
+        <div>
+          {new Date(photo.dateTime).toLocaleString(
+            navigator.language || 'en-US',
+            { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
+          )}
+        </div>
+
+        {photo.isVideo ? (
+          <video
+            loop
+            src={url}
+            controls
+            poster={thumbnailURL}
+            width={width}
+            height={height}
+          />
+        ) : (
+          <img src={url || thumbnailURL} width={width} height={height} />
+        )}
+      </div>
     </div>
   );
 };

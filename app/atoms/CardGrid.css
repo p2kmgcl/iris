@@ -34,6 +34,8 @@
   width: 100%;
   padding-top: 100%;
   background: var(--dark-l1);
+  background-size: cover;
+  background-position: center center;
   border-radius: var(--roundness);
 }
 
