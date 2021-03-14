@@ -1,16 +1,16 @@
 import { FC, useMemo } from 'react';
 import Modal from '../../atoms/Modal';
-import HorizontalList, { ItemProps } from '../../atoms/HorizontalList';
+import Slides, { SlideProps } from '../../atoms/Slides';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import { PhotoModel } from '../../../types/Schema';
 import PhotoLoader from '../../utils/PhotoLoader';
 import styles from './PhotoModal.css';
 
-const PhotoSlide: FC<ItemProps> = ({
+const PhotoSlide: FC<SlideProps> = ({
   itemId,
-  itemHeight: maxHeight,
-  itemWidth: maxWidth,
+  slideHeight: maxHeight,
+  slideWidth: maxWidth,
 }) => {
   const photo = useAsyncMemo<PhotoModel | undefined>(
     () => Database.selectPhoto(itemId),
@@ -100,10 +100,10 @@ const PhotoModal: FC<{
       onCloseButtonClick={onCloseButtonClick}
     >
       {photoKeyList.length ? (
-        <HorizontalList
-          itemIdList={photoKeyList}
-          initialItemId={photoId}
-          Item={PhotoSlide}
+        <Slides
+          slideIdList={photoKeyList}
+          initialSlideId={photoId}
+          Slide={PhotoSlide}
         />
       ) : null}
     </Modal>
