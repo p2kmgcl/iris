@@ -1,11 +1,6 @@
 import { IDBPDatabase, openDB } from 'idb';
 import pkg from '../../package.json';
-import Schema, {
-  AlbumModel,
-  ItemModel,
-  MetadataFileModel,
-  PhotoModel,
-} from '../../types/Schema';
+import Schema, { AlbumModel, ItemModel, PhotoModel } from '../../types/Schema';
 
 const DATABASE_NAME = 'database';
 const DATABASE_VERSION = pkg.version;
@@ -81,20 +76,6 @@ const Database = {
 
         photosStore.createIndex('byAlbumItemId', 'albumItemId', {
           unique: false,
-          multiEntry: false,
-        });
-
-        const metadataFilesStore = database.createObjectStore('metadataFiles', {
-          keyPath: 'itemId',
-        });
-
-        metadataFilesStore.createIndex('byItemId', 'itemId', {
-          unique: true,
-          multiEntry: false,
-        });
-
-        metadataFilesStore.createIndex('byPhotoItemId', 'photoItemId', {
-          unique: true,
           multiEntry: false,
         });
       },
@@ -213,46 +194,12 @@ const Database = {
     });
   },
 
-  addMetadataFile: async (
-    metadataFile: Omit<MetadataFileModel, 'content'> &
-      ItemModel & { contentURI: string },
-  ) => {
-    const content = await fetch(metadataFile.contentURI).then((response) =>
-      response.text(),
-    );
-
-    const transaction = database.transaction(
-      ['items', 'metadataFiles'],
-      'readwrite',
-    );
-
-    transaction.objectStore('items').put({
-      itemId: metadataFile.itemId,
-      parentItemId: metadataFile.parentItemId,
-      updateTime: metadataFile.updateTime,
-      fileName: metadataFile.fileName,
-    });
-
-    transaction.objectStore('metadataFiles').put({
-      itemId: metadataFile.itemId,
-      photoItemId: metadataFile.photoItemId,
-      content,
-    });
-
-    return transaction.done.catch((error) => {
-      throw new Error(
-        `Metadata file ${metadataFile.fileName}: ${error.toString()}`,
-      );
-    });
-  },
-
   // Remove items
 
   removeItem: async (itemId: string) => {
     await database.delete('items', itemId);
     await database.delete('albums', itemId);
     await database.delete('photos', itemId);
-    await database.delete('metadataFiles', itemId);
   },
 
   // Select items

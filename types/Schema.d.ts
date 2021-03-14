@@ -23,12 +23,6 @@ export interface PhotoModel {
   isVideo: boolean;
 }
 
-export interface MetadataFileModel {
-  itemId: string;
-  photoItemId: string;
-  content: string;
-}
-
 export default interface Schema extends DBSchema {
   configuration: {
     key: string;
@@ -66,15 +60,6 @@ export default interface Schema extends DBSchema {
       byItemId: string;
       byDateTime: number;
       byAlbumItemId: string;
-    };
-  };
-
-  metadataFiles: {
-    key: string;
-    value: MetadataFileModel;
-    indexes: {
-      byItemId: string;
-      byPhotoItemId: string;
     };
   };
 }

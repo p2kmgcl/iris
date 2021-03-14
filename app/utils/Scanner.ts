@@ -11,20 +11,31 @@ class ScannerManualAbortError extends Error {
   }
 }
 
-function getMetadataFilePhoto(
-  driveItem: DriveItem,
-  driveItemSiblings: DriveItem[],
-) {
-  const photoName = driveItem.name?.replace(/\.xmp$/i, '') ?? '';
+function parseDateString(dateString: string): [number, string] {
+  const dateTimeRegExp = /(\d{4})[_-](\d{2})[_-](\d{2})(_|-|\s)(\d{2})(_|-|:)(\d{2})([^\n]*)/;
+  const dateRegExp = /(\d{4})[_-](\d{2})[_-](\d{2})([^\n]*)/;
+  const yearRegExp = /(\d{4})([^\n]*)/;
 
-  return (
-    (photoName &&
-      photoName !== driveItem.name &&
-      driveItemSiblings.find(
-        (sibling) => sibling.name && sibling.name === photoName,
-      )) ??
-    null
-  );
+  let date = Infinity;
+  let trimmedString = dateString;
+
+  if (dateTimeRegExp.test(dateString)) {
+    const [, year, month, day, , hour, , minute, rest] = dateTimeRegExp.exec(
+      dateString,
+    ) as string[];
+    date = new Date(`${year}-${month}-${day} ${hour}:${minute}`).getTime();
+    trimmedString = rest.trim();
+  } else if (dateRegExp.test(dateString)) {
+    const [, year, month, day, rest] = dateRegExp.exec(dateString) as string[];
+    date = new Date(`${year}-${month}-${day}`).getTime();
+    trimmedString = rest.trim();
+  } else if (yearRegExp.test(dateString)) {
+    const [, year, rest] = yearRegExp.exec(dateString) as string[];
+    date = new Date(`${year}-01-01`).getTime();
+    trimmedString = rest.trim();
+  }
+
+  return [date, trimmedString || dateString];
 }
 
 function driveItemIsPhoto(driveItem: DriveItem) {
@@ -80,11 +91,59 @@ const Scanner = {
           thumbnails.medium?.url ||
           thumbnails.small?.url) as string;
 
-        const dateTime: number = new Date(
-          driveItem.photo?.takenDateTime ||
-            driveItem.createdDateTime ||
-            lastModifiedDateTime,
-        ).getTime();
+        const dateTime: number =
+          (await (async function () {
+            const metadataFile = driveItemSiblings.find(
+              (siblingItem) => siblingItem.name === `${driveItem.name}.xmp`,
+            ) as { '@microsoft.graph.downloadUrl': string } | undefined;
+
+            if (!metadataFile) {
+              return 0;
+            }
+
+            try {
+              const metadata = new DOMParser().parseFromString(
+                await fetch(
+                  metadataFile['@microsoft.graph.downloadUrl'],
+                ).then((response) => response.text()),
+                'text/xml',
+              );
+
+              const rdfDescription = metadata
+                .getElementsByTagName('rdf:Description')
+                .item(0);
+
+              if (!rdfDescription) {
+                return 0;
+              }
+
+              const attributeName = [
+                'xmp:MetadataDate',
+                'xmp:ModifyDate',
+                'xmp:CreateDate',
+                'exif:DateTimeOriginal',
+                'tiff:DateTime',
+                'video:ModificationDate',
+                'video:DateTimeOriginal',
+                'photoshop:DateCreated',
+              ].find((name) => rdfDescription.getAttribute(name));
+
+              if (!attributeName) {
+                return 0;
+              }
+
+              return new Date(
+                rdfDescription.getAttribute(attributeName) as string,
+              ).getTime();
+            } catch (error) {
+              return 0;
+            }
+          })()) ||
+          new Date(
+            driveItem.photo?.takenDateTime ||
+              driveItem.createdDateTime ||
+              lastModifiedDateTime,
+          ).getTime();
 
         await PhotoLoader.addPhotoThumbnail(
           driveItem.id as string,
@@ -104,8 +163,7 @@ const Scanner = {
           isVideo: !!driveItem.video,
         });
       } else if (children.some((child) => driveItemIsPhoto(child))) {
-        const title = driveItem.name as string;
-        const dateTime = Infinity;
+        const [dateTime, title] = parseDateString(driveItem.name as string);
 
         await Database.addAlbum({
           itemId: driveItem.id as string,
@@ -117,22 +175,6 @@ const Scanner = {
           coverItemId: (children.find((child) =>
             driveItemIsPhoto(child),
           ) as DriveItem).id as string,
-        });
-      } else if (getMetadataFilePhoto(driveItem, driveItemSiblings)) {
-        const photoItem = getMetadataFilePhoto(
-          driveItem,
-          driveItemSiblings,
-        ) as DriveItem;
-
-        await Database.addMetadataFile({
-          photoItemId: photoItem.id as string,
-          itemId: driveItem.id as string,
-          parentItemId: driveItemParent.id as string,
-          fileName: driveItem.name as string,
-          updateTime: lastModifiedDateTime,
-          contentURI: (driveItem as { '@microsoft.graph.downloadUrl': string })[
-            '@microsoft.graph.downloadUrl'
-          ],
         });
       } else {
         await Database.addItem({
