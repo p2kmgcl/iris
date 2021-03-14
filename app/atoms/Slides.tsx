@@ -63,8 +63,6 @@ const Slides: FC<{
 
       initialScrollLeft = slideIndex * wrapperSize.width;
       wrapper.scrollLeft = initialScrollLeft;
-
-      console.log(index, slideIndex, wrapper.scrollLeft);
     }, 500);
 
     const handleScroll = () => {
