@@ -1,4 +1,11 @@
-import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import {
+  CSSProperties,
+  FC,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react';
 import styles from './Slides.css';
 
 export interface SlideProps {
@@ -7,27 +14,14 @@ export interface SlideProps {
   slideWidth: number;
 }
 
-interface ListContext {
-  slideWidth: number;
-  slideHeight: number;
-  slideStyle: CSSProperties;
-}
-
-interface RenderSlideItem {
-  key: string;
-  className: string;
-  style: CSSProperties;
+interface SlideItem {
+  itemId: string;
+  slideWrapperProps: {
+    key: string;
+    className: string;
+    style: CSSProperties;
+  };
   slideProps: SlideProps;
-}
-
-function clamp(value: number, min: number, max: number) {
-  if (value < min) {
-    return min;
-  } else if (value > max) {
-    return max;
-  } else {
-    return value;
-  }
 }
 
 const Slides: FC<{
@@ -35,135 +29,178 @@ const Slides: FC<{
   initialSlideId: string;
   Slide: FC<SlideProps>;
 }> = ({ slideIdList, initialSlideId, Slide }) => {
-  const [index, setIndex] = useState(() => slideIdList.indexOf(initialSlideId));
+  const initialIndex = useMemo(() => {
+    return slideIdList.indexOf(initialSlideId);
+  }, [slideIdList, initialSlideId]);
+
   const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
+  const [list, setList] = useState<HTMLDivElement | null>(null);
+  const [slideSize, setSlideSize] = useState({ width: 0, height: 0 });
 
-  const [
-    { slideWidth, slideHeight, slideStyle },
-    setListContext,
-  ] = useState<ListContext>(() => ({
-    slideWidth: 0,
-    slideHeight: 0,
-    slideStyle: {},
-  }));
+  const [slides, setSlides] = useReducer(
+    (prevSlides: SlideItem[], nextSlides: SlideItem[]) =>
+      nextSlides.length === prevSlides.length &&
+      nextSlides.every((nextSlide) =>
+        prevSlides.find(
+          (prevSlide) =>
+            nextSlide.itemId === prevSlide.itemId &&
+            nextSlide.slideProps.slideWidth === prevSlide.slideProps.slideWidth,
+        ),
+      )
+        ? prevSlides
+        : nextSlides,
+    [],
+  );
 
-  const slideItems = useMemo<RenderSlideItem[]>(() => {
-    if (!slideWidth) {
-      return [];
+  useEffect(() => {
+    if (!wrapper || !list) {
+      return;
     }
 
-    const overScan = slideWidth;
-    const from = Math.max(index * slideWidth - overScan, 0);
-    const to = from + slideWidth + overScan;
+    const updateSlideSize = () => {
+      const slideSize = wrapper.getBoundingClientRect();
+      list.style.height = `${slideSize.height}px`;
+      list.style.width = `${slideIdList.length * slideSize.width}px`;
 
-    const fromIndex = Math.floor(from / slideWidth);
-    const toIndex = Math.min(Math.ceil(to / slideWidth), slideIdList.length);
+      wrapper.scrollTo({
+        left:
+          Math.round(wrapper.scrollLeft / slideSize.width) * slideSize.width,
+      });
 
-    const nextListItems = [];
+      setSlideSize(slideSize);
+    };
 
-    for (let i = fromIndex; i <= toIndex; i++) {
-      if (!slideIdList[i]) {
-        continue;
-      }
+    updateSlideSize();
 
-      nextListItems.push({
-        key: slideIdList[i],
-        className: styles.cell,
-        style: {
-          top: 0,
-          left: i * slideWidth,
-          height: slideHeight,
-          width: slideWidth,
-        },
-        slideProps: {
+    if (initialIndex) {
+      const initialSlideSize = wrapper.getBoundingClientRect();
+      wrapper.scrollTo({ left: initialIndex * initialSlideSize.width });
+    }
+
+    window.addEventListener('resize', updateSlideSize);
+    return () => window.removeEventListener('resize', updateSlideSize);
+  }, [wrapper, list, initialIndex, slideIdList]);
+
+  useEffect(() => {
+    if (!wrapper || !slideSize.width) {
+      return;
+    }
+
+    const updateSlides = () => {
+      const overScan = slideSize.width;
+      const from = Math.max(wrapper.scrollLeft - overScan, 0);
+      const to = from + slideSize.width + overScan;
+
+      const fromIndex = Math.floor(from / slideSize.width);
+
+      const toIndex = Math.min(
+        Math.ceil(to / slideSize.width),
+        slideIdList.length,
+      );
+
+      const nextSlides = [];
+
+      for (let i = fromIndex; i <= toIndex; i++) {
+        if (!slideIdList[i]) {
+          continue;
+        }
+
+        nextSlides.push({
           itemId: slideIdList[i],
-          slideWidth: slideWidth,
-          slideHeight: slideHeight,
-        },
-      });
-    }
+          slideWrapperProps: {
+            key: slideIdList[i],
+            className: styles.slide,
+            style: {
+              top: 0,
+              left: i * slideSize.width,
+              height: slideSize.height,
+              width: slideSize.width,
+            },
+          },
+          slideProps: {
+            itemId: slideIdList[i],
+            slideWidth: slideSize.width,
+            slideHeight: slideSize.height,
+          },
+        });
+      }
 
-    return nextListItems;
-  }, [index, slideWidth, slideHeight, slideIdList]);
+      setSlides(nextSlides);
+    };
+
+    updateSlides();
+    wrapper.addEventListener('scroll', updateSlides);
+    return () => wrapper.removeEventListener('scroll', updateSlides);
+  }, [wrapper, slideSize, slideIdList]);
 
   useEffect(() => {
-    if (!wrapper || !slideIdList.length) {
+    if (!wrapper || !slideSize.width) {
       return;
     }
 
-    const handleResize = () => {
-      const {
-        height: wrapperHeight,
-        width: wrapperWidth,
-      } = wrapper.getBoundingClientRect();
+    let initialClientX: number | undefined;
 
-      setListContext({
-        slideWidth: wrapperWidth,
-        slideHeight: wrapperHeight,
-        slideStyle: { width: wrapperWidth * slideIdList.length },
-      });
-    };
+    const handleSlideStart = (event: TouchEvent) => {
+      event.preventDefault();
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [wrapper, slideIdList]);
-
-  useEffect(() => {
-    if (!wrapper) {
-      return;
-    }
-
-    const scrollLeft = index * slideWidth;
-    let isNaturalScroll = false;
-
-    const handleScroll = () => {
-      if (!isNaturalScroll) {
-        isNaturalScroll = true;
-        return;
-      }
-
-      const delta = (wrapper.scrollLeft - scrollLeft) / slideWidth;
-
-      let nextIndex = index;
-
-      if (delta >= 1) {
-        nextIndex = clamp(index + 1, 0, slideIdList.length - 1);
-      } else if (delta <= -1) {
-        nextIndex = clamp(index - 1, 0, slideIdList.length - 1);
-      }
-
-      if (nextIndex !== index) {
-        isNaturalScroll = false;
-        setIndex(nextIndex);
+      if (event.touches.length === 1) {
+        initialClientX = event.touches.item(0)?.clientX || 0;
       }
     };
 
-    wrapper.addEventListener('scroll', handleScroll);
-    return () => wrapper.removeEventListener('scroll', handleScroll);
-  }, [wrapper, slideWidth, index, slideIdList.length]);
+    const handleSlideMove = (event: TouchEvent) => {
+      event.preventDefault();
 
-  requestAnimationFrame(() => {
-    wrapper?.scrollTo({ left: index * slideWidth, behavior: 'auto' });
-  });
+      let clientX;
+
+      if (event.touches.length === 1) {
+        clientX = event.touches.item(0)?.clientX || 0;
+      }
+
+      if (
+        initialClientX !== undefined &&
+        clientX !== undefined &&
+        clientX !== initialClientX
+      ) {
+        const targetScroll =
+          wrapper.scrollLeft +
+          (clientX > initialClientX ? -slideSize.width : slideSize.width);
+
+        wrapper.scrollTo({
+          left: targetScroll,
+          behavior: 'smooth',
+        });
+
+        initialClientX = undefined;
+      }
+    };
+
+    const handleSlideEnd = () => {
+      initialClientX = undefined;
+    };
+
+    wrapper.addEventListener('touchstart', handleSlideStart);
+    wrapper.addEventListener('touchmove', handleSlideMove);
+    wrapper.addEventListener('touchend', handleSlideEnd);
+    wrapper.addEventListener('touchcancel', handleSlideEnd);
+
+    return () => {
+      wrapper.removeEventListener('touchstart', handleSlideStart);
+      wrapper.removeEventListener('touchmove', handleSlideMove);
+      wrapper.removeEventListener('touchend', handleSlideEnd);
+      wrapper.removeEventListener('touchcancel', handleSlideEnd);
+    };
+  }, [wrapper, slideSize]);
 
   return (
     <div ref={setWrapper} className={styles.wrapper}>
-      {slideIdList.length && slideWidth ? (
-        <div className={styles.list} style={slideStyle}>
-          {slideItems.map((slide) => (
-            <div
-              key={slide.key}
-              className={slide.className}
-              style={slide.style}
-            >
-              <div className={styles.cellContent}>
-                <Slide {...slide.slideProps} />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : null}
+      <div ref={setList} className={styles.list}>
+        {slides.map((slide) => (
+          <div {...slide.slideWrapperProps}>
+            <Slide {...slide.slideProps} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
