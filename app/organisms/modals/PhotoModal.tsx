@@ -1,17 +1,21 @@
-import { FC, useMemo } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import Modal from '../../atoms/Modal';
-import Slides, { SlideProps } from '../../atoms/Slides';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import { PhotoModel } from '../../../types/Schema';
 import PhotoLoader from '../../utils/PhotoLoader';
 import styles from './PhotoModal.css';
+import { Carousel, SlideProps } from '../../atoms/Carousel';
 
-const PhotoSlide: FC<SlideProps> = ({
-  itemId,
-  slideHeight: maxHeight,
-  slideWidth: maxWidth,
-}) => {
+const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
+  const [
+    { width: maxWidth, height: maxHeight },
+    setPhotoSlideClientRect,
+  ] = useState({
+    width: 0,
+    height: 0,
+  });
+
   const photo = useAsyncMemo<PhotoModel | undefined>(
     () => Database.selectPhoto(itemId),
     [itemId],
@@ -60,12 +64,18 @@ const PhotoSlide: FC<SlideProps> = ({
     return [width, height];
   }, [maxWidth, maxHeight, photo]);
 
+  const handlePhotoSlideRef = useCallback((element: HTMLDivElement | null) => {
+    if (element) {
+      setPhotoSlideClientRect(element.getBoundingClientRect());
+    }
+  }, []);
+
   if (!photo || !thumbnailURL) {
     return null;
   }
 
   return (
-    <div className={styles.photoSlide}>
+    <div className={styles.photoSlide} ref={handlePhotoSlideRef}>
       <div>
         <div>
           {new Date(photo.dateTime).toLocaleString(
@@ -109,8 +119,8 @@ const PhotoModal: FC<{
       onCloseButtonClick={onCloseButtonClick}
     >
       {photoKeyList.length ? (
-        <Slides
-          slideIdList={photoKeyList}
+        <Carousel
+          slideIdsList={photoKeyList}
           initialSlideId={photoId}
           Slide={PhotoSlide}
         />
