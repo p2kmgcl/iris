@@ -42,9 +42,16 @@ export const Carousel: FC<CarouselProps> = ({
     let deltaClientX: number | undefined;
     let initialClientX: number | undefined;
     let wrapperWidth: number;
+    let animating = false;
 
     const handleDragStart = (event: TouchEvent | MouseEvent) => {
-      if (event instanceof TouchEvent && event.touches.length !== 1) return;
+      if (animating) {
+        return;
+      }
+
+      if (event instanceof TouchEvent && event.touches.length !== 1) {
+        return;
+      }
 
       initialClientX =
         event instanceof TouchEvent
@@ -55,12 +62,22 @@ export const Carousel: FC<CarouselProps> = ({
     };
 
     const handleDragMove = (event: TouchEvent | MouseEvent) => {
+      if (animating) {
+        return;
+      }
+
+      if (initialClientX === undefined) {
+        return;
+      }
+
       const clientX =
         event instanceof TouchEvent
           ? event.touches.item(0)?.clientX
           : event.clientX;
 
-      if (initialClientX === undefined || clientX === undefined) return;
+      if (clientX === undefined) {
+        return;
+      }
 
       event.preventDefault();
 
@@ -79,7 +96,11 @@ export const Carousel: FC<CarouselProps> = ({
       }
     };
 
-    const handleDragEnd = () => {
+    const handleDragEnd = async () => {
+      if (animating) {
+        return;
+      }
+
       if (deltaClientX !== undefined) {
         const deltaIndex = deltaClientX < 0 ? 1 : deltaClientX > 0 ? -1 : 0;
 
@@ -90,12 +111,15 @@ export const Carousel: FC<CarouselProps> = ({
               : wrapper.animate(
                   [{ transform: `translateX(${deltaIndex * -100}%)` }],
                   {
-                    duration: (1 - Math.abs(deltaClientX)) * 500,
+                    duration: (1 - Math.abs(deltaClientX)) * 300,
                     easing: 'ease-out',
                   },
                 ).finished;
 
-          animationPromise.then(() => {
+          animating = true;
+
+          await animationPromise.then(() => {
+            animating = false;
             wrapper.style.transform = '';
             setIndex((previousIndex) => previousIndex + deltaIndex);
           });
