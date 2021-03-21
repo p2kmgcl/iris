@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './PhotoThumbnail.css';
+import styles from './PhotoThumbnail.module.css';
 import { MdLocalMovies } from 'react-icons/md';
 
 const PhotoThumbnail: FC<{

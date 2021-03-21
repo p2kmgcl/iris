@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './LoadingMask.css';
+import styles from './LoadingMask.module.css';
 import Spinner from './Spinner';
 
 const LoadingMask: FC<{ loading?: boolean }> = ({

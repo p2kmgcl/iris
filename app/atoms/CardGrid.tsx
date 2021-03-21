@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './CardGrid.css';
+import styles from './CardGrid.module.css';
 
 interface Card {
   itemId: string;

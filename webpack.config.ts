@@ -61,7 +61,19 @@ export default {
         include: path.join(__dirname, 'app'),
         use: [
           'style-loader',
-          { loader: 'css-loader', options: { modules: true } },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: true,
+                localIdentContext: path.join(__dirname, 'app'),
+                localIdentName:
+                  process.env.NODE_ENV === 'development'
+                    ? '[path][name]__[local]--[hash:base64:4]'
+                    : '[hash:base64]',
+              },
+            },
+          },
         ],
       },
       {

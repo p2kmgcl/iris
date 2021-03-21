@@ -1,4 +1,4 @@
-:global(:root) {
+:root {
   --dark: #272833;
   --dark-l1: #393a4a;
   --dark-l2: #51536c;
@@ -37,11 +37,11 @@
   --transition-duration: 0.3s;
 }
 
-:global(html) {
+html {
   height: 100%;
 }
 
-:global(body) {
+body {
   background-color: var(--dark);
   color: var(--light);
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu,
@@ -51,7 +51,7 @@
   height: 100%;
 }
 
-:global(#app) {
+#app {
   width: 100vw;
   height: 100%;
   overflow: hidden;

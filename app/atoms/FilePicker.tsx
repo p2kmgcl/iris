@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import styles from './FilePicker.css';
+import styles from './FilePicker.module.css';
 import Spinner from './Spinner';
 import Button from './Button';
 

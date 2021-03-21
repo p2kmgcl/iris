@@ -1,5 +1,5 @@
 import { FC, ReactElement, useMemo } from 'react';
-import styles from './List.css';
+import styles from './List.module.css';
 
 let nextCheckboxId = 0;
 

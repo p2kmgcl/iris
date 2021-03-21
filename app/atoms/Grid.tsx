@@ -1,5 +1,5 @@
 import { CSSProperties, FC, useEffect, useState } from 'react';
-import styles from './Grid.css';
+import styles from './Grid.module.css';
 
 const MAX_ITEM_SIZE = 256;
 

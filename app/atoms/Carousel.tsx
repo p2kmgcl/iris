@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import styles from './Carousel.css';
+import styles from './Carousel.module.css';
 
 export interface SlideProps {
   slideId: string;

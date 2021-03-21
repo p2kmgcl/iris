@@ -1,5 +1,5 @@
 import { ButtonHTMLAttributes, FC } from 'react';
-import styles from './Button.css';
+import styles from './Button.module.css';
 
 const Button: FC<Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'>> = (
   props,

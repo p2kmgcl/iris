@@ -1,7 +1,7 @@
 import { CSSProperties, FC, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { MdClose } from 'react-icons/md';
-import styles from './Modal.css';
+import styles from './Modal.module.css';
 
 const modalStack = (function () {
   let listeners: Array<() => void> = [];

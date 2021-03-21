@@ -4,7 +4,7 @@ import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import { PhotoModel } from '../../../types/Schema';
 import PhotoLoader from '../../utils/PhotoLoader';
-import styles from './PhotoModal.css';
+import styles from './PhotoModal.module.css';
 import { Carousel, SlideProps } from '../../atoms/Carousel';
 
 const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {

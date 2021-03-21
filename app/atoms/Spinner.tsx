@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './Spinner.css';
+import styles from './Spinner.module.css';
 
 const Spinner: FC<{ size: 'regular' | 'large'; spinning?: boolean }> = ({
   size,

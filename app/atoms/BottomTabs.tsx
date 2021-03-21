@@ -1,5 +1,5 @@
 import { FC, Suspense, useLayoutEffect, useRef } from 'react';
-import styles from './BottomTabs.css';
+import styles from './BottomTabs.module.css';
 import Spinner from './Spinner';
 
 const TAB_ID_PREFIX = 'bottom-tab-';

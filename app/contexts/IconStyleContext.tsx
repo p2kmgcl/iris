@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './IconStyleContext.css';
+import styles from './IconStyleContext.module.css';
 import { IconContext } from 'react-icons';
 
 const IconStyleContextProvider: FC = ({ children }) => (

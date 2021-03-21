@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, FC } from 'react';
-import styles from './Input.css';
+import styles from './Input.module.css';
 
 const Input: FC<
   Omit<InputHTMLAttributes<HTMLInputElement>, 'className'> & { label: string }
