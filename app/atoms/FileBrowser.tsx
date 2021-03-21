@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import styles from './FileBrowser.css';
 import Spinner from './Spinner';
 
@@ -7,10 +7,16 @@ const FileBrowser: FC<{
   items: Array<{ label: string; itemId: string; Icon: FC; disabled: boolean }>;
   onItemClick: (itemId: string) => void;
 }> = ({ path: initialPath, items, onItemClick }) => {
+  const [buttonList, setButtonList] = useState<HTMLUListElement | null>(null);
+
   const filteredPath =
     initialPath.length >= 3
       ? [initialPath[0], '..', initialPath[initialPath.length - 1]]
       : initialPath;
+
+  useEffect(() => {
+    buttonList?.scrollTo({ left: 0, top: 0, behavior: 'auto' });
+  }, [buttonList, items]);
 
   return (
     <div className={styles.wrapper}>
@@ -28,7 +34,7 @@ const FileBrowser: FC<{
             ))}
           </ol>
 
-          <ul className={styles.buttonList}>
+          <ul className={styles.buttonList} ref={setButtonList}>
             {items.map((item) => (
               <li className={styles.buttonListItem} key={item.itemId}>
                 <button
