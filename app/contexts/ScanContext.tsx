@@ -57,7 +57,7 @@ const ScanContextProvider: FC = ({ children }) => {
           if (abortControllerRef.current === abortController) {
             scanStatusChannel.emit(
               item
-                ? { description: `Added ${item.fileName}` }
+                ? { description: `Added ${item}` }
                 : { description: 'Scan in progress...' },
             );
           }

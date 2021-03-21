@@ -3,7 +3,6 @@ import { DBSchema } from 'idb';
 export interface ItemModel {
   itemId: string;
   parentItemId: string;
-  fileName: string;
   updateTime: number;
 }
 
@@ -17,6 +16,7 @@ export interface AlbumModel {
 export interface PhotoModel {
   itemId: string;
   albumItemId: string;
+  fileName: string;
   dateTime: number;
   width: number;
   height: number;

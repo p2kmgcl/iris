@@ -101,8 +101,6 @@ const Database = {
             await database.delete('configuration', key);
           }
         }
-
-        await Database.destroy();
       }
 
       await database.add('configuration', {
@@ -149,11 +147,10 @@ const Database = {
       itemId: item.itemId,
       parentItemId: item.parentItemId,
       updateTime: item.updateTime,
-      fileName: item.fileName,
     });
 
     return transaction.done.catch((error) => {
-      throw new Error(`Item ${item.fileName}: ${error.toString()}`);
+      throw new Error(`Item ${item.itemId}: ${error.toString()}`);
     });
   },
 
@@ -163,7 +160,6 @@ const Database = {
     transaction.objectStore('items').put({
       itemId: album.itemId,
       parentItemId: album.parentItemId,
-      fileName: album.fileName,
       updateTime: album.updateTime,
     });
 
@@ -175,7 +171,7 @@ const Database = {
     });
 
     return transaction.done.catch((error) => {
-      throw new Error(`Album ${album.fileName}: ${error.toString()}`);
+      throw new Error(`Album ${album.title}: ${error.toString()}`);
     });
   },
 
@@ -185,12 +181,12 @@ const Database = {
     transaction.objectStore('items').put({
       itemId: photo.itemId,
       parentItemId: photo.parentItemId,
-      fileName: photo.fileName,
       updateTime: photo.updateTime,
     });
 
     transaction.objectStore('photos').put({
       itemId: photo.itemId,
+      fileName: photo.fileName,
       dateTime: photo.dateTime,
       height: photo.height,
       width: photo.width,

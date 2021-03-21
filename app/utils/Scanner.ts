@@ -1,9 +1,9 @@
 import { DriveItem } from '@microsoft/microsoft-graph-types';
 import Database from './Database';
 import Graph from './Graph';
-import { ItemModel } from '../../types/Schema';
 import Authentication from './Authentication';
 import PhotoLoader from './PhotoLoader';
+import { Metadata } from './Metadata';
 
 class ScannerManualAbortError extends Error {
   toString() {
@@ -12,9 +12,11 @@ class ScannerManualAbortError extends Error {
 }
 
 function parseDateString(dateString: string): [number, string] {
-  const dateTimeRegExp = /(\d{4})[_-](\d{2})[_-](\d{2})(_|-|\s)(\d{2})(_|-|:)(\d{2})([^\n]*)/;
-  const dateRegExp = /(\d{4})[_-](\d{2})[_-](\d{2})([^\n]*)/;
-  const yearRegExp = /(\d{4})([^\n]*)/;
+  const dateTimeRegExp = /^(\d{4})[_-](\d{2})[_-](\d{2})(_|-|\s)(\d{2})(_|-|:)(\d{2})([^\n]*)$/;
+  const dateRegExp = /^(\d{4})[_-](\d{2})[_-](\d{2})([^\n]*)$/;
+  const dateImgRegExp = /^IMG[_-](\d{4})(\d{2})(\d{2})[_-]([^\n]*)$/i;
+  const dateVidRegExp = /^VID[_-](\d{4})(\d{2})(\d{2})[_-]([^\n]*)$/i;
+  const yearRegExp = /^(\d{4})(_|-|:|\s)([^\n]*)$/;
 
   let date = Infinity;
   let trimmedString = dateString;
@@ -29,10 +31,25 @@ function parseDateString(dateString: string): [number, string] {
     const [, year, month, day, rest] = dateRegExp.exec(dateString) as string[];
     date = new Date(`${year}-${month}-${day}`).getTime();
     trimmedString = rest.trim();
+  } else if (dateImgRegExp.test(dateString)) {
+    const [, year, month, day, rest] = dateImgRegExp.exec(
+      dateString,
+    ) as string[];
+    date = new Date(`${year}-${month}-${day}`).getTime();
+    trimmedString = rest.trim();
+  } else if (dateVidRegExp.test(dateString)) {
+    const [, year, month, day, rest] = dateVidRegExp.exec(
+      dateString,
+    ) as string[];
+    date = new Date(`${year}-${month}-${day}`).getTime();
+    trimmedString = rest.trim();
   } else if (yearRegExp.test(dateString)) {
     const [, year, rest] = yearRegExp.exec(dateString) as string[];
     date = new Date(`${year}-01-01`).getTime();
     trimmedString = rest.trim();
+  } else if (dateString.length === 4 && !isNaN(parseInt(dateString, 10))) {
+    date = new Date(`${parseInt(dateString, 10)}-01-01`).getTime();
+    trimmedString = dateString;
   }
 
   return [date, trimmedString || dateString];
@@ -46,28 +63,32 @@ const Scanner = {
   scan: async (
     driveItemId: string,
     abortSignal: AbortSignal,
-    onStatusUpdate: (lastScannedItem?: ItemModel) => void,
+    onStatusUpdate: (lastScannedItem?: string) => void,
   ) => {
     async function synchronizeItem(
       driveItem: DriveItem,
       driveItemParent: DriveItem,
       driveItemSiblings: DriveItem[],
     ) {
-      const databaseItem = await Database.selectItem(driveItem.id as string);
-      const lastModifiedDateTime = new Date(
-        driveItem.lastModifiedDateTime as string,
-      ).getTime();
+      if (!driveItem.id || !driveItem.name || !driveItemParent.id) {
+        return;
+      }
+
+      const databaseItem = await Database.selectItem(driveItem.id);
+      const lastModifiedDateTime = driveItem.lastModifiedDateTime
+        ? new Date(driveItem.lastModifiedDateTime).getTime()
+        : Infinity;
 
       if (databaseItem && databaseItem.updateTime === lastModifiedDateTime) {
         return;
       }
 
       const children = driveItem.folder?.childCount
-        ? (await Graph.getItemChildren(driveItem.id as string)).reverse()
+        ? (await Graph.getItemChildren(driveItem.id)).reverse()
         : [];
 
       const removedChildren = (
-        await Database.selectItemsFromParentItemId(driveItem.id as string)
+        await Database.selectItemsFromParentItemId(driveItem.id)
       ).filter((storedChild) =>
         children.every((child) => child.id !== storedChild.itemId),
       );
@@ -83,109 +104,83 @@ const Scanner = {
       }
 
       if (driveItemIsPhoto(driveItem)) {
-        const thumbnails = await Graph.getItemThumbnails(
-          driveItem.id as string,
-        );
-
-        const thumbnailURI = (thumbnails.large?.url ||
-          thumbnails.medium?.url ||
-          thumbnails.small?.url) as string;
-
-        const dateTime: number =
-          (await (async function () {
-            const metadataFile = driveItemSiblings.find(
-              (siblingItem) => siblingItem.name === `${driveItem.name}.xmp`,
-            ) as { '@microsoft.graph.downloadUrl': string } | undefined;
-
-            if (!metadataFile) {
-              return 0;
-            }
-
-            try {
-              const metadata = new DOMParser().parseFromString(
-                await fetch(
-                  metadataFile['@microsoft.graph.downloadUrl'],
-                ).then((response) => response.text()),
-                'text/xml',
-              );
-
-              const rdfDescription = metadata
-                .getElementsByTagName('rdf:Description')
-                .item(0);
-
-              if (!rdfDescription) {
-                return 0;
-              }
-
-              const attributeName = [
-                'xmp:MetadataDate',
-                'xmp:ModifyDate',
-                'xmp:CreateDate',
-                'exif:DateTimeOriginal',
-                'tiff:DateTime',
-                'video:ModificationDate',
-                'video:DateTimeOriginal',
-                'photoshop:DateCreated',
-              ].find((name) => rdfDescription.getAttribute(name));
-
-              if (!attributeName) {
-                return 0;
-              }
-
-              return new Date(
-                rdfDescription.getAttribute(attributeName) as string,
-              ).getTime();
-            } catch (error) {
-              return 0;
-            }
-          })()) ||
-          new Date(
-            driveItem.photo?.takenDateTime ||
-              driveItem.createdDateTime ||
-              lastModifiedDateTime,
-          ).getTime();
-
         await PhotoLoader.addPhotoThumbnail(
-          driveItem.id as string,
-          thumbnailURI,
+          driveItem.id,
+          await (async function () {
+            const thumbnails = await Graph.getItemThumbnails(
+              driveItem.id as string,
+            );
+
+            return (
+              thumbnails.large?.url ||
+              thumbnails.medium?.url ||
+              thumbnails.small?.url ||
+              ''
+            );
+          })(),
         );
 
         await Database.addPhoto({
-          itemId: driveItem.id as string,
-          parentItemId: driveItemParent.id as string,
-          fileName: driveItem.name as string,
+          itemId: driveItem.id,
+          parentItemId: driveItemParent.id,
+          fileName: driveItem.name,
           updateTime: lastModifiedDateTime,
-          dateTime,
-          albumItemId: driveItemParent.id as string,
-          width: (driveItem.image?.width || driveItem.video?.width) as number,
-          height: (driveItem.image?.height ||
-            driveItem.video?.height) as number,
+          dateTime: await (async function () {
+            let date = Infinity;
+
+            const metadataFile = driveItemSiblings.find(
+              (siblingItem) => siblingItem.name === `${driveItem.name}.xmp`,
+            );
+
+            if (metadataFile) {
+              date = Metadata.getDateFromString(
+                await fetch(
+                  (metadataFile as { '@microsoft.graph.downloadUrl': string })[
+                    '@microsoft.graph.downloadUrl'
+                  ],
+                ).then((response) => response.text()),
+              );
+            }
+
+            if (!isFinite(date)) {
+              date = parseDateString(driveItem.name as string)[0];
+            }
+
+            if (
+              !isFinite(date) &&
+              typeof driveItem.photo?.takenDateTime === 'string'
+            ) {
+              date = new Date(driveItem.photo.takenDateTime).getTime();
+            }
+
+            return date;
+          })(),
+          albumItemId: driveItemParent.id,
+          width: driveItem.image?.width || driveItem.video?.width || 0,
+          height: driveItem.image?.height || driveItem.video?.height || 0,
           isVideo: !!driveItem.video,
         });
       } else if (children.some((child) => driveItemIsPhoto(child))) {
-        const [dateTime, title] = parseDateString(driveItem.name as string);
+        const [dateTime, title] = parseDateString(driveItem.name);
 
         await Database.addAlbum({
-          itemId: driveItem.id as string,
-          parentItemId: driveItemParent.id as string,
-          fileName: driveItem.name as string,
+          itemId: driveItem.id,
+          parentItemId: driveItemParent.id,
           updateTime: lastModifiedDateTime,
           title,
           dateTime,
-          coverItemId: (children.find((child) =>
-            driveItemIsPhoto(child),
-          ) as DriveItem).id as string,
+          coverItemId:
+            children.find((child) => driveItemIsPhoto(child))?.id || '',
         });
       } else {
         await Database.addItem({
-          itemId: driveItem.id as string,
-          parentItemId: driveItemParent.id as string,
-          fileName: driveItem.name as string,
+          itemId: driveItem.id,
+          parentItemId: driveItemParent.id,
           updateTime: lastModifiedDateTime,
         });
       }
 
-      onStatusUpdate(await Database.selectItem(driveItem.id as string));
+      onStatusUpdate(`${driveItemParent.name}/${driveItem.name as string}`);
     }
 
     await Authentication.getFreshAccessToken().then(() =>
