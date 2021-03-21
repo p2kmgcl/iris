@@ -25,17 +25,7 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
   const thumbnailURL = PhotoLoader.getPhotoThumbnailURL(itemId);
 
   const url = useAsyncMemo(
-    async () => {
-      const nextURL = await PhotoLoader.getDownloadURLFromItemId(itemId);
-      const image = document.createElement('img');
-      const imageLoadPromise = new Promise<void>((resolve) => {
-        image.addEventListener('load', () => resolve());
-      });
-
-      image.src = nextURL;
-      await imageLoadPromise;
-      return nextURL;
-    },
+    () => PhotoLoader.getDownloadURLFromItemId(itemId),
     [itemId],
     '',
   );
@@ -77,13 +67,6 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
   return (
     <div className={styles.photoSlide} ref={handlePhotoSlideRef}>
       <div>
-        <div>
-          {new Date(photo.dateTime).toLocaleString(
-            navigator.language || 'en-US',
-            { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
-          )}
-        </div>
-
         {photo.isVideo ? (
           <video
             loop
