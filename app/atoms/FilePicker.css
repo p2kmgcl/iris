@@ -1,7 +1,6 @@
 .wrapper {
   overflow: hidden;
-  border-radius: var(--roundness);
-  height: 50vh;
+  height: 65vh;
   width: 72ch;
   margin: 0 auto;
   max-width: calc(100vw - var(--spacing-unit) * 4);
@@ -109,4 +108,11 @@
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
+}
+
+.footer {
+  background-color: var(--dark-l1);
+  padding: calc(var(--spacing-unit) * 1.25) calc(var(--spacing-unit) * 2);
+  display: flex;
+  justify-content: flex-end;
 }

@@ -1,22 +1,18 @@
 import { FC, useEffect, useState } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Graph from '../../utils/Graph';
-import { DriveItem } from '@microsoft/microsoft-graph-types';
 import LoadingMask from '../../atoms/LoadingMask';
 import Database from '../../utils/Database';
-import Button from '../../atoms/Button';
 import {
   AiOutlineArrowUp,
   AiOutlineFile,
   AiOutlineFolder,
 } from 'react-icons/ai';
-import Spacer from '../../atoms/Spacer';
-import FileBrowser from '../../atoms/FileBrowser';
+import FilePicker from '../../atoms/FilePicker';
 import SetupStep from '../../atoms/SetupStep';
 
 const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [itemId, setItemId] = useState('root');
-  const [item, setItem] = useState<DriveItem>();
   const [path, setPath] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [children, setChildren] = useState<
@@ -60,8 +56,6 @@ const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
           disabled: !child.folder,
         }));
 
-      setItem(item);
-
       if (item.parentReference?.id) {
         setChildren([
           {
@@ -94,16 +88,14 @@ const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   return (
     <SetupStep title="Gallery folder">
       <LoadingMask loading={loading}>
-        <FileBrowser path={path} items={children} onItemClick={setItemId} />
+        <FilePicker
+          path={path}
+          itemId={itemId}
+          itemChildren={children}
+          onItemClick={setItemId}
+          onItemSelect={handleChoose}
+        />
       </LoadingMask>
-
-      <Spacer block size={2} />
-
-      {item && item.name ? (
-        <Button disabled={loading} onClick={handleChoose}>
-          {`Choose ${item?.name}`}
-        </Button>
-      ) : null}
     </SetupStep>
   );
 };

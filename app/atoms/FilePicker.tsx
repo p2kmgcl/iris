@@ -1,12 +1,26 @@
 import React, { FC, useEffect, useState } from 'react';
-import styles from './FileBrowser.css';
+import styles from './FilePicker.css';
 import Spinner from './Spinner';
+import Button from './Button';
 
-const FileBrowser: FC<{
+const FilePicker: FC<{
   path: string[];
-  items: Array<{ label: string; itemId: string; Icon: FC; disabled: boolean }>;
+  itemId: string;
+  itemChildren: Array<{
+    label: string;
+    itemId: string;
+    Icon: FC;
+    disabled: boolean;
+  }>;
   onItemClick: (itemId: string) => void;
-}> = ({ path: initialPath, items, onItemClick }) => {
+  onItemSelect: (itemId: string) => void;
+}> = ({
+  itemId,
+  path: initialPath,
+  itemChildren,
+  onItemClick,
+  onItemSelect,
+}) => {
   const [buttonList, setButtonList] = useState<HTMLUListElement | null>(null);
 
   const filteredPath =
@@ -16,11 +30,11 @@ const FileBrowser: FC<{
 
   useEffect(() => {
     buttonList?.scrollTo({ left: 0, top: 0, behavior: 'auto' });
-  }, [buttonList, items]);
+  }, [buttonList, itemChildren]);
 
   return (
     <div className={styles.wrapper}>
-      {items.length ? (
+      {itemChildren.length ? (
         <>
           <ol className={styles.breadcrumbList}>
             {filteredPath.map((item, index) => (
@@ -35,7 +49,7 @@ const FileBrowser: FC<{
           </ol>
 
           <ul className={styles.buttonList} ref={setButtonList}>
-            {items.map((item) => (
+            {itemChildren.map((item) => (
               <li className={styles.buttonListItem} key={item.itemId}>
                 <button
                   disabled={item.disabled}
@@ -55,8 +69,14 @@ const FileBrowser: FC<{
           <Spinner size="large" />
         </div>
       )}
+
+      <div className={styles.footer}>
+        {itemId && itemChildren.length ? (
+          <Button onClick={() => onItemSelect(itemId)}>Select</Button>
+        ) : null}
+      </div>
     </div>
   );
 };
 
-export default FileBrowser;
+export default FilePicker;

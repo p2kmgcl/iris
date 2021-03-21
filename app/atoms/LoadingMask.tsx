@@ -6,7 +6,7 @@ const LoadingMask: FC<{ loading?: boolean }> = ({
   loading = false,
   children,
 }) => (
-  <div className={styles.wrapper}>
+  <div className={`${styles.wrapper} ${loading ? styles.wrapperLoading : ''}`}>
     {children}
 
     {loading ? (

@@ -2,6 +2,12 @@
   position: relative;
   overflow: hidden;
   border-radius: var(--roundness);
+  filter: opacity(1) brightness(1);
+  transition: filter ease var(--transition-duration);
+}
+
+.wrapperLoading {
+  filter: opacity(0.8) brightness(0.6);
 }
 
 .mask {
@@ -10,8 +16,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--dark);
-  opacity: 0.6;
 }
 
 .spinner {
