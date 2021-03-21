@@ -1,22 +1,15 @@
 import { DriveItem, ThumbnailSet } from '@microsoft/microsoft-graph-types';
-import { Client, GraphRequest } from '@microsoft/microsoft-graph-client';
+import { Client } from '@microsoft/microsoft-graph-client';
 import Authentication from './Authentication';
-
-const tokenRef = { current: '' };
 
 const client = Client.initWithMiddleware({
   authProvider: {
-    getAccessToken: async () => tokenRef.current,
+    getAccessToken: () => Authentication.getFreshAccessToken(),
   },
 });
 
-async function graphAPI(query: string): Promise<GraphRequest> {
-  tokenRef.current = await Authentication.getFreshAccessToken();
-  return client.api(query);
-}
-
 async function graphGet<T>(query: string): Promise<T> {
-  return (await graphAPI(query)).get();
+  return (await client.api(query)).get();
 }
 
 const Graph = {

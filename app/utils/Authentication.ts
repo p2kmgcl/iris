@@ -131,6 +131,9 @@ const Authentication = {
           console.error(error);
           return Authentication.logout();
         });
+
+      // Wait until new token has been fetched
+      await refreshPromise;
     }
 
     return auth.access_token;
