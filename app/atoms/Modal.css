@@ -24,7 +24,6 @@
 .headerContent::before {
   content: '';
   display: block;
-  background-color: var(--background-color);
   position: absolute;
   top: 0;
   left: 0;

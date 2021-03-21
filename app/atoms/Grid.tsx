@@ -147,18 +147,20 @@ function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
   }, [wrapperElement, gridContext, itemIdList]);
 
   return (
-    <div ref={setWrapperElement} className={styles.wrapper}>
-      {itemIdList.length && gridContext.columnCount ? (
-        <div className={styles.grid} style={gridContext.gridStyle}>
-          {renderGrid.map((cell) => (
-            <div key={cell.key} className={cell.className} style={cell.style}>
-              <div className={styles.cellContent}>
-                <Item {...itemProps} {...cell.itemProps} />
+    <div className={styles.scroller}>
+      <div ref={setWrapperElement} className={styles.wrapper}>
+        {itemIdList.length && gridContext.columnCount ? (
+          <div className={styles.grid} style={gridContext.gridStyle}>
+            {renderGrid.map((cell) => (
+              <div key={cell.key} className={cell.className} style={cell.style}>
+                <div className={styles.cellContent}>
+                  <Item {...itemProps} {...cell.itemProps} />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : null}
+            ))}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

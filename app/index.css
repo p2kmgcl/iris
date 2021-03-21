@@ -56,17 +56,3 @@
   height: 100%;
   overflow: hidden;
 }
-
-::-webkit-scrollbar {
-  width: 0.5rem;
-  height: 0.5rem;
-  background-color: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--dark-l2);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--primary);
-}
