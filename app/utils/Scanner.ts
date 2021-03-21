@@ -63,7 +63,7 @@ const Scanner = {
       }
 
       const children = driveItem.folder?.childCount
-        ? await Graph.getItemChildren(driveItem.id as string)
+        ? (await Graph.getItemChildren(driveItem.id as string)).reverse()
         : [];
 
       const removedChildren = (
