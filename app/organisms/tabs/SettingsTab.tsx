@@ -86,8 +86,13 @@ const SettingsTab: FC = () => {
           subtitle="Remove all photos but keep account"
           onClick={() => {
             if (confirm('Are you sure?')) {
-              Database.destroy();
-              PhotoLoader.clearThumbnailCache();
+              if (isScanning) {
+                toggleScan();
+              }
+
+              PhotoLoader.clearThumbnailCache().then(() => {
+                return Database.destroy();
+              });
             }
           }}
         />
