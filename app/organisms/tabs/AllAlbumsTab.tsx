@@ -2,10 +2,38 @@ import { FC, useCallback, useState } from 'react';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import AlbumModal from '../modals/AlbumModal';
-import CardGrid from '../../atoms/CardGrid';
+import { Grid, ItemProps } from '../../atoms/Grid';
+import { Card } from '../../atoms/Card';
+
+const Album: FC<ItemProps & { setAlbumId: (albumId: string) => void }> = ({
+  itemId,
+  setAlbumId,
+}) => {
+  const album = useAsyncMemo(
+    () => Database.selectAlbum(itemId),
+    [itemId],
+    undefined,
+  );
+
+  if (!album) {
+    return null;
+  }
+
+  return (
+    <Card
+      thumbnailURL={`/thumbnail?itemId=${album.coverItemId}`}
+      title={album.title}
+      onClick={() => setAlbumId(itemId)}
+    />
+  );
+};
 
 const AllAlbumsTab: FC = () => {
-  const albumList = useAsyncMemo(() => Database.selectAlbumList(), [], []);
+  const albumKeyList = useAsyncMemo(
+    () => Database.selectAlbumKeyList(),
+    [],
+    [],
+  );
   const [albumId, setAlbumId] = useState('');
 
   const handleCloseButtonClick = useCallback(() => {
@@ -13,13 +41,7 @@ const AllAlbumsTab: FC = () => {
   }, []);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-      }}
-    >
+    <>
       {albumId ? (
         <AlbumModal
           albumId={albumId}
@@ -27,8 +49,15 @@ const AllAlbumsTab: FC = () => {
         />
       ) : null}
 
-      <CardGrid cards={albumList} onCardClick={setAlbumId} />
-    </div>
+      <Grid
+        itemIdList={albumKeyList}
+        itemSizeRatio={1.25}
+        minColumnCount={2}
+        itemMaxSize={300}
+        itemProps={{ setAlbumId }}
+        Item={Album}
+      />
+    </>
   );
 };
 

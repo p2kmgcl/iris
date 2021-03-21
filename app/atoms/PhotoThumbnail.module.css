@@ -4,11 +4,13 @@
   position: relative;
   background: none;
   border: none;
-  padding: 0;
+  box-sizing: border-box;
+  padding: 1px;
   cursor: pointer;
 }
 
 .thumbnail {
+  background-color: var(--dark-l1);
   background-size: cover;
   background-position: center center;
   width: 100%;

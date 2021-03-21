@@ -49,7 +49,7 @@ const Modal: FC<{
       className={styles.modal}
       style={
         {
-          '--background-color':
+          backgroundColor:
             background === 'default' ? 'var(--dark)' : 'var(--black)',
           zIndex: priority,
         } as CSSProperties

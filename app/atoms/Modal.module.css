@@ -4,34 +4,19 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--background-color);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
-  top: 0;
-  left: 0;
-  width: 100%;
-  position: fixed;
-  z-index: 2;
+  display: block;
 }
 
 .headerContent {
   position: relative;
   display: flex;
   justify-content: flex-end;
-}
-
-.headerContent::before {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.5;
 }
 
 .closeButton {
@@ -75,9 +60,8 @@
 .content {
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   overflow-y: auto;
-  position: fixed;
+  height: 100%;
+  width: 100%;
   z-index: 1;
 }

@@ -1,22 +1,8 @@
-.grid {
-  --spacing: clamp(
-    calc(var(--spacing-unit) * 2),
-    2vw,
-    calc(var(--spacing-unit) * 4)
-  );
-
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  grid-gap: var(--spacing);
-  padding: var(--spacing);
-  width: 100%;
-  align-items: flex-start;
-}
-
 .card {
   box-sizing: border-box;
-  padding: 0;
+  padding: var(--spacing-unit);
   margin: 0;
+  width: 100%;
 
   background: none;
   border: none;
@@ -27,6 +13,12 @@
 
   overflow: hidden;
   text-align: left;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: calc(var(--spacing-unit) * 2);
+  }
 }
 
 .thumbnail {

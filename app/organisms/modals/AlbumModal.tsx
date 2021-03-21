@@ -2,7 +2,7 @@ import { Dispatch, FC, SetStateAction, useState } from 'react';
 import Modal from '../../atoms/Modal';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
-import Grid, { ItemProps } from '../../atoms/Grid';
+import { Grid, ItemProps } from '../../atoms/Grid';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 import PhotoModal from './PhotoModal';
 import PhotoLoader from '../../utils/PhotoLoader';
@@ -71,7 +71,14 @@ const AlbumModal: FC<{
         <h1>{album.title}</h1>
       </header>
 
-      <Grid itemIdList={photoKeyList} itemProps={{ setPhotoId }} Item={Photo} />
+      <Grid
+        itemIdList={photoKeyList}
+        itemSizeRatio={1}
+        minColumnCount={3}
+        itemMaxSize={256}
+        itemProps={{ setPhotoId }}
+        Item={Photo}
+      />
     </Modal>
   );
 };

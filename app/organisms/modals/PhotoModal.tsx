@@ -66,20 +66,18 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
 
   return (
     <div className={styles.photoSlide} ref={handlePhotoSlideRef}>
-      <div>
-        {photo.isVideo ? (
-          <video
-            loop
-            src={url}
-            controls
-            poster={thumbnailURL}
-            width={width}
-            height={height}
-          />
-        ) : (
-          <img src={url || thumbnailURL} width={width} height={height} />
-        )}
-      </div>
+      {photo.isVideo ? (
+        <video
+          loop
+          src={url}
+          controls
+          poster={thumbnailURL}
+          width={width}
+          height={height}
+        />
+      ) : (
+        <img src={url || thumbnailURL} width={width} height={height} />
+      )}
     </div>
   );
 };

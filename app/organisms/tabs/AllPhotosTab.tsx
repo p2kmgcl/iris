@@ -1,5 +1,5 @@
 import { Dispatch, FC, SetStateAction, useCallback, useState } from 'react';
-import Grid, { ItemProps } from '../../atoms/Grid';
+import { Grid, ItemProps } from '../../atoms/Grid';
 import useAsyncMemo from '../../hooks/useAsyncMemo';
 import Database from '../../utils/Database';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
@@ -48,7 +48,14 @@ const AllPhotosTab: FC = () => {
         />
       ) : null}
 
-      <Grid itemIdList={photoKeyList} itemProps={{ setPhotoId }} Item={Photo} />
+      <Grid
+        itemIdList={photoKeyList}
+        itemProps={{ setPhotoId }}
+        itemMaxSize={256}
+        minColumnCount={3}
+        itemSizeRatio={1}
+        Item={Photo}
+      />
     </>
   );
 };

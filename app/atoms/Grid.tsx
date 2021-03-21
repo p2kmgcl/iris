@@ -1,31 +1,44 @@
 import { CSSProperties, FC, useEffect, useState } from 'react';
 import styles from './Grid.module.css';
-
-const MAX_ITEM_SIZE = 256;
+import { useScrollBarWidth } from '../hooks/useScrollBarWidth';
 
 export interface ItemProps {
   itemId: string;
-  itemSize: number;
+  itemWidth: number;
+  itemHeight: number;
 }
 
 type GridProps<T> = {
   itemIdList: string[];
   itemProps: T;
+  minColumnCount: number;
+  itemMaxSize: number;
+  itemSizeRatio: number;
   Item: FC<T & ItemProps>;
 };
 
-function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
+export function Grid<T>({
+  itemIdList,
+  itemProps,
+  minColumnCount,
+  itemMaxSize,
+  itemSizeRatio,
+  Item,
+}: GridProps<T>): JSX.Element {
+  const scrollBarWidth = useScrollBarWidth();
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(
     null,
   );
 
   const [gridContext, setGridContext] = useState<{
-    itemSize: number;
+    itemWidth: number;
+    itemHeight: number;
     columnCount: number;
     rowCount: number;
     gridStyle: CSSProperties;
   }>(() => ({
-    itemSize: 0,
+    itemWidth: 0,
+    itemHeight: 0,
     columnCount: 0,
     rowCount: 0,
     gridStyle: {},
@@ -46,14 +59,15 @@ function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
     }
 
     const handleResize = () => {
-      const { width: wrapperWidth } = wrapperElement.getBoundingClientRect();
+      const wrapperWidth =
+        wrapperElement.getBoundingClientRect().width - scrollBarWidth;
 
       const nextColumnCount = Math.floor(
         wrapperWidth /
           Math.min(
-            MAX_ITEM_SIZE,
+            itemMaxSize,
             // Try having at least three columns
-            Math.min(window.innerWidth, window.innerHeight) / 3.25,
+            Math.min(wrapperWidth, window.innerHeight) / minColumnCount,
           ),
       );
 
@@ -61,7 +75,8 @@ function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
       const nextItemSize = Math.floor(wrapperWidth / nextColumnCount);
 
       setGridContext({
-        itemSize: nextItemSize,
+        itemWidth: nextItemSize,
+        itemHeight: nextItemSize * itemSizeRatio,
         columnCount: nextColumnCount,
         rowCount: nextRowCount,
         gridStyle: {
@@ -74,10 +89,17 @@ function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [wrapperElement, itemIdList]);
+  }, [
+    wrapperElement,
+    itemIdList,
+    itemSizeRatio,
+    itemMaxSize,
+    minColumnCount,
+    scrollBarWidth,
+  ]);
 
   useEffect(() => {
-    if (!wrapperElement || !gridContext.itemSize) {
+    if (!wrapperElement || !gridContext.itemWidth || !gridContext.itemHeight) {
       return;
     }
 
@@ -87,14 +109,14 @@ function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
     let lastToRowIndex = 0;
 
     const handleScroll = () => {
-      const overScan = window.innerHeight;
+      const viewHeight = window.innerHeight;
       const top = wrapperElement.getBoundingClientRect().top;
 
-      const from = Math.max(-top - overScan, 0);
-      const to = from + window.innerHeight + overScan;
+      const from = Math.max(-top - viewHeight, 0);
+      const to = from + viewHeight * 2;
 
-      const fromRowIndex = Math.floor(from / gridContext.itemSize);
-      const toRowIndex = Math.ceil(to / gridContext.itemSize);
+      const fromRowIndex = Math.floor(from / gridContext.itemHeight);
+      const toRowIndex = Math.ceil(to / gridContext.itemHeight);
 
       // Do not trigger render unless visible area has changed
       if (fromRowIndex === lastFromRowIndex && toRowIndex === lastToRowIndex) {
@@ -119,14 +141,15 @@ function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
             key: `${gridContext.columnCount}-${gridContext.rowCount}-${i}-${j}`,
             className: styles.cell,
             style: {
-              top: i * gridContext.itemSize,
-              left: j * gridContext.itemSize,
-              width: gridContext.itemSize,
-              height: gridContext.itemSize,
+              top: i * gridContext.itemHeight,
+              left: j * gridContext.itemWidth,
+              width: gridContext.itemWidth,
+              height: gridContext.itemHeight,
             },
             itemProps: {
               itemId: itemIdList[index],
-              itemSize: gridContext.itemSize,
+              itemWidth: gridContext.itemWidth,
+              itemHeight: gridContext.itemHeight,
             },
           });
         }
@@ -147,22 +170,18 @@ function Grid<T>({ itemIdList, itemProps, Item }: GridProps<T>): JSX.Element {
   }, [wrapperElement, gridContext, itemIdList]);
 
   return (
-    <div className={styles.scroller}>
-      <div ref={setWrapperElement} className={styles.wrapper}>
-        {itemIdList.length && gridContext.columnCount ? (
-          <div className={styles.grid} style={gridContext.gridStyle}>
-            {renderGrid.map((cell) => (
-              <div key={cell.key} className={cell.className} style={cell.style}>
-                <div className={styles.cellContent}>
-                  <Item {...itemProps} {...cell.itemProps} />
-                </div>
+    <div ref={setWrapperElement} className={styles.wrapper}>
+      {itemIdList.length && gridContext.columnCount ? (
+        <div className={styles.grid} style={gridContext.gridStyle}>
+          {renderGrid.map((cell) => (
+            <div key={cell.key} className={cell.className} style={cell.style}>
+              <div className={styles.cellContent}>
+                <Item {...itemProps} {...cell.itemProps} />
               </div>
-            ))}
-          </div>
-        ) : null}
-      </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
-
-export default Grid;
