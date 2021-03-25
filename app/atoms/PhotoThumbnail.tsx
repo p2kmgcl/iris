@@ -1,12 +1,18 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import styles from './PhotoThumbnail.module.css';
 import { MdLocalMovies } from 'react-icons/md';
+import { PhotoModel } from '../../types/Schema';
+import PhotoLoader from '../utils/PhotoLoader';
 
 const PhotoThumbnail: FC<{
-  url: string;
+  photoItem: PhotoModel;
   onClick: () => void;
-  showVideoIcon: boolean;
-}> = ({ url, onClick, showVideoIcon }) => {
+}> = ({ photoItem, onClick }) => {
+  const url = useMemo(
+    () => PhotoLoader.getPhotoThumbnailURL(photoItem.itemId),
+    [photoItem],
+  );
+
   return (
     <button className={styles.button} onClick={() => onClick()}>
       <div
@@ -15,7 +21,7 @@ const PhotoThumbnail: FC<{
         style={{ backgroundImage: `url(${url})` }}
       />
 
-      {showVideoIcon ? (
+      {photoItem.isVideo ? (
         <div className={styles.icon}>
           <MdLocalMovies />
         </div>
