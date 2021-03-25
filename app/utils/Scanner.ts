@@ -75,7 +75,29 @@ const Scanner = {
         : DEFAULT_DATE;
 
       if (databaseItem && databaseItem.updateTime === lastModifiedDateTime) {
-        return;
+        if (!driveItemIsPhoto(driveItem)) {
+          return;
+        }
+
+        const metadataFile = driveItemSiblings.find(
+          (siblingItem) => siblingItem.name === `${driveItem.name}.xmp`,
+        );
+
+        if (!metadataFile || !metadataFile.id) {
+          return;
+        }
+
+        const databaseMetadataFile = await Database.selectItem(metadataFile.id);
+        const metadataFileDate = metadataFile.lastModifiedDateTime
+          ? new Date(metadataFile.lastModifiedDateTime).getTime()
+          : DEFAULT_DATE;
+
+        if (
+          databaseMetadataFile &&
+          databaseMetadataFile.updateTime === metadataFileDate
+        ) {
+          return;
+        }
       }
 
       const children = driveItem.folder?.childCount
