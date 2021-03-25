@@ -6,6 +6,7 @@ import { PhotoModel } from '../../../types/Schema';
 import PhotoLoader from '../../utils/PhotoLoader';
 import styles from './PhotoModal.module.css';
 import { Carousel, SlideProps } from '../../atoms/Carousel';
+import { AiFillInfoCircle } from 'react-icons/all';
 
 const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
   const [
@@ -16,9 +17,20 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
     height: 0,
   });
 
+  const [showInfo, setShowInfo] = useState(false);
+
   const photo = useAsyncMemo<PhotoModel | undefined>(
     () => Database.selectPhoto(itemId),
     [itemId],
+    undefined,
+  );
+
+  const album = useAsyncMemo(
+    () =>
+      photo?.albumItemId
+        ? Database.selectAlbum(photo.albumItemId)
+        : Promise.resolve(undefined),
+    [photo],
     undefined,
   );
 
@@ -77,6 +89,59 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
         />
       ) : (
         <img src={url || thumbnailURL} width={width} height={height} />
+      )}
+
+      {showInfo ? (
+        <Modal priority={3} onCloseButtonClick={() => setShowInfo(false)}>
+          <table className={styles.infoPanel}>
+            <tr>
+              <td>File name</td>
+              <td>{photo.fileName}</td>
+            </tr>
+            <tr>
+              <td>Date</td>
+              <td>{new Date(photo.dateTime).toLocaleString()}</td>
+            </tr>
+            <tr>
+              <td>Size</td>
+              <td>
+                {photo.width}x{photo.height}
+              </td>
+            </tr>
+            {album ? (
+              <tr>
+                <td>Album</td>
+                <td>{album.title}</td>
+              </tr>
+            ) : null}
+            {photo.location ? (
+              <tr>
+                <td>Location</td>
+                <td>
+                  <iframe
+                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${
+                      photo.location.longitude - 0.001
+                    }%2C${photo.location.latitude - 0.001}%2C${
+                      photo.location.longitude + 0.001
+                    }%2C${photo.location.latitude + 0.001}&amp;layer=mapnik`}
+                  />
+                </td>
+              </tr>
+            ) : null}
+          </table>
+        </Modal>
+      ) : (
+        <div className={styles.bottomPanel}>
+          <button
+            className={styles.bottomPanelButton}
+            onClick={() => setShowInfo(true)}
+          >
+            <span className={styles.bottomPanelButtonIcon}>
+              <AiFillInfoCircle />
+            </span>
+            <span className={styles.bottomPanelButtonLabel}>Show info</span>
+          </button>
+        </div>
       )}
     </div>
   );

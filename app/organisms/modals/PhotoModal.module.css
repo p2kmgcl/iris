@@ -3,4 +3,54 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  position: relative;
+}
+
+.infoPanel {
+  margin: 0 auto;
+}
+
+.infoPanel td {
+  padding: var(--spacing-unit);
+  word-break: break-word;
+}
+
+.infoPanel td:first-child {
+  border-right: solid thin var(--secondary-d2);
+  white-space: nowrap;
+}
+
+.infoPanel iframe {
+  border-radius: var(--roundness);
+  overflow: hidden;
+  border: none;
+  width: 60vw;
+  height: 35vw;
+}
+
+.bottomPanel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  padding: var(--spacing-unit);
+  justify-content: center;
+}
+
+.bottomPanelButton {
+  color: var(--light);
+  background: none;
+  font-family: inherit;
+  font-size: 1.5em;
+  border: none;
+}
+
+.bottomPanelButtonLabel {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
