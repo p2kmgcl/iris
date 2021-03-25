@@ -5,6 +5,8 @@ import Authentication from './Authentication';
 import PhotoLoader from './PhotoLoader';
 import { Metadata } from './Metadata';
 
+const DEFAULT_DATE = -Infinity;
+
 class ScannerManualAbortError extends Error {
   toString() {
     return 'ScannerManualAbortError';
@@ -14,11 +16,10 @@ class ScannerManualAbortError extends Error {
 function parseDateString(dateString: string): [number, string] {
   const dateTimeRegExp = /^(\d{4})[_-](\d{2})[_-](\d{2})(_|-|\s)(\d{2})(_|-|:)(\d{2})([^\n]*)$/;
   const dateRegExp = /^(\d{4})[_-](\d{2})[_-](\d{2})([^\n]*)$/;
-  const dateImgRegExp = /^IMG[_-](\d{4})(\d{2})(\d{2})[_-]([^\n]*)$/i;
-  const dateVidRegExp = /^VID[_-](\d{4})(\d{2})(\d{2})[_-]([^\n]*)$/i;
+  const datePrefixRegExp = /^[a-z]{3}[_-](\d{4})[_-]?(\d{2})[_-]?(\d{2})[_-]([^\n]*)$/i;
   const yearRegExp = /^(\d{4})(_|-|:|\s)([^\n]*)$/;
 
-  let date = Infinity;
+  let date = DEFAULT_DATE;
   let trimmedString = dateString;
 
   if (dateTimeRegExp.test(dateString)) {
@@ -31,14 +32,8 @@ function parseDateString(dateString: string): [number, string] {
     const [, year, month, day, rest] = dateRegExp.exec(dateString) as string[];
     date = new Date(`${year}-${month}-${day}`).getTime();
     trimmedString = rest.trim();
-  } else if (dateImgRegExp.test(dateString)) {
-    const [, year, month, day, rest] = dateImgRegExp.exec(
-      dateString,
-    ) as string[];
-    date = new Date(`${year}-${month}-${day}`).getTime();
-    trimmedString = rest.trim();
-  } else if (dateVidRegExp.test(dateString)) {
-    const [, year, month, day, rest] = dateVidRegExp.exec(
+  } else if (datePrefixRegExp.test(dateString)) {
+    const [, year, month, day, rest] = datePrefixRegExp.exec(
       dateString,
     ) as string[];
     date = new Date(`${year}-${month}-${day}`).getTime();
@@ -77,14 +72,18 @@ const Scanner = {
       const databaseItem = await Database.selectItem(driveItem.id);
       const lastModifiedDateTime = driveItem.lastModifiedDateTime
         ? new Date(driveItem.lastModifiedDateTime).getTime()
-        : Infinity;
+        : DEFAULT_DATE;
 
       if (databaseItem && databaseItem.updateTime === lastModifiedDateTime) {
         return;
       }
 
       const children = driveItem.folder?.childCount
-        ? (await Graph.getItemChildren(driveItem.id)).reverse()
+        ? (await Graph.getItemChildren(driveItem.id)).sort(
+            (a, b) =>
+              new Date(b.lastModifiedDateTime || '').getTime() -
+              new Date(a.lastModifiedDateTime || '').getTime(),
+          )
         : [];
 
       const removedChildren = (
@@ -126,7 +125,7 @@ const Scanner = {
           fileName: driveItem.name,
           updateTime: lastModifiedDateTime,
           dateTime: await (async function () {
-            let date = Infinity;
+            let date = DEFAULT_DATE;
 
             const metadataFile = driveItemSiblings.find(
               (siblingItem) => siblingItem.name === `${driveItem.name}.xmp`,
@@ -142,15 +141,22 @@ const Scanner = {
               );
             }
 
+            if (
+              !isFinite(date) &&
+              typeof driveItem.photo?.takenDateTime === 'string'
+            ) {
+              date = new Date(driveItem.photo.takenDateTime).getTime();
+            }
+
             if (!isFinite(date)) {
               date = parseDateString(driveItem.name as string)[0];
             }
 
             if (
               !isFinite(date) &&
-              typeof driveItem.photo?.takenDateTime === 'string'
+              typeof driveItem.createdDateTime === 'string'
             ) {
-              date = new Date(driveItem.photo.takenDateTime).getTime();
+              date = new Date(driveItem.createdDateTime).getTime();
             }
 
             return date;
