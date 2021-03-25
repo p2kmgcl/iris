@@ -145,6 +145,7 @@ const Database = {
 
     transaction.objectStore('items').put({
       itemId: item.itemId,
+      fileName: item.fileName,
       parentItemId: item.parentItemId,
       updateTime: item.updateTime,
     });
@@ -159,6 +160,7 @@ const Database = {
 
     transaction.objectStore('items').put({
       itemId: album.itemId,
+      fileName: album.fileName,
       parentItemId: album.parentItemId,
       updateTime: album.updateTime,
     });
@@ -180,6 +182,7 @@ const Database = {
 
     transaction.objectStore('items').put({
       itemId: photo.itemId,
+      fileName: photo.fileName,
       parentItemId: photo.parentItemId,
       updateTime: photo.updateTime,
     });

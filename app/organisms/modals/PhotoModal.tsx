@@ -25,13 +25,30 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
     undefined,
   );
 
-  const album = useAsyncMemo(
-    () =>
-      photo?.albumItemId
-        ? Database.selectAlbum(photo.albumItemId)
-        : Promise.resolve(undefined),
-    [photo],
+  const path = useAsyncMemo(
+    () => {
+      const getPath = async (itemId: string): Promise<string> => {
+        const item = await Database.selectItem(itemId);
+        if (!item) return '';
+        if (item.itemId === item.parentItemId) return item.fileName;
+        return `${await getPath(item.parentItemId)}/${item.fileName}`;
+      };
+
+      return getPath(itemId);
+    },
+    [itemId],
     undefined,
+  );
+
+  const albumTitle = useAsyncMemo(
+    () =>
+      photo
+        ? Database.selectAlbum(photo.albumItemId).then(
+            (album) => album?.title || '',
+          )
+        : Promise.resolve(''),
+    [photo],
+    '',
   );
 
   const thumbnailURL = PhotoLoader.getPhotoThumbnailURL(itemId);
@@ -94,40 +111,40 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
       {showInfo ? (
         <Modal priority={3} onCloseButtonClick={() => setShowInfo(false)}>
           <table className={styles.infoPanel}>
-            <tr>
-              <td>File name</td>
-              <td>{photo.fileName}</td>
-            </tr>
-            <tr>
-              <td>Date</td>
-              <td>{new Date(photo.dateTime).toLocaleString()}</td>
-            </tr>
-            <tr>
-              <td>Size</td>
-              <td>
-                {photo.width}x{photo.height}
-              </td>
-            </tr>
-            {album ? (
+            <tbody>
+              <tr>
+                <td>File</td>
+                <td>{path}</td>
+              </tr>
               <tr>
                 <td>Album</td>
-                <td>{album.title}</td>
+                <td>{albumTitle}</td>
               </tr>
-            ) : null}
-            {photo.location ? (
               <tr>
-                <td>Location</td>
+                <td>Date</td>
+                <td>{new Date(photo.dateTime).toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Size</td>
                 <td>
-                  <iframe
-                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${
-                      photo.location.longitude - 0.001
-                    }%2C${photo.location.latitude - 0.001}%2C${
-                      photo.location.longitude + 0.001
-                    }%2C${photo.location.latitude + 0.001}&amp;layer=mapnik`}
-                  />
+                  {photo.width}x{photo.height}
                 </td>
               </tr>
-            ) : null}
+              {photo.location ? (
+                <tr>
+                  <td>Location</td>
+                  <td>
+                    <iframe
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${
+                        photo.location.longitude - 0.001
+                      }%2C${photo.location.latitude - 0.001}%2C${
+                        photo.location.longitude + 0.001
+                      }%2C${photo.location.latitude + 0.001}&amp;layer=mapnik`}
+                    />
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
           </table>
         </Modal>
       ) : (

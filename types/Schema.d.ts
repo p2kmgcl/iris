@@ -2,6 +2,7 @@ import { DBSchema } from 'idb';
 
 export interface ItemModel {
   itemId: string;
+  fileName: string;
   parentItemId: string;
   updateTime: number;
 }

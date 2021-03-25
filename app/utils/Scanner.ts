@@ -225,6 +225,7 @@ const Scanner = {
 
         await Database.addAlbum({
           itemId: driveItem.id,
+          fileName: driveItem.name,
           parentItemId: driveItemParent.id,
           updateTime: lastModifiedDateTime,
           title,
@@ -235,6 +236,7 @@ const Scanner = {
       } else {
         await Database.addItem({
           itemId: driveItem.id,
+          fileName: driveItem.name,
           parentItemId: driveItemParent.id,
           updateTime: lastModifiedDateTime,
         });
