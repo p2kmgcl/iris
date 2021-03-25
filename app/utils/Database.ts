@@ -192,6 +192,7 @@ const Database = {
       width: photo.width,
       isVideo: photo.isVideo,
       albumItemId: photo.albumItemId,
+      location: photo.location,
     });
 
     return transaction.done.catch((error) => {

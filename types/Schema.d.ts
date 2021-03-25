@@ -21,6 +21,11 @@ export interface PhotoModel {
   width: number;
   height: number;
   isVideo: boolean;
+  location?: {
+    altitude: number;
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export default interface Schema extends DBSchema {

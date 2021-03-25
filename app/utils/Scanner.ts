@@ -187,6 +187,38 @@ const Scanner = {
           width: driveItem.image?.width || driveItem.video?.width || 0,
           height: driveItem.image?.height || driveItem.video?.height || 0,
           isVideo: !!driveItem.video,
+          location: await (async function () {
+            let location;
+
+            const metadataFile = driveItemSiblings.find(
+              (siblingItem) => siblingItem.name === `${driveItem.name}.xmp`,
+            );
+
+            if (metadataFile) {
+              location = Metadata.getLocationFromString(
+                await fetch(
+                  (metadataFile as { '@microsoft.graph.downloadUrl': string })[
+                    '@microsoft.graph.downloadUrl'
+                  ],
+                ).then((response) => response.text()),
+              );
+            }
+
+            if (
+              !location &&
+              driveItem.location &&
+              typeof driveItem.location.latitude === 'number' &&
+              typeof driveItem.location.longitude === 'number'
+            ) {
+              location = {
+                altitude: driveItem.location.longitude || 0,
+                latitude: driveItem.location.latitude,
+                longitude: driveItem.location.longitude,
+              };
+            }
+
+            return location;
+          })(),
         });
       } else if (children.some((child) => driveItemIsPhoto(child))) {
         const [dateTime, title] = parseDateString(driveItem.name);
