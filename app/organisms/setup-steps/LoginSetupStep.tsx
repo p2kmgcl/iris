@@ -45,7 +45,7 @@ const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
         </H1>
       </header>
 
-      <Spacer axis="y" size={10} />
+      <Spacer axis="y" size={8} />
 
       <Button disabled={loading} type="button" onClick={handleClick}>
         <Spacer axis="y" size={5} />
