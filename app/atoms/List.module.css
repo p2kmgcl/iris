@@ -2,9 +2,18 @@
   padding: 0;
   margin: 0 auto;
   max-width: 60ch;
-  box-shadow: 0 0 0 1px var(--dark-l1);
+  box-shadow: 0 0 0 1px var(--border-color);
   list-style: none;
   min-height: 100%;
+}
+
+.list .list {
+  border-bottom: solid thin var(--border-color);
+  box-shadow: none;
+}
+
+.list > li .list {
+  border-top: solid thin var(--border-color);
 }
 
 .listItem {
@@ -14,7 +23,7 @@
 }
 
 .listItem + .listItem {
-  border-top: solid thin var(--dark-l1);
+  border-top: solid thin var(--border-color);
 }
 
 .listButtonItem,
@@ -37,22 +46,6 @@
   cursor: pointer;
 }
 
-.listButton:hover {
-  background-color: var(--primary-l1);
-  color: var(--dark);
-}
-
-.listButton:focus {
-  background-color: var(--primary-l1);
-  color: var(--dark);
-  outline: none;
-}
-
-.listButton:active {
-  background-color: var(--primary-d1);
-  color: var(--dark);
-}
-
 .listLabel {
   display: flex;
   flex-grow: 1;
@@ -61,20 +54,16 @@
   word-break: break-word;
 }
 
+.listButton:hover,
 .listCheckbox:hover + .listLabel {
-  background-color: var(--primary-l1);
-  color: var(--dark);
+  background-color: var(--accent-background);
+  color: var(--accent-color);
 }
 
-.listCheckbox:focus + .listLabel {
-  background-color: var(--primary-l1);
-  color: var(--dark);
-  outline: none;
-}
-
+.listButton:active,
 .listButton:active {
-  background-color: var(--primary-d1);
-  color: var(--dark);
+  background-color: var(--accent-3-background);
+  color: var(--accent-3-color);
 }
 
 .listToggleItem {
@@ -82,10 +71,9 @@
 }
 
 .listToggle {
-  border: solid thin var(--dark-l1);
+  border: solid thin var(--border-color);
   border-radius: var(--roundness);
   overflow: hidden;
-  background: var(--dark);
   flex-shrink: 0;
 }
 
@@ -95,7 +83,7 @@
   width: 1.25em;
   height: 1.25em;
   margin-right: 1.25em;
-  background: var(--dark-l1);
+  background: var(--disabled-color);
   transition: margin ease calc(var(--transition-duration) / 2),
     background ease calc(var(--transition-duration) / 2);
   will-change: margin, background;
@@ -104,7 +92,7 @@
 .listCheckbox:checked + .listLabel .listToggle::before {
   margin-right: 0;
   margin-left: 1.25em;
-  background: var(--primary);
+  background: var(--accent-2-color);
 }
 
 .listCheckbox {
@@ -130,7 +118,7 @@
 }
 
 .listItemSubtitle {
-  color: var(--secondary-d1);
+  color: var(--disabled-color);
   font-size: 0.875rem;
 }
 
@@ -138,14 +126,6 @@
   font-size: 1rem;
   margin: 0;
   padding: 0.5rem 1rem;
-  background: var(--dark-l1);
-}
-
-.listCheckbox:hover + .listLabel .listItemSubtitle,
-.listCheckbox:active + .listLabel .listItemSubtitle,
-.listCheckbox:focus + .listLabel .listItemSubtitle,
-.listButton:hover .listItemSubtitle,
-.listButton:active .listItemSubtitle,
-.listButton:focus .listItemSubtitle {
-  color: var(--secondary-d2);
+  color: var(--accent-3-color);
+  background: var(--accent-3-background);
 }

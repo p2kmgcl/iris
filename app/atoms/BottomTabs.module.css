@@ -11,8 +11,7 @@
   flex-shrink: 0;
   display: flex;
   justify-content: center;
-  background-color: var(--dark-l1);
-  border-top: solid thin var(--secondary-d2);
+  border-top: solid thin var(--border-color);
 }
 
 .tab {
@@ -30,29 +29,19 @@
   padding: var(--spacing-unit);
 }
 
-.tab[aria-selected='true'] {
-  background-color: var(--primary);
-  color: var(--dark);
-}
-
-.tab:active {
-  background-color: var(--primary-d1);
-  color: var(--dark);
-}
-
 .tab:hover {
-  background-color: var(--primary-l1);
-  color: var(--dark);
+  background-color: var(--accent-2-background);
+  color: var(--accent-2-color);
 }
 
-.tab:focus {
-  background-color: var(--primary-l1);
-  color: var(--dark);
-  outline: none;
+.tab[aria-selected='true'],
+.tab:active {
+  background-color: var(--accent-background);
+  color: var(--accent-color);
 }
 
 .tab + .tab {
-  border-left: solid thin var(--secondary-d2);
+  border-left: solid thin var(--border-color);
 }
 
 .tabIcon {

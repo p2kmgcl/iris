@@ -10,7 +10,7 @@
 }
 
 .thumbnail {
-  background-color: var(--dark-l1);
+  background-color: var(--border-color);
   background-size: cover;
   background-position: center center;
   width: 100%;
@@ -24,9 +24,15 @@
   font-size: 1.5em;
   width: 1em;
   height: 1em;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--secondary-l1);
-  background-color: var(--secondary-d3);
+  color: var(--white);
+  background-color: var(--black);
+  opacity: 0.8;
+}
+
+.icon > svg {
+  transform: scale(1.5);
 }

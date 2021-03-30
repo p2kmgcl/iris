@@ -25,7 +25,7 @@
   display: block;
   width: 100%;
   padding-top: 100%;
-  background: var(--dark-l1);
+  background: var(--border-color);
   background-size: cover;
   background-position: center center;
   border-radius: var(--roundness);

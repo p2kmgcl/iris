@@ -50,7 +50,11 @@ const Modal: FC<{
       style={
         {
           backgroundColor:
-            background === 'default' ? 'var(--dark)' : 'var(--black)',
+            background === 'default'
+              ? 'var(--main-background)'
+              : 'var(--black)',
+          color:
+            background === 'default' ? 'var(--main-color)' : 'var(--white)',
           zIndex: priority,
         } as CSSProperties
       }

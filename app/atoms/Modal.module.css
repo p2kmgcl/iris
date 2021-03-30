@@ -32,14 +32,11 @@
 }
 
 .closeButton:hover {
-  background-color: var(--primary-l1);
-  color: var(--dark);
+  opacity: 0.7;
 }
 
 .closeButton:active {
-  background-color: var(--primary-d1);
-  color: var(--dark);
-  transition-duration: 0s;
+  opacity: 1;
 }
 
 .closeButtonIcon {

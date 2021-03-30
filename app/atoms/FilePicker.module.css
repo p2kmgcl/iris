@@ -5,7 +5,7 @@
   margin: 0 auto;
   max-width: calc(100vw - var(--spacing-unit) * 4);
   box-sizing: border-box;
-  background-color: var(--dark);
+  background-color: var(--main-background);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -13,8 +13,10 @@
 
 .breadcrumbList {
   list-style: none;
-  background-color: var(--dark-l1);
+  background-color: var(--accent-background);
+  color: var(--accent-color);
   padding: calc(var(--spacing-unit) * 1.25) calc(var(--spacing-unit) * 2);
+  border-bottom: solid thin var(--border-color);
   width: 100%;
   box-sizing: border-box;
   font-size: 0.875rem;
@@ -41,8 +43,8 @@
   flex-wrap: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  background-color: var(--dark);
-  color: var(--secondary-l1);
+  background-color: var(--accent-2-background);
+  color: var(--accent-2-color);
   border-radius: calc(var(--spacing-unit) + 1em);
   padding: calc(var(--spacing-unit) * 0.5) calc(var(--spacing-unit) * 1.5);
 }
@@ -53,12 +55,11 @@
   padding: 0;
   margin: 0;
   text-align: left;
-  background-color: var(--dark);
   width: 100%;
 }
 
 .buttonListItem + .buttonListItem {
-  border-top: solid thin var(--dark-l1);
+  border-top: solid thin var(--border-color);
 }
 
 .buttonListButton {
@@ -67,8 +68,8 @@
   align-items: center;
   width: 100%;
   text-align: left;
-  background-color: transparent;
-  color: inherit;
+  background-color: var(--main-background);
+  color: var(--main-color);
   font-size: 1rem;
   font-family: inherit;
   padding: calc(var(--spacing-unit) * 2);
@@ -77,24 +78,18 @@
 }
 
 .buttonListButton:hover {
-  background-color: var(--primary-l1);
-  color: var(--dark);
-}
-
-.buttonListButton:focus {
-  background-color: var(--primary-l1);
-  color: var(--dark);
-  outline: none;
+  background-color: var(--accent-background);
+  color: var(--accent-color);
 }
 
 .buttonListButton:active {
-  background-color: var(--primary-d1);
-  color: var(--dark);
+  background-color: var(--accent-3-background);
+  color: var(--accent-3-color);
 }
 
 .buttonListButton:disabled {
-  background-color: transparent;
-  color: var(--secondary-d1);
+  background-color: var(--disabled-background);
+  color: var(--disabled-color);
   cursor: default;
 }
 
@@ -111,7 +106,8 @@
 }
 
 .footer {
-  background-color: var(--dark-l1);
+  background-color: var(--accent-background);
+  border-top: solid thin var(--border-color);
   padding: calc(var(--spacing-unit) * 1.25) calc(var(--spacing-unit) * 2);
   display: flex;
   justify-content: flex-end;
