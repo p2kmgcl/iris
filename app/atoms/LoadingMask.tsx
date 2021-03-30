@@ -2,11 +2,16 @@ import { FC } from 'react';
 import styles from './LoadingMask.module.css';
 import Spinner from './Spinner';
 
-const LoadingMask: FC<{ loading?: boolean }> = ({
+const LoadingMask: FC<{ rounded?: boolean; loading?: boolean }> = ({
+  rounded = true,
   loading = false,
   children,
 }) => (
-  <div className={`${styles.wrapper} ${loading ? styles.wrapperLoading : ''}`}>
+  <div
+    className={`${styles.wrapper} ${rounded ? styles.wrapperRounded : ''} ${
+      loading ? styles.wrapperLoading : ''
+    }`}
+  >
     {children}
 
     {loading ? (

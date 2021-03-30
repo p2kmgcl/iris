@@ -1,0 +1,10 @@
+.circle {
+  display: flex;
+  width: 1.5em;
+  height: 1.5em;
+  justify-content: center;
+  align-items: center;
+  border: solid thin var(--border-color);
+  overflow: hidden;
+  border-radius: 50%;
+}

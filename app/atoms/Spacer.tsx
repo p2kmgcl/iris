@@ -3,7 +3,7 @@ import { FC } from 'react';
 const Spacer: FC<{
   block?: boolean;
   axis?: 'x' | 'y' | 'both';
-  size?: 0.25 | 0.5 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+  size?: 0.25 | 0.5 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 15 | 20;
 }> = ({ block = false, axis = 'both', size = 1 }) => (
   <span
     style={{

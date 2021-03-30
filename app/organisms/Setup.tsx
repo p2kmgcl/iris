@@ -3,12 +3,12 @@ import SetupStepProps from '../../types/SetupStepProps';
 import App from './App';
 import LoginSetupStep from './setup-steps/LoginSetupStep';
 import RootDirectorySetupStep from './setup-steps/RootDirectorySetupStep';
-import ReadySetupStep from './setup-steps/ReadySetupStep';
+import PreRootDirectorySetupStep from './setup-steps/PreRootDirectorySetupStep';
 
 const SetupSteps: Array<FC<SetupStepProps>> = [
   LoginSetupStep,
+  PreRootDirectorySetupStep,
   RootDirectorySetupStep,
-  ReadySetupStep,
 ];
 
 export default function Setup() {

@@ -72,7 +72,9 @@ const FilePicker: FC<{
 
       <div className={styles.footer}>
         {itemId && itemChildren.length ? (
-          <Button onClick={() => onItemSelect(itemId)}>Select</Button>
+          <Button onClick={() => onItemSelect(itemId)}>
+            Select this folder
+          </Button>
         ) : null}
       </div>
     </div>

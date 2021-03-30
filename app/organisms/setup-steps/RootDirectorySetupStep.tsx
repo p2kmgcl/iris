@@ -11,7 +11,7 @@ import {
 import FilePicker from '../../atoms/FilePicker';
 import SetupStep from '../../atoms/SetupStep';
 
-const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
+const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [itemId, setItemId] = useState('root');
   const [path, setPath] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -86,8 +86,8 @@ const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   }, [itemId]);
 
   return (
-    <SetupStep title="Gallery folder">
-      <LoadingMask loading={loading}>
+    <SetupStep fullScreen>
+      <LoadingMask loading={loading} rounded={false}>
         <FilePicker
           path={path}
           itemId={itemId}
@@ -100,4 +100,4 @@ const RootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   );
 };
 
-export default RootDirectorySetupStep;
+export default PreRootDirectorySetupStep;

@@ -3,7 +3,7 @@
 
   --main-color: hsl(var(--hue), 0%, 10%);
   --main-background: hsl(var(--hue), 10%, 99%);
-  --border-color: hsla(var(--hue), 0%, 0%, 0.15);
+  --border-color: hsla(var(--hue), 0%, 0%, 0.1);
 
   --accent-color: hsl(var(--hue), 50%, 10%);
   --accent-background: hsl(var(--hue), 42%, 83%);
