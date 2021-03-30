@@ -6,6 +6,7 @@ import ScanContextProvider from './contexts/ScanContext';
 import IconStyleContextProvider from './contexts/IconStyleContext';
 import Authentication from './utils/Authentication';
 import App from './organisms/App';
+import { ThemeColorProvider } from './contexts/ThemeColorProvider';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 const LazyApp = React.lazy(() => Promise.resolve({ default: App }));
@@ -38,9 +39,11 @@ async function registerServiceWorker() {
     render(
       <IconStyleContextProvider>
         <ScanContextProvider>
-          <Suspense fallback={<></>}>
-            <MainComponent />
-          </Suspense>
+          <ThemeColorProvider>
+            <Suspense fallback={<></>}>
+              <MainComponent />
+            </Suspense>
+          </ThemeColorProvider>
         </ScanContextProvider>
       </IconStyleContextProvider>,
       appElement,

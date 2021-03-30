@@ -1,13 +1,10 @@
 import { FC } from 'react';
 import styles from './SetupStep.module.css';
 
-const SetupStep: FC<{ title: string }> = ({ title, children }) => {
+const SetupStep: FC = ({ children }) => {
   return (
     <article className={styles.wrapper}>
-      <div className={styles.content}>
-        <h1 className={styles.title}>{title}</h1>
-        {children}
-      </div>
+      <div className={styles.content}>{children}</div>
     </article>
   );
 };

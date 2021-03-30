@@ -1,5 +1,4 @@
 import { FC, useCallback, useState } from 'react';
-import WelcomePageSetupStep from './setup-steps/WelcomePageSetupStep';
 import SetupStepProps from '../../types/SetupStepProps';
 import App from './App';
 import LoginSetupStep from './setup-steps/LoginSetupStep';
@@ -7,7 +6,6 @@ import RootDirectorySetupStep from './setup-steps/RootDirectorySetupStep';
 import ReadySetupStep from './setup-steps/ReadySetupStep';
 
 const SetupSteps: Array<FC<SetupStepProps>> = [
-  WelcomePageSetupStep,
   LoginSetupStep,
   RootDirectorySetupStep,
   ReadySetupStep,

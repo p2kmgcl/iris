@@ -7,8 +7,7 @@ node_modules/
 .prettierignore
 .gitignore
 yarn.lock
-static/CNAME
-generate-development-certificate.sh
+*.excalidraw
 *.svg
 *.png
 *.txt

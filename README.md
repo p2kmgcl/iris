@@ -16,7 +16,7 @@
 </h1>
 
 <h4 align="center">
-  The missing OneDrive gallery.<br><br>
+  The missing OneDrive gallery you were waiting for.<br><br>
 
   <a href="https://github.com/p2kmgcl/iris/releases">
     <img alt="GitHub release" src="https://img.shields.io/github/release/p2kmgcl/iris.svg">

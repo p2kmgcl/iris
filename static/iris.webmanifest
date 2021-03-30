@@ -1,59 +1,77 @@
 {
   "name": "Iris",
   "short_name": "Iris",
-  "description": "The missing OneDrive gallery.",
+  "description": "The missing OneDrive gallery you were waiting for.",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "natural",
-  "theme_color": "#fff",
-  "background_color": "#000",
+  "theme_color": "#272833",
   "lang": "en-US",
   "icons": [
     {
-      "src": "icons/favicon/512.png",
+      "src": "icons/favicon-maskable/512.png",
       "sizes": "512x512",
       "purpose": "maskable"
     },
     {
+      "src": "icons/favicon-maskable/192.png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+
+    {
+      "src": "icons/favicon/512.png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
       "src": "icons/favicon/384.png",
       "sizes": "384x384",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/192.png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/180.png",
-      "sizes": "180x180"
+      "sizes": "180x180",
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/152.png",
-      "sizes": "152x152"
+      "sizes": "152x152",
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/144.png",
-      "sizes": "144x144"
+      "sizes": "144x144",
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/128.png",
-      "sizes": "128x128"
+      "sizes": "128x128",
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/120.png",
-      "sizes": "120x120"
+      "sizes": "120x120",
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/96.png",
-      "sizes": "96x96"
+      "sizes": "96x96",
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/72.png",
-      "sizes": "72x72"
+      "sizes": "72x72",
+      "purpose": "any"
     },
     {
       "src": "icons/favicon/48.png",
-      "sizes": "48x48"
+      "sizes": "48x48",
+      "purpose": "any"
     }
   ]
 }
