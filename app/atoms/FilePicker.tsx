@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
 import styles from './FilePicker.module.css';
-import Spinner from './Spinner';
 import Button from './Button';
 
 const FilePicker: FC<{
@@ -34,48 +33,38 @@ const FilePicker: FC<{
 
   return (
     <div className={styles.wrapper}>
-      {itemChildren.length ? (
-        <>
-          <ol className={styles.breadcrumbList}>
-            {filteredPath.map((item, index) => (
-              <React.Fragment key={`${item}-${index}`}>
-                {index > 0 ? (
-                  <span className={styles.breadcrumbSeparator}>/</span>
-                ) : null}
+      <ol className={styles.breadcrumbList}>
+        {filteredPath.map((item, index) => (
+          <React.Fragment key={`${item}-${index}`}>
+            {index > 0 ? (
+              <span className={styles.breadcrumbSeparator}>/</span>
+            ) : null}
 
-                <li className={styles.breadcrumbItem}>{item}</li>
-              </React.Fragment>
-            ))}
-          </ol>
+            <li className={styles.breadcrumbItem}>{item}</li>
+          </React.Fragment>
+        ))}
+      </ol>
 
-          <ul className={styles.buttonList} ref={setButtonList}>
-            {itemChildren.map((item) => (
-              <li className={styles.buttonListItem} key={item.itemId}>
-                <button
-                  disabled={item.disabled}
-                  className={styles.buttonListButton}
-                  type="button"
-                  onClick={() => onItemClick(item.itemId)}
-                >
-                  <span className={styles.buttonListIcon}>{<item.Icon />}</span>
-                  <span>{item.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : (
-        <div className={styles.spinner}>
-          <Spinner size="large" />
-        </div>
-      )}
+      <ul className={styles.buttonList} ref={setButtonList}>
+        {itemChildren.map((item) => (
+          <li className={styles.buttonListItem} key={item.itemId}>
+            <button
+              disabled={item.disabled}
+              className={styles.buttonListButton}
+              type="button"
+              onClick={() => onItemClick(item.itemId)}
+            >
+              <span className={styles.buttonListIcon}>{<item.Icon />}</span>
+              <span>{item.label}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
 
       <div className={styles.footer}>
-        {itemId && itemChildren.length ? (
-          <Button onClick={() => onItemSelect(itemId)}>
-            Select this folder
-          </Button>
-        ) : null}
+        <Button disabled={!itemId} onClick={() => onItemSelect(itemId)}>
+          Select this folder
+        </Button>
       </div>
     </div>
   );

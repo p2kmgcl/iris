@@ -18,9 +18,11 @@
   color: var(--accent-color);
   padding: calc(var(--spacing-unit) * 1.25) calc(var(--spacing-unit) * 2);
   border-bottom: solid thin var(--border-color);
-  flex-shrink: 0;
   font-size: 0.875rem;
   margin: 0;
+
+  flex-shrink: 0;
+  height: 2em;
 
   display: flex;
   flex-wrap: nowrap;
@@ -55,6 +57,7 @@
   margin: 0;
   text-align: left;
   width: 100%;
+  flex-grow: 1;
 }
 
 .buttonListItem + .buttonListItem {

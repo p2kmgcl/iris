@@ -3,11 +3,13 @@ import { FC } from 'react';
 export const Text: FC<{
   align?: 'inherit' | 'left' | 'center' | 'right';
   variant?: 'default' | 'secondary';
+  TagName?: 'p' | 'h1';
   size?: number;
   lineHeight?: number;
   block?: boolean;
 }> = ({
   children,
+  TagName = 'p',
   align = 'inherit',
   variant = 'default',
   size = 1,
@@ -15,7 +17,7 @@ export const Text: FC<{
   block = false,
 }) => {
   return (
-    <p
+    <TagName
       style={{
         textAlign: align,
         color:
@@ -27,6 +29,6 @@ export const Text: FC<{
       }}
     >
       {children}
-    </p>
+    </TagName>
   );
 };

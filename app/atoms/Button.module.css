@@ -30,3 +30,7 @@
   color: var(--accent-color);
   transition-duration: 0s;
 }
+
+.buttonLarge {
+  padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
+}

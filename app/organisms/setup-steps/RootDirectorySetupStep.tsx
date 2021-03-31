@@ -87,7 +87,7 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
 
   return (
     <SetupStep fullScreen>
-      <LoadingMask loading={loading} rounded={false}>
+      <LoadingMask loading={loading || !children.length} rounded={false}>
         <FilePicker
           path={path}
           itemId={itemId}
