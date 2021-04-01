@@ -1,4 +1,8 @@
-import { DriveItem, ThumbnailSet } from '@microsoft/microsoft-graph-types';
+import {
+  DriveItem,
+  ThumbnailSet,
+  User,
+} from '@microsoft/microsoft-graph-types';
 import { Client } from '@microsoft/microsoft-graph-client';
 import Authentication from './Authentication';
 
@@ -9,10 +13,12 @@ const client = Client.initWithMiddleware({
 });
 
 async function graphGet<T>(query: string): Promise<T> {
-  return (await client.api(query)).get();
+  return client.api(query).get();
 }
 
 const Graph = {
+  getProfile: () => graphGet<User>('/me'),
+
   getItem: (itemId: string) => graphGet<DriveItem>(`/me/drive/items/${itemId}`),
 
   getItemChildren: (itemId: string) =>

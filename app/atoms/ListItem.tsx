@@ -9,11 +9,23 @@ export const ListItem: FC<{
   sublabel?: ReactNode;
   disabled?: boolean;
   pressed?: boolean;
+  href?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
-}> = ({ leftIcon, rightIcon, label, sublabel, disabled, pressed, onClick }) => {
+}> = ({
+  leftIcon,
+  rightIcon,
+  label,
+  sublabel,
+  disabled,
+  pressed,
+  href,
+  onClick,
+}) => {
   let ButtonTagName = 'span';
 
-  let buttonProps: HTMLProps<HTMLButtonElement | HTMLSpanElement> = {
+  let buttonProps: HTMLProps<
+    HTMLButtonElement | HTMLSpanElement | HTMLAnchorElement
+  > = {
     className: styles.item,
   };
 
@@ -30,6 +42,16 @@ export const ListItem: FC<{
       type: 'button',
       disabled,
       onClick,
+    };
+  }
+
+  if (href !== undefined) {
+    ButtonTagName = 'a';
+    buttonProps = {
+      ...buttonProps,
+      className: classNames(styles.item, styles.anchor),
+      target: '_blank',
+      href,
     };
   }
 

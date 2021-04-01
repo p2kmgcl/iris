@@ -1,6 +1,8 @@
 import pkg from '../../package.json';
+import Graph from './Graph';
 
 const LOCAL_STORAGE_AUTH_KEY = `__${pkg.name}_auth__`;
+const LOCAL_STORAGE_PROFILE_KEY = `__${pkg.name}_profile__`;
 
 let refreshPromise: Promise<void> = Promise.resolve();
 
@@ -12,6 +14,11 @@ let auth: {
   access_token: '',
   refresh_token: '',
   expiration_date: 0,
+};
+
+let profile: { displayName: string; userPrincipalName: string } = {
+  displayName: '',
+  userPrincipalName: '',
 };
 
 const setAuth = (nextAuth: {
@@ -44,6 +51,10 @@ const Authentication = {
         localStorage.getItem(LOCAL_STORAGE_AUTH_KEY) as string,
       );
 
+      const storedProfile = JSON.parse(
+        localStorage.getItem(LOCAL_STORAGE_PROFILE_KEY) as string,
+      );
+
       if (
         storedAuth.access_token &&
         storedAuth.refresh_token &&
@@ -51,17 +62,21 @@ const Authentication = {
       ) {
         auth = storedAuth;
       }
+
+      if (storedProfile.displayName && storedProfile.userPrincipalName) {
+        profile = storedProfile;
+      }
     } catch (_error) {
       // noop
     }
   },
 
   isAuthenticated: async () => {
-    return !!(
-      auth.access_token &&
-      auth.expiration_date &&
-      auth.expiration_date
-    );
+    return !!(auth.access_token && auth.refresh_token && auth.expiration_date);
+  },
+
+  getProfile: () => {
+    return profile;
   },
 
   login: async () => {
@@ -85,7 +100,25 @@ const Authentication = {
           }
 
           setAuth(data);
-          resolve();
+
+          Graph.getProfile()
+            .then((nextProfile) => {
+              profile = {
+                displayName:
+                  nextProfile.displayName ||
+                  [nextProfile.givenName, nextProfile.surname]
+                    .filter(Boolean)
+                    .join(' '),
+                userPrincipalName: nextProfile.userPrincipalName || '',
+              };
+
+              localStorage.setItem(
+                LOCAL_STORAGE_PROFILE_KEY,
+                JSON.stringify(profile),
+              );
+            })
+            .then(resolve)
+            .catch(reject);
         } catch (error) {
           reject(error);
         }
@@ -102,7 +135,13 @@ const Authentication = {
       expiration_date: 0,
     };
 
+    profile = {
+      displayName: '',
+      userPrincipalName: '',
+    };
+
     localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
+    localStorage.removeItem(LOCAL_STORAGE_PROFILE_KEY);
     window.location.reload();
 
     // Wait until page reload

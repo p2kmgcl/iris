@@ -1,5 +1,6 @@
 .title {
-  border: solid thin var(--border-color);
+  border-top: solid thin var(--border-color);
+  border-bottom: solid thin var(--border-color);
   color: var(--accent-color);
   background-color: var(--accent-background);
   font-size: var(--font-size);

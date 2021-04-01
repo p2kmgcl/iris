@@ -9,15 +9,16 @@ import {
 } from '../../contexts/ScanContext';
 import Spinner from '../../atoms/Spinner';
 import {
-  AiOutlineClear,
   AiOutlineHdd,
   AiOutlineInfoCircle,
   AiOutlineLogout,
+  IoMdDocument,
+  MdPerson,
 } from 'react-icons/all';
-import PhotoLoader from '../../utils/PhotoLoader';
 import { ListItem } from '../../atoms/ListItem';
 import { InvisibleList } from '../../atoms/InvisibleList';
 import { BannerTitle } from '../../atoms/BannerTitle';
+import PhotoLoader from '../../utils/PhotoLoader';
 
 const ScanStatus = () => {
   const isScanning = useIsScanning();
@@ -67,6 +68,18 @@ const UsedSpace = () => {
   );
 };
 
+const Me = () => {
+  const profile = Authentication.getProfile();
+
+  return (
+    <ListItem
+      leftIcon={<MdPerson />}
+      label={profile.displayName}
+      sublabel={profile.userPrincipalName}
+    />
+  );
+};
+
 const SettingsTab: FC = () => (
   <>
     <BannerTitle>Scan</BannerTitle>
@@ -75,37 +88,39 @@ const SettingsTab: FC = () => (
       <ScanStatus />
     </InvisibleList>
 
-    <BannerTitle>About</BannerTitle>
+    <BannerTitle>Account</BannerTitle>
 
     <InvisibleList>
+      <Me />
       <ListItem
         leftIcon={<AiOutlineLogout />}
         label="Logout"
-        sublabel="Remove account but keep photos"
+        sublabel="Remove account and offline data. All photos will remain safe in your OneDrive account"
         onClick={() => {
           if (confirm('Are you sure?')) {
             Authentication.logout();
+            PhotoLoader.clearThumbnailCache();
+            Database.destroy();
           }
         }}
       />
-      <ListItem
-        leftIcon={<AiOutlineClear />}
-        label="Clear database"
-        sublabel="Remove all photos but keep account"
-        onClick={() => {
-          if (confirm('Are you sure?')) {
-            PhotoLoader.clearThumbnailCache().then(() => {
-              return Database.destroy();
-            });
-          }
-        }}
-      />
+    </InvisibleList>
+
+    <BannerTitle>About</BannerTitle>
+
+    <InvisibleList>
       <ListItem
         leftIcon={<AiOutlineInfoCircle />}
         label="Version"
         sublabel={pkg.version}
       />
       <UsedSpace />
+      <ListItem
+        leftIcon={<IoMdDocument />}
+        label="License"
+        sublabel="Read application license"
+        href="https://github.com/p2kmgcl/iris/blob/master/LICENSE"
+      />
     </InvisibleList>
   </>
 );

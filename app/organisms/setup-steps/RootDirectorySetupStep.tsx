@@ -104,7 +104,7 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
             <ListItem
               key={child.itemId}
               disabled={child.disabled}
-              icon={child.icon}
+              leftIcon={child.icon}
               label={child.label}
               onClick={() => setItemId(child.itemId)}
             />

@@ -13,22 +13,29 @@
   box-sizing: border-box;
 }
 
-.button {
+.button,
+.anchor {
   cursor: pointer;
 }
 
-.button:hover {
+.anchor {
+  text-decoration: none;
+}
+
+.button:hover,
+.anchor:hover {
   background-color: var(--highlight-background);
   color: var(--highlight-color);
 }
 
-.button:active {
+.button:active,
+.anchor:active {
   background-color: var(--primary-background);
   color: var(--primary-color);
   transition-duration: 0s;
 }
 
-.item:not(.button),
+.item:not(.button):not(.anchor),
 .button:disabled {
   background-color: var(--disabled-background);
   color: var(--disabled-color);
@@ -38,6 +45,21 @@
 .sublabel {
   color: var(--main-color-secondary);
   font-size: var(--font-size-small);
+}
+
+.button:hover .sublabel,
+.anchor:hover .sublabel {
+  color: var(--highlight-color-secondary);
+}
+
+.button:active .sublabel,
+.anchor:active .sublabel {
+  color: var(--primary-color-secondary);
+}
+
+.item:not(.button):not(.anchor) .sublabel,
+.button:disabled .sublabel {
+  color: var(--disabled-color-secondary);
 }
 
 .leftIcon,

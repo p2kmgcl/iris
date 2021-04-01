@@ -11,8 +11,13 @@ import styles from './LoginSetupStep.module.css';
 const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const handleClick: MouseEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault();
-    await Authentication.login();
-    stepReady();
+
+    try {
+      await Authentication.login();
+      stepReady();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

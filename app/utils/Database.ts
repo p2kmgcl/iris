@@ -228,9 +228,9 @@ const Database = {
       .count();
   },
 
-  selectAlbumKeyList: () => {
+  selectAlbumList: () => {
     return database
-      .getAllKeysFromIndex('albums', 'byDateTime')
+      .getAllFromIndex('albums', 'byDateTime')
       .then((albums) => albums.reverse());
   },
 

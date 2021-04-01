@@ -231,7 +231,8 @@ const Scanner = {
           title,
           dateTime,
           coverItemId:
-            children.find((child) => driveItemIsPhoto(child))?.id || '',
+            children.find((child) => child.id && driveItemIsPhoto(child))?.id ||
+            '',
         });
       } else {
         await Database.addItem({
