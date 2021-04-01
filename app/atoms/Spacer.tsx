@@ -1,15 +1,22 @@
 import { FC } from 'react';
 
+const SIZE = {
+  small: 'calc(var(--spacing-unit) * 0.5)',
+  regular: 'var(--spacing-unit)',
+  large: 'calc(var(--spacing-unit) * 2)',
+  extraLarge: 'calc(var(--spacing-unit) * 3)',
+};
+
 const Spacer: FC<{
-  block?: boolean;
-  axis?: 'x' | 'y' | 'both';
-  size?: 0.25 | 0.5 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 15 | 20;
-}> = ({ block = false, axis = 'both', size = 1 }) => (
+  inline?: boolean;
+  height?: keyof typeof SIZE;
+  width?: keyof typeof SIZE;
+}> = ({ inline, height = 'regular', width = 'regular' }) => (
   <span
     style={{
-      display: block ? 'block' : 'inline-block',
-      height: axis === 'x' ? 1 : `calc(var(--spacing-unit) * ${size})`,
-      width: axis === 'y' ? 1 : `calc(var(--spacing-unit) * ${size})`,
+      display: inline ? 'inline-block' : 'block',
+      height: height ? SIZE[height] : undefined,
+      width: width ? SIZE[width] : undefined,
     }}
   />
 );

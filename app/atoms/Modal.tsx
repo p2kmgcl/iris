@@ -1,7 +1,11 @@
-import { CSSProperties, FC, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { MdClose } from 'react-icons/md';
+import { FC, useEffect, useState } from 'react';
 import styles from './Modal.module.css';
+import classNames from 'classnames';
+import { GoKebabVertical, MdArrowBack } from 'react-icons/all';
+import { createPortal } from 'react-dom';
+
+const MODAL_BASE_PRIORITY = 1000;
+const MODAL_LAYER_SIZE = 100;
 
 const modalStack = (function () {
   let listeners: Array<() => void> = [];
@@ -21,16 +25,23 @@ const modalStack = (function () {
       window.history.pushState(null, document.title);
       listeners = [...listeners, listener];
     },
+
+    getPriority: () => {
+      return MODAL_BASE_PRIORITY + listeners.length * MODAL_LAYER_SIZE;
+    },
   };
 })();
 
 const Modal: FC<{
-  priority: number;
-  background?: 'default' | 'black';
+  contrast?: boolean;
+  options?: Array<{ label: string; onClick: () => void }>;
   onCloseButtonClick: () => void;
-}> = ({ priority, background = 'default', children, onCloseButtonClick }) => {
+}> = ({ contrast, options, children, onCloseButtonClick }) => {
+  const [priority, setPriority] = useState(-1);
+
   useEffect(() => {
     modalStack.push(onCloseButtonClick);
+    setPriority(modalStack.getPriority());
   }, [onCloseButtonClick]);
 
   useEffect(() => {
@@ -45,36 +56,34 @@ const Modal: FC<{
   }, []);
 
   return createPortal(
-    <div
-      className={styles.modal}
-      style={
-        {
-          backgroundColor:
-            background === 'default'
-              ? 'var(--main-background)'
-              : 'var(--black)',
-          color:
-            background === 'default' ? 'var(--main-color)' : 'var(--white)',
-          zIndex: priority,
-        } as CSSProperties
-      }
-    >
-      <div className={styles.header}>
+    <div className={classNames(styles.modal, { [styles.contrast]: contrast })}>
+      <div className={styles.header} style={{ zIndex: priority + 2 }}>
         <div className={styles.headerContent}>
           <button
-            className={styles.closeButton}
             type="button"
+            aria-label="Close"
+            className={styles.headerButton}
             onClick={() => window.history.back()}
           >
-            <span className={styles.closeButtonIcon}>
-              <MdClose />
-            </span>
-            <span className={styles.closeButtonLabel}>Close</span>
+            <MdArrowBack />
           </button>
+
+          {options?.length ? (
+            <button
+              type="button"
+              aria-label="View options"
+              className={styles.headerButton}
+              onClick={() => window.history.back()}
+            >
+              <GoKebabVertical />
+            </button>
+          ) : null}
         </div>
       </div>
 
-      <div className={styles.content}>{children}</div>
+      <div className={styles.content} style={{ zIndex: priority + 1 }}>
+        {children}
+      </div>
     </div>,
     document.body,
   );

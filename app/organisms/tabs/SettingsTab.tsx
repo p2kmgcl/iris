@@ -13,14 +13,27 @@ import {
   AiOutlineHdd,
   AiOutlineInfoCircle,
   AiOutlineLogout,
-} from 'react-icons/ai';
-import List, {
-  ListButtonItem,
-  ListItem,
-  ListToggleItem,
-  SubList,
-} from '../../atoms/List';
+} from 'react-icons/all';
 import PhotoLoader from '../../utils/PhotoLoader';
+import { ListItem } from '../../atoms/ListItem';
+import { InvisibleList } from '../../atoms/InvisibleList';
+import { BannerTitle } from '../../atoms/BannerTitle';
+
+const ScanStatus = () => {
+  const isScanning = useIsScanning();
+  const toggleScan = useToggleScan();
+  const scanStatus = useScanStatus();
+
+  return (
+    <ListItem
+      leftIcon={<Spinner size="regular" spinning={isScanning} />}
+      label="Find new photos"
+      sublabel={scanStatus.description}
+      pressed={isScanning}
+      onClick={() => toggleScan()}
+    />
+  );
+};
 
 const UsedSpace = () => {
   const [space, setSpace] = useState<JSX.Element>(<></>);
@@ -34,10 +47,9 @@ const UsedSpace = () => {
 
       setSpace(
         <>
-          <div>
-            {photoCount} photos in {albumCount} albums
-          </div>
-          <div>{megaBytes} megabytes</div>
+          {photoCount} photos in {albumCount} albums
+          <br />
+          {megaBytes} megabytes
         </>,
       );
     };
@@ -50,65 +62,52 @@ const UsedSpace = () => {
     };
   }, []);
 
-  return space;
-};
-
-const SettingsTab: FC = () => {
-  const isScanning = useIsScanning();
-  const toggleScan = useToggleScan();
-  const scanStatus = useScanStatus();
-
   return (
-    <List>
-      <SubList title="Scan">
-        <ListToggleItem
-          icon={<Spinner size="regular" spinning={isScanning} />}
-          title="Find new photos"
-          subtitle={scanStatus.description}
-          checked={isScanning}
-          onChange={() => toggleScan()}
-        />
-      </SubList>
-      <SubList title="About">
-        <ListButtonItem
-          icon={<AiOutlineLogout />}
-          title="Logout"
-          subtitle="Remove account but keep photos"
-          onClick={() => {
-            if (confirm('Are you sure?')) {
-              Authentication.logout();
-            }
-          }}
-        />
-        <ListButtonItem
-          icon={<AiOutlineClear />}
-          title="Clear database"
-          subtitle="Remove all photos but keep account"
-          onClick={() => {
-            if (confirm('Are you sure?')) {
-              if (isScanning) {
-                toggleScan();
-              }
-
-              PhotoLoader.clearThumbnailCache().then(() => {
-                return Database.destroy();
-              });
-            }
-          }}
-        />
-        <ListItem
-          icon={<AiOutlineInfoCircle />}
-          title="Version"
-          subtitle={pkg.version}
-        />
-        <ListItem
-          icon={<AiOutlineHdd />}
-          title="Used space"
-          subtitle={<UsedSpace />}
-        />
-      </SubList>
-    </List>
+    <ListItem leftIcon={<AiOutlineHdd />} label="Used space" sublabel={space} />
   );
 };
+
+const SettingsTab: FC = () => (
+  <>
+    <BannerTitle>Scan</BannerTitle>
+
+    <InvisibleList>
+      <ScanStatus />
+    </InvisibleList>
+
+    <BannerTitle>About</BannerTitle>
+
+    <InvisibleList>
+      <ListItem
+        leftIcon={<AiOutlineLogout />}
+        label="Logout"
+        sublabel="Remove account but keep photos"
+        onClick={() => {
+          if (confirm('Are you sure?')) {
+            Authentication.logout();
+          }
+        }}
+      />
+      <ListItem
+        leftIcon={<AiOutlineClear />}
+        label="Clear database"
+        sublabel="Remove all photos but keep account"
+        onClick={() => {
+          if (confirm('Are you sure?')) {
+            PhotoLoader.clearThumbnailCache().then(() => {
+              return Database.destroy();
+            });
+          }
+        }}
+      />
+      <ListItem
+        leftIcon={<AiOutlineInfoCircle />}
+        label="Version"
+        sublabel={pkg.version}
+      />
+      <UsedSpace />
+    </InvisibleList>
+  </>
+);
 
 export default SettingsTab;

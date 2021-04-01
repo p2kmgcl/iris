@@ -1,0 +1,4 @@
+.image {
+  border: solid thin var(--border-color);
+  border-radius: 50%;
+}

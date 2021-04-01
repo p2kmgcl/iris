@@ -1,53 +1,69 @@
 :root {
   --hue: 263;
-
-  --main-color: hsl(var(--hue), 0%, 10%);
-  --main-background: hsl(var(--hue), 10%, 99%);
   --border-color: hsla(var(--hue), 0%, 0%, 0.1);
 
-  --accent-color: hsl(var(--hue), 50%, 10%);
-  --accent-background: hsl(var(--hue), 42%, 83%);
-  --accent-2-color: hsl(var(--hue), 30%, 10%);
-  --accent-2-background: hsl(var(--hue), 40%, 92%);
-  --accent-3-color: hsl(var(--hue), 40%, 10%);
-  --accent-3-background: hsl(var(--hue), 34%, 96%);
+  --main-color: hsl(var(--hue), 0%, 10%);
+  --main-color-secondary: hsl(var(--hue), 0%, 34%);
+  --main-background: hsl(var(--hue), 10%, 99%);
 
-  --disabled-color: hsla(var(--hue), 0%, 10%, 0.6);
-  --disabled-background: hsl(var(--hue), 0%, 89%);
+  --primary-color: hsl(var(--hue), 0%, 100%);
+  --primary-color-secondary: hsl(var(--hue), 0%, 77%);
+  --primary-background: hsl(var(--hue), 20%, 30%);
 
-  --black: #000;
-  --white: #fff;
-  --blue: #4b9fff;
-  --orange: #ffb46e;
-  --red: #ff5f5f;
-  --teal: #50d2a0;
-  --pink: #ff73c3;
-  --green: #9be169;
-  --purple: #af78ff;
-  --yellow: #ffd76e;
-  --cyan: #5fc8ff;
-  --indigo: #7785ff;
+  --highlight-color: hsl(var(--hue), 0%, 100%);
+  --highlight-color-secondary: hsl(var(--hue), 0%, 81%);
+  --highlight-background: hsl(var(--hue), 22%, 40%);
+
+  --accent-color: hsl(var(--hue), 0%, 0%);
+  --accent-color-secondary: hsl(var(--hue), 0%, 25%);
+  --accent-background: hsl(var(--hue), 40%, 92%);
+
+  --disabled-color: hsl(var(--hue), 0%, 30%);
+  --disabled-color-secondary: hsl(var(--hue), 0%, 40%);
+  --disabled-background: hsl(var(--hue), 0%, 96%);
+
+  --contrast-color: #ffffff;
+  --contrast-color-secondary: #aaaaaa;
+  --contrast-background: #000000;
+
+  --font-size: 16px;
+  --font-size-small: 14px;
+  --font-size-large: 32px;
 
   --roundness: 8px;
-  --spacing-unit: 8px;
+  --spacing-unit: 16px;
   --transition-duration: 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --main-color: hsl(var(--hue), 0%, 99%);
-    --main-background: hsl(var(--hue), 10%, 17%);
     --border-color: hsla(var(--hue), 0%, 100%, 0.15);
 
-    --accent-color: hsl(var(--hue), 20%, 95%);
-    --accent-background: hsl(var(--hue), 15%, 30%);
-    --accent-2-color: hsl(var(--hue), 20%, 100%);
-    --accent-2-background: hsl(var(--hue), 18%, 33%);
-    --accent-3-color: hsl(var(--hue), 20%, 95%);
-    --accent-3-background: hsl(var(--hue), 10%, 42%);
+    --main-color: hsl(var(--hue), 0%, 95%);
+    --main-color-secondary: hsl(var(--hue), 0%, 72%);
+    --main-background: hsl(var(--hue), 10%, 17%);
 
-    --disabled-color: hsla(var(--hue), 0%, 99%, 0.6);
-    --disabled-background: hsl(var(--hue), 0%, 11%);
+    --primary-color: hsl(var(--hue), 0%, 100%);
+    --primary-color-secondary: hsl(var(--hue), 0%, 77%);
+    --primary-background: hsl(var(--hue), 20%, 30%);
+
+    --highlight-color: hsl(var(--hue), 0%, 100%);
+    --highlight-color-secondary: hsl(var(--hue), 0%, 81%);
+    --highlight-background: hsl(var(--hue), 22%, 40%);
+
+    --accent-color: hsl(var(--hue), 0%, 100%);
+    --accent-color-secondary: hsl(var(--hue), 0%, 72%);
+    --accent-background: hsl(var(--hue), 10%, 28%);
+
+    --disabled-color: hsl(var(--hue), 0%, 72%);
+    --disabled-color-secondary: hsl(var(--hue), 0%, 56%);
+    --disabled-background: hsl(var(--hue), 10%, 17%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-duration: 0s;
   }
 }
 
@@ -60,7 +76,7 @@ body {
   color: var(--main-color);
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu,
     Cantarell, Helvetica Neue, Arial, sans-serif;
-  font-size: 16px;
+  font-size: var(--font-size);
   margin: 0;
   height: 100%;
 }

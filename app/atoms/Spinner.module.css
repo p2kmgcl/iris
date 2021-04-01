@@ -21,7 +21,7 @@
   border: 1.1em solid currentColor;
   transform: translateZ(0);
   transition: border-color ease var(--transition-duration);
-  animation: spinner 1.1s infinite linear;
+  animation: spinner calc(var(--transition-duration) * 4) infinite linear;
   animation-play-state: paused;
 }
 

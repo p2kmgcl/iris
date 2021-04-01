@@ -1,42 +1,46 @@
 import { FC } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
-import SetupStep from '../../atoms/SetupStep';
-import { LandingPage } from '../../atoms/LandingPage';
-import { Circle } from '../../atoms/Circle';
-import { AiOutlineSearch } from 'react-icons/ai';
-import { Text } from '../../atoms/Text';
+import { View } from '../../atoms/View';
+import { Title } from '../../atoms/Title';
+import Spacer from '../../atoms/Spacer';
+import { Paragraph } from '../../atoms/Paragraph';
+import Button from '../../atoms/Button';
+import styles from './PreRootDirectorySetupStep.module.css';
+import { AiOutlineSearch } from 'react-icons/all';
 
 const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   return (
-    <SetupStep>
-      <LandingPage
-        Banner={
-          <Text size={8}>
-            <Circle>
-              <AiOutlineSearch />
-            </Circle>
-          </Text>
-        }
-        title={
-          <>
-            Select where
-            <br />
-            your photos are
-          </>
-        }
-        subtitle={
-          <>
-            Iris will scan this folder
-            <br />
-            periodically and show you
-            <br />
-            all your photos.
-          </>
-        }
-        buttonLabel="Select folder"
-        onButtonClick={stepReady}
-      />
-    </SetupStep>
+    <View centered>
+      <header>
+        <span className={styles.icon} role="image">
+          <AiOutlineSearch />
+        </span>
+
+        <Spacer height="small" />
+
+        <Title>
+          Select where
+          <br />
+          your photos are
+        </Title>
+      </header>
+
+      <Spacer height="regular" />
+
+      <Paragraph>
+        Iris will scan this folder
+        <br />
+        periodically and show you
+        <br />
+        all your photos.
+      </Paragraph>
+
+      <Spacer height="large" />
+
+      <Button large onClick={stepReady}>
+        Select folder
+      </Button>
+    </View>
   );
 };
 

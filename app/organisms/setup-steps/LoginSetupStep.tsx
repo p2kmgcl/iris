@@ -1,8 +1,12 @@
 import { FC, MouseEventHandler } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Authentication from '../../utils/Authentication';
-import SetupStep from '../../atoms/SetupStep';
-import { LandingPage } from '../../atoms/LandingPage';
+import { View } from '../../atoms/View';
+import { Title } from '../../atoms/Title';
+import { Paragraph } from '../../atoms/Paragraph';
+import Button from '../../atoms/Button';
+import Spacer from '../../atoms/Spacer';
+import styles from './LoginSetupStep.module.css';
 
 const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const handleClick: MouseEventHandler<HTMLButtonElement> = async (event) => {
@@ -12,21 +16,27 @@ const LoginSetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   };
 
   return (
-    <SetupStep>
-      <LandingPage
-        Banner={<img src="/icons/favicon/192.png" alt="" />}
-        title="Iris"
-        subtitle={
-          <>
-            The missing OneDrive gallery
-            <br />
-            you were waiting for
-          </>
-        }
-        buttonLabel="Login with Microsoft"
-        onButtonClick={handleClick}
-      />
-    </SetupStep>
+    <View centered>
+      <header>
+        <img className={styles.image} src="/icons/favicon/192.png" alt="" />
+        <Spacer height="small" />
+        <Title>Iris</Title>
+      </header>
+
+      <Spacer height="regular" />
+
+      <Paragraph>
+        The missing OneDrive gallery
+        <br />
+        you were waiting for
+      </Paragraph>
+
+      <Spacer height="large" />
+
+      <Button large onClick={handleClick}>
+        Login with Microsoft
+      </Button>
+    </View>
   );
 };
 

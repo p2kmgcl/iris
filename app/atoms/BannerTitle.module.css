@@ -1,0 +1,19 @@
+.title {
+  border: solid thin var(--border-color);
+  color: var(--accent-color);
+  background-color: var(--accent-background);
+  font-size: var(--font-size);
+  padding: calc(var(--spacing-unit) * 0.5) var(--spacing-unit);
+  margin: 0;
+  height: 1.5rem;
+  line-height: 1.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.overflowStart {
+  direction: rtl;
+  text-align: left;
+}

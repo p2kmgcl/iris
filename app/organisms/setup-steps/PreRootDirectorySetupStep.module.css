@@ -1,10 +1,11 @@
-.circle {
+.icon {
   display: flex;
-  width: 1.5em;
-  height: 1.5em;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
+  width: 192px;
+  height: 192px;
   border: solid thin var(--border-color);
-  overflow: hidden;
   border-radius: 50%;
+  font-size: 128px;
 }

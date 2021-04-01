@@ -109,7 +109,7 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
       )}
 
       {showInfo ? (
-        <Modal priority={3} onCloseButtonClick={() => setShowInfo(false)}>
+        <Modal onCloseButtonClick={() => setShowInfo(false)}>
           <table className={styles.infoPanel}>
             <tbody>
               <tr>
@@ -176,11 +176,7 @@ const PhotoModal: FC<{
   );
 
   return (
-    <Modal
-      priority={2}
-      background="black"
-      onCloseButtonClick={onCloseButtonClick}
-    >
+    <Modal contrast onCloseButtonClick={onCloseButtonClick}>
       {photoKeyList.length ? (
         <Carousel
           slideIdsList={photoKeyList}

@@ -1,22 +1,26 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Graph from '../../utils/Graph';
-import LoadingMask from '../../atoms/LoadingMask';
 import Database from '../../utils/Database';
 import {
   AiOutlineArrowUp,
   AiOutlineFile,
   AiOutlineFolder,
 } from 'react-icons/ai';
-import FilePicker from '../../atoms/FilePicker';
-import SetupStep from '../../atoms/SetupStep';
+import { BannerTitle } from '../../atoms/BannerTitle';
+import Button from '../../atoms/Button';
+import styles from './RootDirectorySetupStep.module.css';
+import Spinner from '../../atoms/Spinner';
+import { InvisibleList } from '../../atoms/InvisibleList';
+import { ListItem } from '../../atoms/ListItem';
 
 const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
+  const [buttonList, setButtonList] = useState<HTMLDivElement | null>(null);
   const [itemId, setItemId] = useState('root');
-  const [path, setPath] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [path, setPath] = useState<string>('');
+  const [loading, setLoading] = useState(true);
   const [children, setChildren] = useState<
-    Array<{ itemId: string; label: string; Icon: FC; disabled: boolean }>
+    Array<{ itemId: string; label: string; icon: ReactNode; disabled: boolean }>
   >([]);
 
   const handleChoose = async () => {
@@ -52,7 +56,7 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
         .map((child) => ({
           itemId: child.id as string,
           label: child.name as string,
-          Icon: child.folder ? AiOutlineFolder : AiOutlineFile,
+          icon: child.folder ? <AiOutlineFolder /> : <AiOutlineFile />,
           disabled: !child.folder,
         }));
 
@@ -61,7 +65,7 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
           {
             itemId: item.parentReference.id as string,
             label: '..',
-            Icon: AiOutlineArrowUp,
+            icon: <AiOutlineArrowUp />,
             disabled: false,
           },
           ...filteredChildren,
@@ -77,26 +81,49 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
               .split('/')
               .filter((chunk) => chunk)
               .map((chunk) => decodeURIComponent(chunk))
-              .concat([item.name]) ?? ['/']
-          : [],
+              .concat([item.name])
+              .join('/') ?? '/'
+          : '',
       );
 
       setLoading(false);
     })();
   }, [itemId]);
 
+  useEffect(() => {
+    buttonList?.scrollTo({ left: 0, top: 0, behavior: 'auto' });
+  }, [buttonList, children]);
+
   return (
-    <SetupStep fullScreen>
-      <LoadingMask loading={loading || !children.length} rounded={false}>
-        <FilePicker
-          path={path}
-          itemId={itemId}
-          itemChildren={children}
-          onItemClick={setItemId}
-          onItemSelect={handleChoose}
-        />
-      </LoadingMask>
-    </SetupStep>
+    <div className={styles.wrapper}>
+      <BannerTitle overflowDirection="start">{path}</BannerTitle>
+
+      <div className={styles.content} ref={setButtonList}>
+        <InvisibleList>
+          {children.map((child) => (
+            <ListItem
+              key={child.itemId}
+              disabled={child.disabled}
+              icon={child.icon}
+              label={child.label}
+              onClick={() => setItemId(child.itemId)}
+            />
+          ))}
+        </InvisibleList>
+      </div>
+
+      <div className={styles.footer}>
+        <Button disabled={loading} onClick={handleChoose}>
+          Select this folder
+        </Button>
+      </div>
+
+      {loading || !children.length ? (
+        <div className={styles.loadingMask}>
+          <Spinner size="large" />
+        </div>
+      ) : null}
+    </div>
   );
 };
 

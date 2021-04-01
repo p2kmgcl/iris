@@ -1,4 +1,4 @@
-.wrapper {
+.tabsWrapper {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -16,9 +16,9 @@
 
 .tab {
   background: transparent;
-  color: inherit;
+  color: var(--main-color-secondary);
   font-family: inherit;
-  font-size: 1em;
+  font-size: var(--font-size-small);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,14 +30,14 @@
 }
 
 .tab:hover {
-  background-color: var(--accent-2-background);
-  color: var(--accent-2-color);
+  background-color: var(--highlight-background);
+  color: var(--highlight-color);
 }
 
 .tab[aria-selected='true'],
 .tab:active {
-  background-color: var(--accent-background);
-  color: var(--accent-color);
+  background-color: var(--primary-background);
+  color: var(--primary-color);
 }
 
 .tab + .tab {
@@ -48,7 +48,7 @@
   font-size: 22px;
 }
 
-.content {
+.tabsContent {
   flex-grow: 1;
   overflow-x: auto;
 }

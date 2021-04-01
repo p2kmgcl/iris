@@ -5,6 +5,8 @@ import Database from '../../utils/Database';
 import { Grid, ItemProps } from '../../atoms/Grid';
 import PhotoThumbnail from '../../atoms/PhotoThumbnail';
 import PhotoModal from './PhotoModal';
+import Spacer from '../../atoms/Spacer';
+import { View } from '../../atoms/View';
 
 interface PhotoProps {
   setPhotoId: Dispatch<SetStateAction<string>>;
@@ -49,7 +51,7 @@ const AlbumModal: FC<{
   }
 
   return (
-    <Modal priority={1} onCloseButtonClick={onCloseButtonClick}>
+    <Modal onCloseButtonClick={onCloseButtonClick}>
       {photoId ? (
         <PhotoModal
           albumId={albumId}
@@ -58,17 +60,21 @@ const AlbumModal: FC<{
         />
       ) : null}
 
-      <header style={{ padding: '3em 1em 1em 1em' }}>
-        {isFinite(album.dateTime) ? (
-          <p>
-            {new Date(album.dateTime).toLocaleDateString(
-              navigator.language || 'en-US',
-              { year: 'numeric', month: 'long', day: 'numeric' },
-            )}
-          </p>
-        ) : null}
-        <h1>{album.title}</h1>
-      </header>
+      <Spacer height="extraLarge" />
+
+      <View padded>
+        <header>
+          {isFinite(album.dateTime) ? (
+            <p>
+              {new Date(album.dateTime).toLocaleDateString(
+                navigator.language || 'en-US',
+                { year: 'numeric', month: 'long', day: 'numeric' },
+              )}
+            </p>
+          ) : null}
+          <h1>{album.title}</h1>
+        </header>
+      </View>
 
       <Grid
         itemIdList={photoKeyList}

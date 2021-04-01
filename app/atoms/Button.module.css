@@ -1,10 +1,10 @@
 .button {
   border: solid thin var(--border-color);
-  background-color: var(--accent-background);
-  color: var(--accent-color);
+  background-color: var(--primary-background);
+  color: var(--primary-color);
   font-family: inherit;
   font-size: 1rem;
-  padding: var(--spacing-unit) calc(var(--spacing-unit) * 3);
+  padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
   border-radius: var(--roundness);
   cursor: pointer;
   transition: background-color ease var(--transition-duration),
@@ -15,8 +15,14 @@
 }
 
 .button:hover {
-  background-color: var(--accent-2-background);
-  color: var(--accent-2-color);
+  background-color: var(--highlight-background);
+  color: var(--highlight-color);
+}
+
+.button:active {
+  background-color: var(--primary-background);
+  color: var(--primary-color);
+  transition-duration: 0s;
 }
 
 .button:disabled {
@@ -25,12 +31,6 @@
   cursor: default;
 }
 
-.button:active {
-  background-color: var(--accent-background);
-  color: var(--accent-color);
-  transition-duration: 0s;
-}
-
-.buttonLarge {
-  padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
+.large {
+  padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2);
 }
