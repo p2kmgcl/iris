@@ -1,4 +1,8 @@
 {
   "extends": "../tsconfig.json",
-  "compilerOptions": { "module": "ESNext" }
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": ["ESNext", "DOM"]
+  },
+  "include": ["**/*", "../types/**/*"]
 }

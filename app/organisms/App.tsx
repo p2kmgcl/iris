@@ -9,14 +9,9 @@ import React, {
   useState,
 } from 'react';
 import { useToggleScan } from '../contexts/ScanContext';
-import {
-  MdDeveloperMode,
-  MdPhoto,
-  MdPhotoAlbum,
-  MdSettings,
-} from 'react-icons/md';
 import styles from './App.module.css';
 import Spinner from '../atoms/Spinner';
+import { BookOpen, Image, Sliders, Tool } from 'react-feather';
 
 const TAB_ID_PREFIX = 'bottom-tab-';
 const LABEL_ID_PREFIX = 'bottom-tab-label-';
@@ -34,19 +29,19 @@ const TABS: Record<
   [DEFAULT_TAB_ID]: {
     tabId: DEFAULT_TAB_ID,
     label: 'Photos',
-    Icon: MdPhoto,
+    Icon: Image,
     Content: React.lazy(() => import('./tabs/AllPhotosTab')),
   },
   allAlbums: {
     tabId: 'allAlbums',
     label: 'Albums',
-    Icon: MdPhotoAlbum,
+    Icon: BookOpen,
     Content: React.lazy(() => import('./tabs/AllAlbumsTab')),
   },
   settings: {
     tabId: 'settings',
     label: 'Settings',
-    Icon: MdSettings,
+    Icon: Sliders,
     Content: React.lazy(() => import('./tabs/SettingsTab')),
   },
 };
@@ -55,7 +50,7 @@ if (process.env.NODE_ENV === 'development') {
   TABS.developer = {
     tabId: 'developer',
     label: 'Developer',
-    Icon: MdDeveloperMode,
+    Icon: Tool,
     Content: React.lazy(() => import('./tabs/DeveloperTab')),
   };
 }

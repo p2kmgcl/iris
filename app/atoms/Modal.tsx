@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from 'react';
 import styles from './Modal.module.css';
 import classNames from 'classnames';
-import { GoKebabVertical, MdArrowBack } from 'react-icons/all';
 import { createPortal } from 'react-dom';
+import { ArrowLeft, MoreVertical } from 'react-feather';
 
 const MODAL_BASE_PRIORITY = 1000;
 const MODAL_LAYER_SIZE = 100;
@@ -65,7 +65,7 @@ const Modal: FC<{
             className={styles.headerButton}
             onClick={() => window.history.back()}
           >
-            <MdArrowBack />
+            <ArrowLeft />
           </button>
 
           {options?.length ? (
@@ -75,7 +75,7 @@ const Modal: FC<{
               className={styles.headerButton}
               onClick={() => window.history.back()}
             >
-              <GoKebabVertical />
+              <MoreVertical />
             </button>
           ) : null}
         </div>

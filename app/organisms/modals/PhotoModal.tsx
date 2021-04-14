@@ -6,7 +6,7 @@ import { PhotoModel } from '../../../types/Schema';
 import PhotoLoader from '../../utils/PhotoLoader';
 import styles from './PhotoModal.module.css';
 import { Carousel, SlideProps } from '../../atoms/Carousel';
-import { AiFillInfoCircle } from 'react-icons/all';
+import { Info } from 'react-feather';
 
 const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
   const [
@@ -154,7 +154,7 @@ const PhotoSlide: FC<SlideProps> = ({ slideId: itemId }) => {
             onClick={() => setShowInfo(true)}
           >
             <span className={styles.bottomPanelButtonIcon}>
-              <AiFillInfoCircle />
+              <Info />
             </span>
             <span className={styles.bottomPanelButtonLabel}>Show info</span>
           </button>

@@ -2,17 +2,14 @@ import { FC, ReactNode, useEffect, useState } from 'react';
 import SetupStepProps from '../../../types/SetupStepProps';
 import Graph from '../../utils/Graph';
 import Database from '../../utils/Database';
-import {
-  AiOutlineArrowUp,
-  AiOutlineFile,
-  AiOutlineFolder,
-} from 'react-icons/ai';
 import { BannerTitle } from '../../atoms/BannerTitle';
 import Button from '../../atoms/Button';
 import styles from './RootDirectorySetupStep.module.css';
 import Spinner from '../../atoms/Spinner';
 import { InvisibleList } from '../../atoms/InvisibleList';
 import { ListItem } from '../../atoms/ListItem';
+import { CornerLeftUp, File, Folder } from 'react-feather';
+import { View } from '../../atoms/View';
 
 const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
   const [buttonList, setButtonList] = useState<HTMLDivElement | null>(null);
@@ -56,7 +53,7 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
         .map((child) => ({
           itemId: child.id as string,
           label: child.name as string,
-          icon: child.folder ? <AiOutlineFolder /> : <AiOutlineFile />,
+          icon: child.folder ? <Folder /> : <File />,
           disabled: !child.folder,
         }));
 
@@ -65,7 +62,7 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
           {
             itemId: item.parentReference.id as string,
             label: '..',
-            icon: <AiOutlineArrowUp />,
+            icon: <CornerLeftUp />,
             disabled: false,
           },
           ...filteredChildren,
@@ -94,7 +91,7 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
     buttonList?.scrollTo({ left: 0, top: 0, behavior: 'auto' });
   }, [buttonList, children]);
 
-  return (
+  return (    <View fixedWidth>
     <div className={styles.wrapper}>
       <BannerTitle overflowDirection="start">{path}</BannerTitle>
 
@@ -123,7 +120,7 @@ const PreRootDirectorySetupStep: FC<SetupStepProps> = ({ stepReady }) => {
           <Spinner size="large" />
         </div>
       ) : null}
-    </div>
+    </div></View>
   );
 };
 

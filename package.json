@@ -1,35 +1,24 @@
 {
   "name": "iris",
   "version": "0.0.21",
+  "author": "Pablo Molina <contact@pablomolina.me>",
+  "license": "MIT",
   "private": true,
   "scripts": {
-    "check-format": "prettier --list-different .",
-    "format": "prettier --write .",
     "show-changelog": "conventional-changelog -p angular -r 2",
-    "lint": "eslint --max-warnings 0 --fix app/**/*.ts app/**/*.tsx",
-    "build": "NODE_ENV=production webpack --mode production --config webpack.config.ts",
+    "format": "prettier --write .",
+    "lint": "prettier --list-different . && eslint --fix app/**/*.ts app/**/*.tsx && tsc --build webpack/tsconfig.json && tsc --build app/tsconfig.json && tsc --build service-worker/tsconfig.json",
+    "build": "NODE_ENV=production webpack --config webpack/webpack.config.ts",
     "start": "netlify dev",
-    "start:development": "NODE_ENV=development webpack serve --mode development --config webpack.config.ts",
-    "postinstall": "husky install"
+    "start:development": "NODE_ENV=development webpack serve --config webpack/webpack.config.ts"
   },
   "engines": {
     "node": ">=10.0.0",
     "yarn": ">=1.22.0"
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged",
-      "pre-push": "npm run check-format && npm run lint"
-    }
-  },
-  "lint-staged": {
-    "*": "prettier --write",
-    "*.ts": "eslint --max-warnings 0 --fix",
-    "*.tsx": "eslint --max-warnings 0 --fix"
-  },
   "dependencies": {
     "@azure/msal-browser": "^2.11.1",
+    "@babel/runtime": "^7.13.10",
     "@microsoft/microsoft-graph-client": "^2.2.1",
     "@microsoft/microsoft-graph-types": "^1.30.0",
     "classnames": "^2.2.6",
@@ -37,15 +26,14 @@
     "node-fetch": "^2.6.1",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-icons": "^4.2.0"
+    "react-feather": "^2.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.13.10",
+    "@babel/plugin-transform-runtime": "^7.13.15",
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.12.13",
     "@babel/preset-typescript": "^7.13.0",
-    "@commitlint/cli": "^11.0.0",
-    "@commitlint/config-angular": "^11.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
     "@types/classnames": "^2.2.11",
     "@types/compression-webpack-plugin": "^6.0.4",
@@ -53,7 +41,7 @@
     "@types/node": "^10.0.0",
     "@types/react": "^17.0.1",
     "@types/react-dom": "^17.0.0",
-    "@types/webpack": "^4.41.26",
+    "@types/webpack": "^5.28.0",
     "@types/workbox-webpack-plugin": "^5.1.5",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
@@ -64,11 +52,9 @@
     "css-loader": "^5.0.2",
     "eslint": "^7.0.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "husky": "^5.0.0",
-    "lint-staged": "^10.5.4",
     "netlify-cli": "^3.10.0",
     "prettier": "^2.2.1",
-    "react-refresh": "^0.9.0",
+    "react-refresh": "^0.10.0",
     "style-loader": "^2.0.0",
     "ts-node": "^9.1.1",
     "typescript": "~4.1.0",

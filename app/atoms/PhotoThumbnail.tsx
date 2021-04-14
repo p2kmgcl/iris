@@ -1,8 +1,8 @@
 import { FC, useMemo } from 'react';
 import styles from './PhotoThumbnail.module.css';
-import { MdLocalMovies } from 'react-icons/md';
 import { PhotoModel } from '../../types/Schema';
 import PhotoLoader from '../utils/PhotoLoader';
+import { Film } from 'react-feather';
 
 const PhotoThumbnail: FC<{
   photoItem: PhotoModel;
@@ -23,7 +23,7 @@ const PhotoThumbnail: FC<{
 
       {photoItem.isVideo ? (
         <div className={styles.icon}>
-          <MdLocalMovies />
+          <Film size={24} />
         </div>
       ) : null}
     </button>

@@ -11,3 +11,12 @@
 .padded {
   padding: var(--spacing-unit);
 }
+
+.fixedWidth {
+  box-shadow: 0 0 0 1px var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0 auto;
+  max-width: 80ch;
+}

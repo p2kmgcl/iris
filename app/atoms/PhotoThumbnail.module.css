@@ -28,11 +28,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
-  background-color: var(--black);
-  opacity: 0.8;
-}
-
-.icon > svg {
-  transform: scale(1.5);
+  color: black;
+  background-color: white;
+  opacity: 0.6;
+  border-radius: 4px;
 }

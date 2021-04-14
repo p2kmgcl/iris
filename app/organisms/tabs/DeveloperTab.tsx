@@ -4,7 +4,7 @@ import { View } from '../../atoms/View';
 
 export default function DeveloperTab() {
   return (
-    <>
+    <View fixedWidth>
       <BannerTitle>Colors</BannerTitle>
       <View>
         {['main', 'primary', 'highlight', 'accent', 'disabled', 'contrast'].map(
@@ -26,7 +26,7 @@ export default function DeveloperTab() {
                   fontSize: 'var(--font-size-small)',
                 }}
               >
-                Secondary
+                Secondary 2
               </div>
             </div>
           ),
@@ -37,6 +37,6 @@ export default function DeveloperTab() {
       <View padded>
         <Spinner size="large" spinning />
       </View>
-    </>
+    </View>
   );
 }
